@@ -578,3 +578,40 @@ if (document.readyState === 'loading') {
 } else {
     initDashboard();
 }
+
+// Live auto-polling mechanism
+setInterval(async () => {
+    try {
+        const res = await fetch('dashboard_data.json?t=' + Date.now());
+        if (!res.ok) return;
+        const newData = await res.json();
+        
+        // Simple comparison using length and first element
+        if (JSON.stringify(newData) !== JSON.stringify(window.TRANSPORT_DATA)) {
+            console.log("New data detected! Updating dashboard live...");
+            window.TRANSPORT_DATA = newData;
+            
+            // Re-apply filters with new data
+            filterData();
+            
+            // Optional: Show a subtle notification (toast) to user
+            const toast = document.createElement('div');
+            toast.textContent = "데이터가 실시간으로 업데이트 되었습니다!";
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.backgroundColor = 'var(--accent)';
+            toast.style.color = '#fff';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '5px';
+            toast.style.zIndex = '9999';
+            toast.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            toast.style.animation = 'fadein 0.5s, fadeout 0.5s 2.5s';
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+    } catch(e) {
+        // Ignore fetch errors to prevent console spam
+    }
+}, 10000); // Poll every 10 seconds
