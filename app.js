@@ -487,9 +487,14 @@ function filterData() {
     const thStatusVal = document.getElementById('th-filter-status')?.value || '';
     const thLoadingVal = document.getElementById('th-filter-loading')?.value || '';
     const thDestVal = document.getElementById('th-filter-dest')?.value || '';
+    const thStartDateVal = document.getElementById('th-filter-startdate')?.value || '';
+    const thEndDateVal = document.getElementById('th-filter-enddate')?.value || '';
+    const thWaypointVal = document.getElementById('th-filter-waypoint')?.value || '';
     const thToneVal = document.getElementById('th-filter-tone')?.value || '';
     const thDriverVal = document.getElementById('th-filter-driver')?.value || '';
     const thCarnumVal = document.getElementById('th-filter-carnum')?.value || '';
+    const thRemarkVal = document.getElementById('th-filter-remark')?.value || '';
+    const thFareVal = document.getElementById('th-filter-fare')?.value || '';
     
     // Update main header title dynamically
     const brandNameSpan = document.getElementById('brand-name');
@@ -545,9 +550,23 @@ function filterData() {
         if (thStatusVal && String(row['주문 상태'] || '').trim() !== thStatusVal) return false;
         if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
         if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
+        if (thStartDateVal) {
+            const rStart = String(row['상차 요청 일시'] || '').split(' ')[0];
+            if (rStart !== thStartDateVal) return false;
+        }
+        if (thEndDateVal) {
+            const rEnd = String(row['하차 요청 일시'] || '').split(' ')[0];
+            if (rEnd !== thEndDateVal) return false;
+        }
+        if (thWaypointVal && String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim() !== thWaypointVal) return false;
         if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
         if (thDriverVal && String(row['운전자명'] || '').trim() !== thDriverVal) return false;
         if (thCarnumVal && String(row['차량번호'] || '').trim() !== thCarnumVal) return false;
+        if (thRemarkVal && String(row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '').trim() !== thRemarkVal) return false;
+        if (thFareVal) {
+            const sales = row['총 매출 금액'] || row['매출 금액'];
+            if (String(sales !== undefined && sales !== null ? sales : '').trim() !== thFareVal) return false;
+        }
 
         // Search text Match (Search drivers, vehicle numbers, detail addresses)
         if (searchVal) {
