@@ -289,14 +289,14 @@ function initFilters() {
     window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '화주사 (전체)');
     window.cmsLoading = new CustomMultiSelect(document.getElementById('filter-loading'), '출발지명 (전체)');
     window.cmsDest = new CustomMultiSelect(document.getElementById('filter-dest'), '도착지명 (전체)');
-    window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '차량정보 (전체)');
+    window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '차량톤수 (전체)');
     window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '접수상태 (전체)');
 
     window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량정보 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
@@ -804,7 +804,7 @@ function exportToCSV() {
     // Determine which data to export based on current filter status
     let dataToExport = activeData;
     
-    const headers = ['접수상태', '출발지명', '도착지명', '출발일시', '도착일시', '도착지주소', '경유지', '차량정보', '차량번호', '접수자', '비고', '운임', '매입금액', '순이익', '순이익률'];
+    const headers = ['접수상태', '출발지명', '도착지명', '출발일시', '도착일시', '도착지주소', '경유지', '차량톤수', '차량번호', '접수자', '비고', '운임', '매입금액', '순이익', '순이익률'];
     
     let csvContent = '\uFEFF'; // UTF-8 BOM
     csvContent += headers.join(',') + '\n';
