@@ -868,6 +868,45 @@ function toggleTheme() {
     updateCharts();
 }
 
+function applyDynamicLabels() {
+    // Load Configuration
+    const getConfigName = (key, defaultName) => {
+        return (window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) || defaultName;
+    };
+    
+    window.nameStatus = getConfigName('주문 상태', '접수상태');
+    window.nameShipper = getConfigName('화주명', '화주사');
+    window.nameLoading = getConfigName('상차지명', '출발지명');
+    window.nameDest = getConfigName('하차지명', '도착지명');
+    window.nameTone = getConfigName('요청 톤급', '차량톤수');
+    window.nameDriver = getConfigName('운전자명', '접수자');
+    window.nameFare = getConfigName('총 매출 금액', '운임');
+    window.nameStartDate = getConfigName('상차 요청 일시', '출발일시');
+    window.nameEndDate = getConfigName('하차 요청 일시', '도착일시');
+
+    // Update UI Labels dynamically
+    const lblStatus = document.querySelector('label[for="filter-status"]');
+    if(lblStatus) lblStatus.innerHTML = `🔄 ${window.nameStatus}`;
+    
+    const lblShipper = document.querySelector('label[for="filter-shipper"]');
+    if(lblShipper) lblShipper.innerHTML = `🏢 ${window.nameShipper}`;
+
+    const lblLoading = document.querySelector('label[for="filter-loading"]');
+    if(lblLoading) lblLoading.innerHTML = `📍 ${window.nameLoading}`;
+    
+    const lblDest = document.querySelector('label[for="filter-dest"]');
+    if(lblDest) lblDest.innerHTML = `📍 ${window.nameDest}`;
+    
+    const lblTone = document.querySelector('label[for="filter-tone"]');
+    if(lblTone) lblTone.innerHTML = `⚖️ ${window.nameTone}`;
+
+    const thStart = document.getElementById('th-filter-startdate');
+    if(thStart) thStart.placeholder = `${window.nameStartDate} (선택)`;
+
+    const thEnd = document.getElementById('th-filter-enddate');
+    if(thEnd) thEnd.placeholder = `${window.nameEndDate} (선택)`;
+}
+
 // On Load
 function initDashboard() {
     applyDynamicLabels();
