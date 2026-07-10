@@ -83,14 +83,22 @@ class CustomMultiSelect {
         this.btn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isOpen = this.panel.style.display === 'block';
+            
+            // Close all others first
             document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
-            this.panel.style.display = isOpen ? 'none' : 'block';
+            document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
+            
+            if (!isOpen) {
+                this.panel.style.display = 'block';
+                this.wrapper.classList.add('is-open');
+            }
         });
         
         // Close when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.wrapper.contains(e.target)) {
                 this.panel.style.display = 'none';
+                this.wrapper.classList.remove('is-open');
             }
         });
         
