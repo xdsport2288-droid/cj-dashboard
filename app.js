@@ -580,36 +580,42 @@ if (document.readyState === 'loading') {
 }
 
 // Live auto-polling mechanism
+const knownDataStrings = new Set([JSON.stringify(window.TRANSPORT_DATA)]);
+
 setInterval(async () => {
     try {
         const res = await fetch('dashboard_data.json?t=' + Date.now());
         if (!res.ok) return;
         const newData = await res.json();
+        const newStr = JSON.stringify(newData);
         
-        // Simple comparison using length and first element
-        if (JSON.stringify(newData) !== JSON.stringify(window.TRANSPORT_DATA)) {
+        // Use a Set to remember seen versions. This prevents popup spam 
+        // if the GitHub CDN flip-flops between old and new versions during deployment.
+        if (!knownDataStrings.has(newStr)) {
             console.log("New data detected! Updating dashboard live...");
+            knownDataStrings.add(newStr);
             window.TRANSPORT_DATA = newData;
             
             // Re-apply filters with new data
             filterData();
             
-            // Optional: Show a subtle notification (toast) to user
+            // Show a subtle notification (toast) to user
             const toast = document.createElement('div');
-            toast.textContent = "데이터가 실시간으로 업데이트 되었습니다!";
+            toast.textContent = "데이터가 실시간으로 최신화되었습니다!";
             toast.style.position = 'fixed';
             toast.style.bottom = '20px';
             toast.style.right = '20px';
             toast.style.backgroundColor = 'var(--accent)';
             toast.style.color = '#fff';
-            toast.style.padding = '10px 20px';
-            toast.style.borderRadius = '5px';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
             toast.style.zIndex = '9999';
-            toast.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
-            toast.style.animation = 'fadein 0.5s, fadeout 0.5s 2.5s';
+            toast.style.fontWeight = 'bold';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            toast.style.animation = 'fadein 0.5s, fadeout 0.5s 3.5s';
             
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => toast.remove(), 4000);
         }
     } catch(e) {
         // Ignore fetch errors to prevent console spam
