@@ -368,16 +368,16 @@ function filterData() {
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = TRANSPORT_DATA.filter(row => {
         // Shipper Match
-        if (shipperVal && row['화주명'] !== shipperVal) return false;
+        if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
         // Destination Match
-        if (destVal && row['하차지명'] !== destVal) return false;
+        if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
         
         // Tone Match
-        if (toneVal && row['요청 톤급'] !== toneVal) return false;
+        if (toneVal && String(row['요청 톤급'] || '').trim() !== toneVal) return false;
         
         // Status Match
-        if (statusVal && row['주문 상태'] !== statusVal) return false;
+        if (statusVal && String(row['주문 상태'] || '').trim() !== statusVal) return false;
 
         // Date Range Match
         if (row['상차 요청 일시']) {
@@ -404,13 +404,13 @@ function filterData() {
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = TRANSPORT_DATA.filter(row => {
         // Shipper Match
-        if (shipperVal && row['화주명'] !== shipperVal) return false;
+        if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
         // Destination Match
-        if (destVal && row['하차지명'] !== destVal) return false;
+        if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
         
         // Tone Match
-        if (toneVal && row['요청 톤급'] !== toneVal) return false;
+        if (toneVal && String(row['요청 톤급'] || '').trim() !== toneVal) return false;
         
         // Date Range Match
         if (row['상차 요청 일시']) {
