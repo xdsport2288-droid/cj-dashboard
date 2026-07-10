@@ -749,24 +749,47 @@ function initDashboard() {
         timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
-    // Function to add a clear button to flatpickr
-    const addClearButton = function(selectedDates, dateStr, instance) {
+    // Function to add custom buttons to flatpickr
+    const addCustomButtons = function(selectedDates, dateStr, instance) {
+        const btnContainer = document.createElement("div");
+        btnContainer.style.display = "flex";
+        btnContainer.style.gap = "5px";
+        btnContainer.style.padding = "5px 10px 10px 10px";
+        btnContainer.style.backgroundColor = "var(--bg-secondary)";
+        btnContainer.style.borderTop = "1px solid var(--card-border)";
+        btnContainer.style.borderRadius = "0 0 5px 5px";
+
+        const todayBtn = document.createElement("button");
+        todayBtn.textContent = "오늘";
+        todayBtn.className = "btn btn-secondary";
+        todayBtn.style.flex = "1";
+        todayBtn.style.padding = "6px";
+        todayBtn.style.cursor = "pointer";
+        todayBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        todayBtn.style.color = "#48bb78";
+        todayBtn.addEventListener("click", function() {
+            const today = new Date();
+            instance.setDate([today, today]);
+            instance.close();
+            filterData();
+        });
+
         const clearBtn = document.createElement("button");
         clearBtn.textContent = "전체선택 (초기화)";
         clearBtn.className = "btn btn-secondary";
-        clearBtn.style.width = "100%";
-        clearBtn.style.borderTop = "1px solid var(--card-border)";
-        clearBtn.style.borderRadius = "0 0 5px 5px";
-        clearBtn.style.padding = "8px";
-        clearBtn.style.marginTop = "5px";
+        clearBtn.style.flex = "2";
+        clearBtn.style.padding = "6px";
         clearBtn.style.cursor = "pointer";
-        clearBtn.style.backgroundColor = "var(--bg-secondary)";
+        clearBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
         clearBtn.style.color = "var(--text-primary)";
         clearBtn.addEventListener("click", function() {
             instance.clear();
             instance.close();
         });
-        instance.calendarContainer.appendChild(clearBtn);
+
+        btnContainer.appendChild(todayBtn);
+        btnContainer.appendChild(clearBtn);
+        instance.calendarContainer.appendChild(btnContainer);
     };
 
     // Initialize Flatpickr date range picker
@@ -777,7 +800,7 @@ function initDashboard() {
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
-        onReady: addClearButton
+        onReady: addCustomButtons
     });
 
     flatpickr("#th-filter-startdate", {
@@ -787,7 +810,7 @@ function initDashboard() {
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
-        onReady: addClearButton
+        onReady: addCustomButtons
     });
 
     flatpickr("#th-filter-enddate", {
@@ -797,7 +820,7 @@ function initDashboard() {
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
-        onReady: addClearButton
+        onReady: addCustomButtons
     });
 
     // Event listeners
