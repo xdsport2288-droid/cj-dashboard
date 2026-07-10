@@ -46,6 +46,22 @@ class CustomMultiSelect {
         this.selectAllWrapper.appendChild(document.createTextNode(' 전체 선택/해제'));
         this.panel.appendChild(this.selectAllWrapper);
         
+        // Determine grid columns
+        let cols = 1;
+        if (this.options.length > 20) cols = 4;
+        else if (this.options.length > 12) cols = 3;
+        else if (this.options.length > 6) cols = 2;
+        
+        this.panel.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        if (cols > 1) {
+            this.panel.style.width = 'max-content';
+            this.panel.style.maxWidth = '90vw'; // prevent overflow
+            this.selectAllWrapper.style.gridColumn = '1 / -1';
+            this.selectAllWrapper.style.borderBottom = '1px solid var(--card-border)';
+            this.selectAllWrapper.style.marginBottom = '5px';
+            this.selectAllWrapper.style.paddingBottom = '8px';
+        }
+        
         // Options checkboxes
         this.checkboxes = [];
         this.options.forEach(opt => {
@@ -82,14 +98,14 @@ class CustomMultiSelect {
         // Toggle panel
         this.btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isOpen = this.panel.style.display === 'block';
+            const isOpen = this.panel.style.display === 'grid';
             
             // Close all others first
             document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
             document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
             
             if (!isOpen) {
-                this.panel.style.display = 'block';
+                this.panel.style.display = 'grid';
                 this.wrapper.classList.add('is-open');
             }
         });
