@@ -166,6 +166,16 @@ class CustomMultiSelect {
         const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
         selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
     }
+    
+    setValue(val) {
+        this.checkboxes.forEach((cb, i) => {
+            cb.checked = (val === '' || this.options[i].value === val);
+            this.options[i].selected = cb.checked;
+        });
+        this.updateButton();
+        const selectAllCb = this.selectAllWrapper.querySelector('input');
+        if (selectAllCb) this.updateSelectAllState(selectAllCb);
+    }
 }
 
 let activeData = [...window.TRANSPORT_DATA];
@@ -276,13 +286,13 @@ function initFilters() {
     if (thFare) Array.from(fares).sort((a,b)=>Number(a)-Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
 
     // Initialize Custom MultiSelects
-    new CustomMultiSelect(document.getElementById('filter-shipper'), '화주명 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-loading'), '상차지명 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-dest'), '하차지명 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-tone'), '요청 톤급 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-status'), '주문 상태 (전체)');
+    window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '화주명 (전체)');
+    window.cmsLoading = new CustomMultiSelect(document.getElementById('filter-loading'), '상차지명 (전체)');
+    window.cmsDest = new CustomMultiSelect(document.getElementById('filter-dest'), '하차지명 (전체)');
+    window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '요청 톤급 (전체)');
+    window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '주문 상태 (전체)');
 
-    new CustomMultiSelect(document.getElementById('th-filter-status'), '주문 상태 (전체)');
+    window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '주문 상태 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-loading'), '상차지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '하차지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
@@ -291,6 +301,29 @@ function initFilters() {
     new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-fare'), '총 매출 금액 (전체)');
+
+    // Dynamically generate tabs
+    const tableTabs = document.querySelector('.table-tabs');
+    if (tableTabs) {
+        tableTabs.innerHTML = '<button class="tab-btn active" data-status="">전체</button>';
+        Array.from(statuses).sort().forEach(s => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-btn';
+            btn.dataset.status = s;
+            btn.textContent = s;
+            tableTabs.appendChild(btn);
+        });
+    }
+
+    // Bind tab click events dynamically
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selectedStatus = e.currentTarget.getAttribute('data-status');
+            if (window.cmsStatus) window.cmsStatus.setValue(selectedStatus);
+            if (window.cmsThStatus) window.cmsThStatus.setValue(selectedStatus);
+            filterData();
+        });
+    });
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
@@ -321,26 +354,28 @@ function updateKPIs(statusUnfilteredData) {
     document.getElementById('kpi-orders').textContent = ordersCount.toLocaleString() + ' 건';
 
     const countSource = statusUnfilteredData || activeData;
-    
-    let confirmCount = 0;
-    let assignCount = 0;
-
+    const statusCounts = {};
     countSource.forEach(row => {
-        const status = row['주문 상태'];
-        if (status === '운송실적 확정') confirmCount++;
-        else if (status === '배차확정') assignCount++;
+        const status = row['주문 상태'] || '상태 없음';
+        statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
 
     const totalSourceCount = countSource.length;
-    const confirmPct = totalSourceCount > 0 ? ((confirmCount / totalSourceCount) * 100).toFixed(1) : 0;
-    const assignPct = totalSourceCount > 0 ? ((assignCount / totalSourceCount) * 100).toFixed(1) : 0;
-
     const currentStatus = document.getElementById('filter-status').value;
 
-    document.getElementById('kpi-orders-detail').innerHTML = `
-        <span class="status-tag success ${currentStatus && currentStatus !== '운송실적 확정' ? 'inactive' : ''}" data-status="운송실적 확정">확정 ${confirmCount} (${confirmPct}%)</span>
-        <span class="status-tag warning ${currentStatus && currentStatus !== '배차확정' ? 'inactive' : ''}" data-status="배차확정">배차 ${assignCount} (${assignPct}%)</span>
-    `;
+    let kpiHtml = '';
+    const classes = ['success', 'warning', 'info', 'primary', 'danger'];
+    let colorIdx = 0;
+    
+    Object.keys(statusCounts).sort().forEach(status => {
+        const count = statusCounts[status];
+        const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
+        const colorClass = classes[colorIdx % classes.length];
+        colorIdx++;
+        kpiHtml += `<span class="status-tag ${colorClass} ${currentStatus && currentStatus !== status ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
+    });
+
+    document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
 }
 
 // Populate and Update Table
@@ -933,21 +968,15 @@ function initDashboard() {
         el.addEventListener('change', filterData);
     });
     
-    // Tab button event listeners
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const selectedStatus = e.currentTarget.getAttribute('data-status');
-            document.getElementById('filter-status').value = selectedStatus;
-            filterData();
-        });
-    });
+    // Tab button event listeners are bound dynamically in initFilters()
     
     // KPI Status tag click event listeners (Event delegation)
     document.getElementById('kpi-orders-detail').addEventListener('click', (e) => {
         const target = e.target.closest('.status-tag');
         if (target) {
             const statusVal = target.getAttribute('data-status');
-            document.getElementById('filter-status').value = statusVal;
+            if (window.cmsStatus) window.cmsStatus.setValue(statusVal);
+            if (window.cmsThStatus) window.cmsThStatus.setValue(statusVal);
             filterData();
         }
     });
