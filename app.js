@@ -46,13 +46,17 @@ function initFilters() {
     const dests = new Set();
     const tones = new Set();
     const statuses = new Set(['운송실적 확정', '배차확정', '주문 취소']);
+    const drivers = new Set();
+    const carnums = new Set();
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
         if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
         if (row['하차지명']) dests.add(String(row['하차지명']).trim());
-        if (row['요청 톤급']) tones.add(row['요청 톤급']);
-        if (row['주문 상태']) statuses.add(row['주문 상태']);
+        if (row['요청 톤급']) tones.add(String(row['요청 톤급']).trim());
+        if (row['주문 상태']) statuses.add(String(row['주문 상태']).trim());
+        if (row['운전자명']) drivers.add(String(row['운전자명']).trim());
+        if (row['차량번호']) carnums.add(String(row['차량번호']).trim());
     });
 
     // Populate Shipper
@@ -94,6 +98,39 @@ function initFilters() {
         opt.textContent = s;
         statusSelect.appendChild(opt);
     });
+
+    // Populate Table Header Dropdowns
+    const thStatus = document.getElementById('th-filter-status');
+    const thLoading = document.getElementById('th-filter-loading');
+    const thDest = document.getElementById('th-filter-dest');
+    const thTone = document.getElementById('th-filter-tone');
+    const thDriver = document.getElementById('th-filter-driver');
+    const thCarnum = document.getElementById('th-filter-carnum');
+
+    if (thStatus) {
+        thStatus.innerHTML = '<option value="">전체</option>';
+        Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
+    }
+    if (thLoading) {
+        thLoading.innerHTML = '<option value="">전체</option>';
+        Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
+    }
+    if (thDest) {
+        thDest.innerHTML = '<option value="">전체</option>';
+        Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
+    }
+    if (thTone) {
+        thTone.innerHTML = '<option value="">전체</option>';
+        Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
+    }
+    if (thDriver) {
+        thDriver.innerHTML = '<option value="">전체</option>';
+        Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
+    }
+    if (thCarnum) {
+        thCarnum.innerHTML = '<option value="">전체</option>';
+        Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
+    }
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
@@ -385,6 +422,14 @@ function filterData() {
     const destVal = document.getElementById('filter-dest').value;
     const toneVal = document.getElementById('filter-tone').value;
     const statusVal = document.getElementById('filter-status').value;
+
+    // Read Table Header Filters
+    const thStatusVal = document.getElementById('th-filter-status')?.value || '';
+    const thLoadingVal = document.getElementById('th-filter-loading')?.value || '';
+    const thDestVal = document.getElementById('th-filter-dest')?.value || '';
+    const thToneVal = document.getElementById('th-filter-tone')?.value || '';
+    const thDriverVal = document.getElementById('th-filter-driver')?.value || '';
+    const thCarnumVal = document.getElementById('th-filter-carnum')?.value || '';
     
     // Update main header title dynamically
     const brandNameSpan = document.getElementById('brand-name');
@@ -436,6 +481,14 @@ function filterData() {
             return false;
         }
 
+        // Table Header Specific Matches
+        if (thStatusVal && String(row['주문 상태'] || '').trim() !== thStatusVal) return false;
+        if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
+        if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
+        if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
+        if (thDriverVal && String(row['운전자명'] || '').trim() !== thDriverVal) return false;
+        if (thCarnumVal && String(row['차량번호'] || '').trim() !== thCarnumVal) return false;
+
         // Search text Match (Search drivers, vehicle numbers, detail addresses)
         if (searchVal) {
             const driver = String(row['운전자명'] || '').toLowerCase();
@@ -471,6 +524,14 @@ function filterData() {
         } else if (startDateVal || endDateVal) {
             return false;
         }
+
+        // Table Header Specific Matches
+        if (thStatusVal && String(row['주문 상태'] || '').trim() !== thStatusVal) return false;
+        if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
+        if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
+        if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
+        if (thDriverVal && String(row['운전자명'] || '').trim() !== thDriverVal) return false;
+        if (thCarnumVal && String(row['차량번호'] || '').trim() !== thCarnumVal) return false;
 
         // Search text Match
         if (searchVal) {
@@ -611,6 +672,11 @@ function initDashboard() {
     document.getElementById('filter-tone').addEventListener('change', filterData);
     document.getElementById('filter-status').addEventListener('change', filterData);
     document.getElementById('search-input').addEventListener('input', filterData);
+
+    // Table header filters event listeners
+    document.querySelectorAll('.th-filter').forEach(el => {
+        el.addEventListener('change', filterData);
+    });
     
     // Tab button event listeners
     document.querySelectorAll('.tab-btn').forEach(btn => {
