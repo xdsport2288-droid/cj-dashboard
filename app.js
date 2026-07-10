@@ -1,5 +1,119 @@
 // Interactive Transport Dashboard Logic
 
+// Custom MultiSelect Class
+class CustomMultiSelect {
+    constructor(selectElement, defaultText) {
+        if (!selectElement) return;
+        
+        // If already wrapped, unwrap and destroy the old custom UI so we can recreate it fresh
+        if (selectElement.parentNode && selectElement.parentNode.classList.contains('custom-multiselect')) {
+            const oldWrapper = selectElement.parentNode;
+            oldWrapper.parentNode.insertBefore(selectElement, oldWrapper);
+            oldWrapper.remove();
+        }
+        
+        this.selectElement = selectElement;
+        this.defaultText = defaultText;
+        this.options = Array.from(selectElement.options);
+        
+        // Hide the original select
+        this.selectElement.style.display = 'none';
+        
+        // Create the wrapper
+        this.wrapper = document.createElement('div');
+        this.wrapper.className = 'custom-multiselect';
+        this.selectElement.parentNode.insertBefore(this.wrapper, this.selectElement);
+        this.wrapper.appendChild(this.selectElement);
+        
+        // Create the summary button
+        this.btn = document.createElement('div');
+        this.btn.className = this.selectElement.classList.contains('th-filter') ? 'th-filter custom-multiselect-btn' : 'filter-select custom-multiselect-btn';
+        this.btn.textContent = this.defaultText;
+        this.wrapper.appendChild(this.btn);
+        
+        // Create the dropdown panel
+        this.panel = document.createElement('div');
+        this.panel.className = 'custom-multiselect-panel';
+        this.panel.style.display = 'none';
+        this.wrapper.appendChild(this.panel);
+        
+        // Select All Checkbox
+        this.selectAllWrapper = document.createElement('label');
+        this.selectAllWrapper.className = 'custom-multiselect-option select-all';
+        const selectAllCb = document.createElement('input');
+        selectAllCb.type = 'checkbox';
+        this.selectAllWrapper.appendChild(selectAllCb);
+        this.selectAllWrapper.appendChild(document.createTextNode(' 전체 선택/해제'));
+        this.panel.appendChild(this.selectAllWrapper);
+        
+        // Options checkboxes
+        this.checkboxes = [];
+        this.options.forEach(opt => {
+            const lbl = document.createElement('label');
+            lbl.className = 'custom-multiselect-option';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = opt.value;
+            cb.checked = opt.selected;
+            lbl.appendChild(cb);
+            lbl.appendChild(document.createTextNode(' ' + opt.textContent));
+            this.panel.appendChild(lbl);
+            this.checkboxes.push(cb);
+            
+            cb.addEventListener('change', () => {
+                opt.selected = cb.checked;
+                this.updateButton();
+                this.updateSelectAllState(selectAllCb);
+                if (typeof filterData === 'function') filterData();
+            });
+        });
+        
+        // Select All logic
+        selectAllCb.addEventListener('change', () => {
+            const isChecked = selectAllCb.checked;
+            this.checkboxes.forEach((cb, i) => {
+                cb.checked = isChecked;
+                this.options[i].selected = isChecked;
+            });
+            this.updateButton();
+            if (typeof filterData === 'function') filterData();
+        });
+        
+        // Toggle panel
+        this.btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = this.panel.style.display === 'block';
+            document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
+            this.panel.style.display = isOpen ? 'none' : 'block';
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.wrapper.contains(e.target)) {
+                this.panel.style.display = 'none';
+            }
+        });
+        
+        this.updateButton();
+    }
+    
+    updateButton() {
+        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
+        if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
+            this.btn.textContent = this.defaultText;
+            this.btn.classList.remove('has-selection');
+        } else {
+            this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
+            this.btn.classList.add('has-selection');
+        }
+    }
+    
+    updateSelectAllState(selectAllCb) {
+        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
+        selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
+    }
+}
+
 let activeData = [...window.TRANSPORT_DATA];
 let trendChart = null;
 let toneChart = null;
@@ -872,109 +986,3 @@ setInterval(async () => {
         // Ignore fetch errors to prevent console spam
     }
 }, 10000); // Poll every 10 seconds
-
-// Custom MultiSelect Class
-class CustomMultiSelect {
-    constructor(selectElement, defaultText) {
-        if (!selectElement) return;
-        this.selectElement = selectElement;
-        this.defaultText = defaultText;
-        this.options = Array.from(selectElement.options);
-        
-        // Hide the original select
-        this.selectElement.style.display = 'none';
-        
-        // Create the wrapper
-        this.wrapper = document.createElement('div');
-        this.wrapper.className = 'custom-multiselect';
-        this.selectElement.parentNode.insertBefore(this.wrapper, this.selectElement);
-        this.wrapper.appendChild(this.selectElement);
-        
-        // Create the summary button
-        this.btn = document.createElement('div');
-        this.btn.className = this.selectElement.classList.contains('th-filter') ? 'th-filter custom-multiselect-btn' : 'filter-select custom-multiselect-btn';
-        this.btn.textContent = this.defaultText;
-        this.wrapper.appendChild(this.btn);
-        
-        // Create the dropdown panel
-        this.panel = document.createElement('div');
-        this.panel.className = 'custom-multiselect-panel';
-        this.panel.style.display = 'none';
-        this.wrapper.appendChild(this.panel);
-        
-        // Select All Checkbox
-        this.selectAllWrapper = document.createElement('label');
-        this.selectAllWrapper.className = 'custom-multiselect-option select-all';
-        const selectAllCb = document.createElement('input');
-        selectAllCb.type = 'checkbox';
-        this.selectAllWrapper.appendChild(selectAllCb);
-        this.selectAllWrapper.appendChild(document.createTextNode(' 전체 선택/해제'));
-        this.panel.appendChild(this.selectAllWrapper);
-        
-        // Options checkboxes
-        this.checkboxes = [];
-        this.options.forEach(opt => {
-            const lbl = document.createElement('label');
-            lbl.className = 'custom-multiselect-option';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox';
-            cb.value = opt.value;
-            cb.checked = opt.selected;
-            lbl.appendChild(cb);
-            lbl.appendChild(document.createTextNode(' ' + opt.textContent));
-            this.panel.appendChild(lbl);
-            this.checkboxes.push(cb);
-            
-            cb.addEventListener('change', () => {
-                opt.selected = cb.checked;
-                this.updateButton();
-                this.updateSelectAllState(selectAllCb);
-                if (typeof filterData === 'function') filterData();
-            });
-        });
-        
-        // Select All logic
-        selectAllCb.addEventListener('change', () => {
-            const isChecked = selectAllCb.checked;
-            this.checkboxes.forEach((cb, i) => {
-                cb.checked = isChecked;
-                this.options[i].selected = isChecked;
-            });
-            this.updateButton();
-            if (typeof filterData === 'function') filterData();
-        });
-        
-        // Toggle panel
-        this.btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isOpen = this.panel.style.display === 'block';
-            document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
-            this.panel.style.display = isOpen ? 'none' : 'block';
-        });
-        
-        // Close when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!this.wrapper.contains(e.target)) {
-                this.panel.style.display = 'none';
-            }
-        });
-        
-        this.updateButton();
-    }
-    
-    updateButton() {
-        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
-        if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
-            this.btn.textContent = this.defaultText;
-            this.btn.classList.remove('has-selection');
-        } else {
-            this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
-            this.btn.classList.add('has-selection');
-        }
-    }
-    
-    updateSelectAllState(selectAllCb) {
-        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
-        selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
-    }
-}
