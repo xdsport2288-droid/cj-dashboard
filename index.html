@@ -61,32 +61,27 @@
             <section class="filters-panel animate-fade">
                 <div class="filter-group">
                     <label for="filter-shipper">🏢 화주명 (거래처)</label>
-                    <select id="filter-shipper" class="filter-select">
-                        <option value="">전체 거래처</option>
+                    <select id="filter-shipper" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-loading">📍 상차지명</label>
-                    <select id="filter-loading" class="filter-select">
-                        <option value="">전체 상차지</option>
+                    <select id="filter-loading" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-dest">📍 하차지명</label>
-                    <select id="filter-dest" class="filter-select">
-                        <option value="">전체 하차지</option>
+                    <select id="filter-dest" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-tone">⚖️ 차량 톤급</label>
-                    <select id="filter-tone" class="filter-select">
-                        <option value="">전체 톤급</option>
+                    <select id="filter-tone" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group">
                     <label for="filter-status">🔄 주문 상태</label>
-                    <select id="filter-status" class="filter-select">
-                        <option value="">전체 상태</option>
+                    <select id="filter-status" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group" style="grid-column: span 2;">
@@ -205,13 +200,13 @@
                         <thead>
                             <tr>
                                 <th>
-                                    <select id="th-filter-status" class="th-filter"><option value="">🔄 상태 (전체)</option></select>
+                                    <select id="th-filter-status" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-loading" class="th-filter"><option value="">📍 상차지 (전체)</option></select>
+                                    <select id="th-filter-loading" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-dest" class="th-filter"><option value="">📍 하차지 (전체)</option></select>
+                                    <select id="th-filter-dest" class="th-filter" multiple></select>
                                 </th>
                                 <th>
                                     <input type="text" id="th-filter-startdate" class="th-filter" placeholder="📅 출발일 (범위 선택)">
@@ -220,22 +215,22 @@
                                     <input type="text" id="th-filter-enddate" class="th-filter" placeholder="📅 도착일 (범위 선택)">
                                 </th>
                                 <th>
-                                    <select id="th-filter-waypoint" class="th-filter"><option value="">🛣️ 경유지 (전체)</option></select>
+                                    <select id="th-filter-waypoint" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-tone" class="th-filter"><option value="">⚖️ 톤급 (전체)</option></select>
+                                    <select id="th-filter-tone" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-driver" class="th-filter"><option value="">👤 운전자 (전체)</option></select>
+                                    <select id="th-filter-driver" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-carnum" class="th-filter"><option value="">🚚 차량번호 (전체)</option></select>
+                                    <select id="th-filter-carnum" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-remark" class="th-filter"><option value="">📝 비고 (전체)</option></select>
+                                    <select id="th-filter-remark" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <select id="th-filter-fare" class="th-filter"><option value="">💰 운임 (전체)</option></select>
+                                    <select id="th-filter-fare" class="th-filter" multiple></select>
                                 </th>
                             </tr>
                         </thead>
