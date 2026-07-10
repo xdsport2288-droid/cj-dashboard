@@ -567,6 +567,28 @@ tbody tr:hover {
     border-radius: 6px;
 }
 .summary-item strong {
+
+
+/* Table Summary Box */
+.table-summary-box {
+    display: flex;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.summary-item {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+.summary-item strong {
     color: var(--text-secondary);
     margin-right: 6px;
 }
@@ -576,19 +598,25 @@ tbody tr:hover {
 .th-filter {
     display: block;
     width: 100%;
-    margin-top: 5px;
-    padding: 2px 4px;
+    margin-top: 8px;
+    padding: 0.4rem 0.5rem;
     font-size: 0.8rem;
     color: var(--text-primary);
-    background-color: var(--surface-hover);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm);
     outline: none;
+    font-family: inherit;
+    transition: var(--transition);
+    cursor: pointer;
 }
 .th-filter:focus {
-    border-color: var(--primary-color);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
 }
 .th-content {
-    display: block;
-    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
 }
