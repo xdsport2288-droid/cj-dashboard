@@ -1,4 +1,4 @@
-const TRANSPORT_DATA = [
+window.TRANSPORT_DATA = [
   {
     "주문 상태": "배차확정",
     "화주명": "(주)위니온로지스",
