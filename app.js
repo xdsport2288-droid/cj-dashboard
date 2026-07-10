@@ -870,6 +870,8 @@ function toggleTheme() {
 
 // On Load
 function initDashboard() {
+    applyDynamicLabels();
+    initEditMode();
     initFilters();
     updateKPIs();
     updateCharts();
@@ -1218,6 +1220,3 @@ function handleDragEnd(e) {
         item.classList.remove('drag-over');
     });
 }
-
-// Bind Edit mode events
-document.addEventListener('DOMContentLoaded', initEditMode);
