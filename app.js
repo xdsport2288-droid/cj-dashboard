@@ -159,14 +159,6 @@ function initFilters() {
         thDest.innerHTML = '<option value="">📍 하차지 (전체)</option>';
         Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
     }
-    if (thStartDate) {
-        thStartDate.innerHTML = '<option value="">📅 출발일 (전체)</option>';
-        Array.from(startDates).sort().forEach(sd => { const o = document.createElement('option'); o.value = sd; o.textContent = sd; thStartDate.appendChild(o); });
-    }
-    if (thEndDate) {
-        thEndDate.innerHTML = '<option value="">📅 도착일 (전체)</option>';
-        Array.from(endDates).sort().forEach(ed => { const o = document.createElement('option'); o.value = ed; o.textContent = ed; thEndDate.appendChild(o); });
-    }
     if (thWaypoint) {
         thWaypoint.innerHTML = '<option value="">🛣️ 경유지 (전체)</option>';
         Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
@@ -551,12 +543,18 @@ function filterData() {
         if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
         if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
         if (thStartDateVal) {
-            const rStart = String(row['상차 요청 일시'] || '').split(' ')[0];
-            if (rStart !== thStartDateVal) return false;
+            const parts = thStartDateVal.split(/ to | ~ |~/);
+            const rStart = parts[0] ? parts[0].trim() : '';
+            const rEnd = parts[1] ? parts[1].trim() : rStart;
+            const rowDate = String(row['상차 요청 일시'] || '').split(' ')[0];
+            if (rowDate < rStart || rowDate > rEnd) return false;
         }
         if (thEndDateVal) {
-            const rEnd = String(row['하차 요청 일시'] || '').split(' ')[0];
-            if (rEnd !== thEndDateVal) return false;
+            const parts = thEndDateVal.split(/ to | ~ |~/);
+            const rStart = parts[0] ? parts[0].trim() : '';
+            const rEnd = parts[1] ? parts[1].trim() : rStart;
+            const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
+            if (rowDate < rStart || rowDate > rEnd) return false;
         }
         if (thWaypointVal && String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim() !== thWaypointVal) return false;
         if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
@@ -609,12 +607,18 @@ function filterData() {
         if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
         if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
         if (thStartDateVal) {
-            const rStart = String(row['상차 요청 일시'] || '').split(' ')[0];
-            if (rStart !== thStartDateVal) return false;
+            const parts = thStartDateVal.split(/ to | ~ |~/);
+            const rStart = parts[0] ? parts[0].trim() : '';
+            const rEnd = parts[1] ? parts[1].trim() : rStart;
+            const rowDate = String(row['상차 요청 일시'] || '').split(' ')[0];
+            if (rowDate < rStart || rowDate > rEnd) return false;
         }
         if (thEndDateVal) {
-            const rEnd = String(row['하차 요청 일시'] || '').split(' ')[0];
-            if (rEnd !== thEndDateVal) return false;
+            const parts = thEndDateVal.split(/ to | ~ |~/);
+            const rStart = parts[0] ? parts[0].trim() : '';
+            const rEnd = parts[1] ? parts[1].trim() : rStart;
+            const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
+            if (rowDate < rStart || rowDate > rEnd) return false;
         }
         if (thWaypointVal && String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim() !== thWaypointVal) return false;
         if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
@@ -751,10 +755,25 @@ function initDashboard() {
         locale: "ko",
         dateFormat: "Y-m-d",
         onChange: function(selectedDates, dateStr, instance) {
-            // Only filter if 0 dates selected (cleared) or both dates selected (range complete)
-            if (selectedDates.length === 0 || selectedDates.length === 2) {
-                filterData();
-            }
+            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
+        }
+    });
+
+    flatpickr("#th-filter-startdate", {
+        mode: "range",
+        locale: "ko",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
+        }
+    });
+
+    flatpickr("#th-filter-enddate", {
+        mode: "range",
+        locale: "ko",
+        dateFormat: "Y-m-d",
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         }
     });
 
