@@ -749,6 +749,26 @@ function initDashboard() {
         timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
+    // Function to add a clear button to flatpickr
+    const addClearButton = function(selectedDates, dateStr, instance) {
+        const clearBtn = document.createElement("button");
+        clearBtn.textContent = "전체선택 (초기화)";
+        clearBtn.className = "btn btn-secondary";
+        clearBtn.style.width = "100%";
+        clearBtn.style.borderTop = "1px solid var(--card-border)";
+        clearBtn.style.borderRadius = "0 0 5px 5px";
+        clearBtn.style.padding = "8px";
+        clearBtn.style.marginTop = "5px";
+        clearBtn.style.cursor = "pointer";
+        clearBtn.style.backgroundColor = "var(--bg-secondary)";
+        clearBtn.style.color = "var(--text-primary)";
+        clearBtn.addEventListener("click", function() {
+            instance.clear();
+            instance.close();
+        });
+        instance.calendarContainer.appendChild(clearBtn);
+    };
+
     // Initialize Flatpickr date range picker
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
@@ -756,7 +776,8 @@ function initDashboard() {
         dateFormat: "Y-m-d",
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
-        }
+        },
+        onReady: addClearButton
     });
 
     flatpickr("#th-filter-startdate", {
@@ -765,7 +786,8 @@ function initDashboard() {
         dateFormat: "Y-m-d",
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
-        }
+        },
+        onReady: addClearButton
     });
 
     flatpickr("#th-filter-enddate", {
@@ -774,7 +796,8 @@ function initDashboard() {
         dateFormat: "Y-m-d",
         onChange: function(selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
-        }
+        },
+        onReady: addClearButton
     });
 
     // Event listeners
