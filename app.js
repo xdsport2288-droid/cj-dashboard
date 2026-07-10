@@ -45,7 +45,7 @@ function initFilters() {
     const loadings = new Set();
     const dests = new Set();
     const tones = new Set();
-    const statuses = new Set();
+    const statuses = new Set(['운송실적 확정', '배차확정', '주문 취소']);
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
@@ -153,10 +153,18 @@ function updateKPIs(statusUnfilteredData) {
 // Populate and Update Table
 function updateTable() {
     const tbody = document.getElementById('table-body');
+    const summaryBox = document.getElementById('table-summary');
     tbody.innerHTML = '';
+    
+    let totalSales = 0;
+    let totalPurchase = 0;
+    let totalCount = activeData.length;
 
-    if (activeData.length === 0) {
+    if (totalCount === 0) {
         tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
+        if (summaryBox) {
+            summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
+        }
         return;
     }
 
@@ -172,25 +180,34 @@ function updateTable() {
         const sales = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
         const purchase = cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
         const profit = sales - purchase;
-        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) + '%' : '0%';
-
-        let profitColor = 'var(--text-primary)';
-        if (profit > 0) profitColor = '#10b981';
-        else if (profit < 0) profitColor = '#ef4444';
+        
+        totalSales += sales;
+        totalPurchase += purchase;
 
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['하차지명'] || ''}">${row['하차지명'] || '-'}</td>
+            <td>${row['상차 요청 일시'] || '-'}</td>
+            <td>${row['하차 요청 일시'] || '-'}</td>
             <td style="text-align: center;">${row['경유지'] || '0'}</td>
-            <td style="text-align: center;">${row['수량'] || '1'}</td>
             <td>${row['요청 톤급'] || '-'}</td>
             <td>${row['운전자명'] || '-'}</td>
             <td>${row['차량번호'] || '-'}</td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['비고'] || ''}">${row['비고'] || '-'}</td>
             <td style="font-weight: 600; text-align: right; color: var(--accent);">${sales.toLocaleString()}원</td>
         `;
         tbody.appendChild(tr);
     });
+    
+    if (summaryBox) {
+        summaryBox.innerHTML = `
+            <span class="summary-item"><strong>총 건수:</strong> ${totalCount.toLocaleString()}건</span>
+            <span class="summary-item" style="color: #60a5fa;"><strong>총 운임:</strong> ${totalSales.toLocaleString()}원</span>
+            <span class="summary-item" style="color: #f59e0b;"><strong>총 매입:</strong> ${totalPurchase.toLocaleString()}원</span>
+            <span class="summary-item" style="color: #10b981;"><strong>순이익:</strong> ${(totalSales - totalPurchase).toLocaleString()}원</span>
+        `;
+    }
 }
 
 // Render or Update Charts
@@ -497,7 +514,7 @@ function exportToCSV() {
     if (activeData.length === 0) return;
     
     // Create header
-    const headers = ['주문상태', '상차지명', '하차지명', '하차지상세주소', '경유지', '수량', '톤급', '차량번호', '운전자명', '상차요청일시', '매출금액', '매입금액', '순이익', '순이익률'];
+    const headers = ['주문상태', '상차지명', '하차지명', '출발일', '도착일', '하차지상세주소', '경유지', '톤급', '차량번호', '운전자명', '비고', '매출금액', '매입금액', '순이익', '순이익률'];
     
     let csvContent = '\uFEFF'; // UTF-8 BOM
     csvContent += headers.join(',') + '\n';
@@ -512,13 +529,14 @@ function exportToCSV() {
             row['주문 상태'] || '',
             row['상차지명'] || '',
             row['하차지명'] || '',
+            row['상차 요청 일시'] || '',
+            row['하차 요청 일시'] || '',
             `"${(row['하차지 상세 주소'] || '').replace(/"/g, '""')}"`,
             row['경유지'] || '0',
-            row['수량'] || '1',
             row['요청 톤급'] || '',
             row['차량번호'] || '',
             row['운전자명'] || '',
-            row['상차 요청 일시'] || '',
+            `"${(row['비고'] || '').replace(/"/g, '""')}"`,
             sales,
             purchase,
             profit,
