@@ -39,7 +39,11 @@ function initFilters() {
     loadingSelect.innerHTML = '<option value="">전체 상차지</option>';
     destSelect.innerHTML = '<option value="">전체 하차지</option>';
     toneSelect.innerHTML = '<option value="">전체 톤급</option>';
-    statusSelect.innerHTML = '<option value="">전체 상태</option>';
+    shipperSelect.innerHTML = '';
+    loadingSelect.innerHTML = '';
+    destSelect.innerHTML = '';
+    toneSelect.innerHTML = '';
+    statusSelect.innerHTML = '';
 
     const shippers = new Set();
     const loadings = new Set();
@@ -48,8 +52,6 @@ function initFilters() {
     const statuses = new Set(['운송실적 확정', '배차확정', '주문 취소']);
     const drivers = new Set();
     const carnums = new Set();
-    const startDates = new Set();
-    const endDates = new Set();
     const waypoints = new Set();
     const remarks = new Set();
     const fares = new Set();
@@ -62,127 +64,65 @@ function initFilters() {
         if (row['주문 상태']) statuses.add(String(row['주문 상태']).trim());
         if (row['운전자명']) drivers.add(String(row['운전자명']).trim());
         if (row['차량번호']) carnums.add(String(row['차량번호']).trim());
-        if (row['상차 요청 일시']) startDates.add(String(row['상차 요청 일시']).split(' ')[0]);
-        if (row['하차 요청 일시']) endDates.add(String(row['하차 요청 일시']).split(' ')[0]);
         if (row['경유지'] !== undefined && row['경유지'] !== null) waypoints.add(String(row['경유지']).trim());
         if (row['비고'] !== undefined && row['비고'] !== null) remarks.add(String(row['비고']).trim());
         const sales = row['총 매출 금액'] || row['매출 금액'];
         if (sales !== undefined && sales !== null && String(sales).trim() !== '') fares.add(String(sales).trim());
     });
 
-    // Populate Shipper
-    Array.from(shippers).sort().forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        shipperSelect.appendChild(opt);
-    });
-
-    // Populate Loading
-    Array.from(loadings).sort().forEach(l => {
-        const opt = document.createElement('option');
-        opt.value = l;
-        opt.textContent = l;
-        loadingSelect.appendChild(opt);
-    });
-
-    // Populate Destination
-    Array.from(dests).sort().forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d;
-        opt.textContent = d;
-        destSelect.appendChild(opt);
-    });
-
-    // Populate Tones
-    Array.from(tones).sort().forEach(t => {
-        const opt = document.createElement('option');
-        opt.value = t;
-        opt.textContent = t;
-        toneSelect.appendChild(opt);
-    });
-
-    // Read Table Header Dropdowns
-    const thStatusEl = document.getElementById('th-filter-status');
-    const thStatusVal = thStatusEl ? thStatusEl.value : '';
-    const thLoadingEl = document.getElementById('th-filter-loading');
-    const thLoadingVal = thLoadingEl ? thLoadingEl.value : '';
-    const thDestEl = document.getElementById('th-filter-dest');
-    const thDestVal = thDestEl ? thDestEl.value : '';
-    const thStartDateEl = document.getElementById('th-filter-startdate');
-    const thStartDateVal = thStartDateEl ? thStartDateEl.value : '';
-    const thEndDateEl = document.getElementById('th-filter-enddate');
-    const thEndDateVal = thEndDateEl ? thEndDateEl.value : '';
-    const thWaypointEl = document.getElementById('th-filter-waypoint');
-    const thWaypointVal = thWaypointEl ? thWaypointEl.value : '';
-    const thToneEl = document.getElementById('th-filter-tone');
-    const thToneVal = thToneEl ? thToneEl.value : '';
-    const thDriverEl = document.getElementById('th-filter-driver');
-    const thDriverVal = thDriverEl ? thDriverEl.value : '';
-    const thCarnumEl = document.getElementById('th-filter-carnum');
-    const thCarnumVal = thCarnumEl ? thCarnumEl.value : '';
-    const thRemarkEl = document.getElementById('th-filter-remark');
-    const thRemarkVal = thRemarkEl ? thRemarkEl.value : '';
-    const thFareEl = document.getElementById('th-filter-fare');
-    const thFareVal = thFareEl ? thFareEl.value : '';
-
-    // Populate Statuses
-    Array.from(statuses).sort().forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = s;
-        statusSelect.appendChild(opt);
-    });
-
-    // Populate Table Header Dropdowns
     const thStatus = document.getElementById('th-filter-status');
     const thLoading = document.getElementById('th-filter-loading');
     const thDest = document.getElementById('th-filter-dest');
     const thTone = document.getElementById('th-filter-tone');
     const thDriver = document.getElementById('th-filter-driver');
     const thCarnum = document.getElementById('th-filter-carnum');
-    const thStartDate = document.getElementById('th-filter-startdate');
-    const thEndDate = document.getElementById('th-filter-enddate');
     const thWaypoint = document.getElementById('th-filter-waypoint');
     const thRemark = document.getElementById('th-filter-remark');
     const thFare = document.getElementById('th-filter-fare');
 
-    if (thStatus) {
-        thStatus.innerHTML = '<option value="">🔄 상태 (전체)</option>';
-        Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
-    }
-    if (thLoading) {
-        thLoading.innerHTML = '<option value="">📍 상차지 (전체)</option>';
-        Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
-    }
-    if (thDest) {
-        thDest.innerHTML = '<option value="">📍 하차지 (전체)</option>';
-        Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
-    }
-    if (thWaypoint) {
-        thWaypoint.innerHTML = '<option value="">🛣️ 경유지 (전체)</option>';
-        Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
-    }
-    if (thTone) {
-        thTone.innerHTML = '<option value="">⚖️ 톤급 (전체)</option>';
-        Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
-    }
-    if (thDriver) {
-        thDriver.innerHTML = '<option value="">👤 운전자 (전체)</option>';
-        Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
-    }
-    if (thCarnum) {
-        thCarnum.innerHTML = '<option value="">🚚 차량번호 (전체)</option>';
-        Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
-    }
-    if (thRemark) {
-        thRemark.innerHTML = '<option value="">📝 비고 (전체)</option>';
-        Array.from(remarks).sort().forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; thRemark.appendChild(o); });
-    }
-    if (thFare) {
-        thFare.innerHTML = '<option value="">💰 운임 (전체)</option>';
-        Array.from(fares).sort((a,b)=>Number(a)-Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
-    }
+    if (thStatus) thStatus.innerHTML = '';
+    if (thLoading) thLoading.innerHTML = '';
+    if (thDest) thDest.innerHTML = '';
+    if (thWaypoint) thWaypoint.innerHTML = '';
+    if (thTone) thTone.innerHTML = '';
+    if (thDriver) thDriver.innerHTML = '';
+    if (thCarnum) thCarnum.innerHTML = '';
+    if (thRemark) thRemark.innerHTML = '';
+    if (thFare) thFare.innerHTML = '';
+
+    // Populate options in native select elements
+    if (shipperSelect) Array.from(shippers).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; shipperSelect.appendChild(o); });
+    if (loadingSelect) Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; loadingSelect.appendChild(o); });
+    if (destSelect) Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; destSelect.appendChild(o); });
+    if (toneSelect) Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; toneSelect.appendChild(o); });
+    if (statusSelect) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; statusSelect.appendChild(o); });
+
+    if (thStatus) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
+    if (thLoading) Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
+    if (thDest) Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
+    if (thWaypoint) Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
+    if (thTone) Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
+    if (thDriver) Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
+    if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
+    if (thRemark) Array.from(remarks).sort().forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; thRemark.appendChild(o); });
+    if (thFare) Array.from(fares).sort((a,b)=>Number(a)-Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
+
+    // Initialize Custom MultiSelects
+    new CustomMultiSelect(document.getElementById('filter-shipper'), '거래처 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-loading'), '상차지 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-dest'), '하차지 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-tone'), '톤급 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-status'), '주문상태 (전체)');
+
+    new CustomMultiSelect(document.getElementById('th-filter-status'), '상태 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-loading'), '상차지 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-dest'), '하차지 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-tone'), '톤급 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-driver'), '운전자 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
@@ -469,32 +409,40 @@ function updateStatusTab(statusVal) {
 
 // Filter Action
 function filterData() {
-    const shipperVal = document.getElementById('filter-shipper').value;
-    const loadingVal = document.getElementById('filter-loading').value;
-    const destVal = document.getElementById('filter-dest').value;
-    const toneVal = document.getElementById('filter-tone').value;
-    const statusVal = document.getElementById('filter-status').value;
+    const getSelectedValues = (id) => {
+        const el = document.getElementById(id);
+        if (!el) return [];
+        return Array.from(el.selectedOptions).map(o => o.value).filter(v => v !== '');
+    };
+
+    const shipperVals = getSelectedValues('filter-shipper');
+    const loadingVals = getSelectedValues('filter-loading');
+    const destVals = getSelectedValues('filter-dest');
+    const toneVals = getSelectedValues('filter-tone');
+    const statusVals = getSelectedValues('filter-status');
 
     // Read Table Header Filters
-    const thStatusVal = document.getElementById('th-filter-status')?.value || '';
-    const thLoadingVal = document.getElementById('th-filter-loading')?.value || '';
-    const thDestVal = document.getElementById('th-filter-dest')?.value || '';
+    const thStatusVals = getSelectedValues('th-filter-status');
+    const thLoadingVals = getSelectedValues('th-filter-loading');
+    const thDestVals = getSelectedValues('th-filter-dest');
+    const thWaypointVals = getSelectedValues('th-filter-waypoint');
+    const thToneVals = getSelectedValues('th-filter-tone');
+    const thDriverVals = getSelectedValues('th-filter-driver');
+    const thCarnumVals = getSelectedValues('th-filter-carnum');
+    const thRemarkVals = getSelectedValues('th-filter-remark');
+    const thFareVals = getSelectedValues('th-filter-fare');
+    
     const thStartDateVal = document.getElementById('th-filter-startdate')?.value || '';
     const thEndDateVal = document.getElementById('th-filter-enddate')?.value || '';
-    const thWaypointVal = document.getElementById('th-filter-waypoint')?.value || '';
-    const thToneVal = document.getElementById('th-filter-tone')?.value || '';
-    const thDriverVal = document.getElementById('th-filter-driver')?.value || '';
-    const thCarnumVal = document.getElementById('th-filter-carnum')?.value || '';
-    const thRemarkVal = document.getElementById('th-filter-remark')?.value || '';
-    const thFareVal = document.getElementById('th-filter-fare')?.value || '';
-    
+
     // Update main header title dynamically
     const brandNameSpan = document.getElementById('brand-name');
-    if (shipperVal) {
-        let displayName = shipperVal;
-        // Clean up suffix for cleaner display
+    if (shipperVals.length === 1) {
+        let displayName = shipperVals[0];
         displayName = displayName.replace(/주식회사/g, '').replace(/_수출포장/g, '').replace(/_/g, ' ').trim();
         brandNameSpan.textContent = displayName;
+    } else if (shipperVals.length > 1) {
+        brandNameSpan.textContent = `다중 거래처 (${shipperVals.length}곳)`;
     } else {
         brandNameSpan.textContent = "더운반)이천지점";
     }
@@ -510,26 +458,21 @@ function filterData() {
     
     const searchVal = document.getElementById('search-input').value.toLowerCase();
     
-    updateStatusTab(statusVal);
+    updateStatusTab(statusVals.length === 1 ? statusVals[0] : '');
+
+    const checkMulti = (vals, rowValue) => {
+        if (vals.length === 0) return true;
+        return vals.includes(String(rowValue || '').trim());
+    };
 
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
-        // Shipper Match
-        if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
-        
-        // Loading Match
-        if (loadingVal && String(row['상차지명'] || '').trim() !== loadingVal) return false;
+        if (!checkMulti(shipperVals, row['화주명'])) return false;
+        if (!checkMulti(loadingVals, row['상차지명'])) return false;
+        if (!checkMulti(destVals, row['하차지명'])) return false;
+        if (!checkMulti(toneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(statusVals, row['주문 상태'])) return false;
 
-        // Destination Match
-        if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
-        
-        // Tone Match
-        if (toneVal && String(row['요청 톤급'] || '').trim() !== toneVal) return false;
-        
-        // Status Match
-        if (statusVal && String(row['주문 상태'] || '').trim() !== statusVal) return false;
-
-        // Date Range Match
         if (row['상차 요청 일시']) {
             const rowDate = row['상차 요청 일시'].split(' ')[0];
             if (startDateVal && rowDate < startDateVal) return false;
@@ -538,10 +481,20 @@ function filterData() {
             return false;
         }
 
-        // Table Header Specific Matches
-        if (thStatusVal && String(row['주문 상태'] || '').trim() !== thStatusVal) return false;
-        if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
-        if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
+        if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
+        if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
+        if (!checkMulti(thDestVals, row['하차지명'])) return false;
+        if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
+        if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(thDriverVals, row['운전자명'])) return false;
+        if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
+        if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
+        
+        if (thFareVals.length > 0) {
+            const sales = row['총 매출 금액'] || row['매출 금액'];
+            if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
+        }
+        
         if (thStartDateVal) {
             const parts = thStartDateVal.split(/ to | ~ |~/);
             const rStart = parts[0] ? parts[0].trim() : '';
@@ -556,17 +509,7 @@ function filterData() {
             const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
             if (rowDate < rStart || rowDate > rEnd) return false;
         }
-        if (thWaypointVal && String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim() !== thWaypointVal) return false;
-        if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
-        if (thDriverVal && String(row['운전자명'] || '').trim() !== thDriverVal) return false;
-        if (thCarnumVal && String(row['차량번호'] || '').trim() !== thCarnumVal) return false;
-        if (thRemarkVal && String(row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '').trim() !== thRemarkVal) return false;
-        if (thFareVal) {
-            const sales = row['총 매출 금액'] || row['매출 금액'];
-            if (String(sales !== undefined && sales !== null ? sales : '').trim() !== thFareVal) return false;
-        }
 
-        // Search text Match (Search drivers, vehicle numbers, detail addresses)
         if (searchVal) {
             const driver = String(row['운전자명'] || '').toLowerCase();
             const carNum = String(row['차량번호'] || '').toLowerCase();
@@ -575,25 +518,16 @@ function filterData() {
                 return false;
             }
         }
-
         return true;
     });
 
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
-        // Shipper Match
-        if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
-        
-        // Loading Match
-        if (loadingVal && String(row['상차지명'] || '').trim() !== loadingVal) return false;
+        if (!checkMulti(shipperVals, row['화주명'])) return false;
+        if (!checkMulti(loadingVals, row['상차지명'])) return false;
+        if (!checkMulti(destVals, row['하차지명'])) return false;
+        if (!checkMulti(toneVals, row['요청 톤급'])) return false;
 
-        // Destination Match
-        if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
-        
-        // Tone Match
-        if (toneVal && String(row['요청 톤급'] || '').trim() !== toneVal) return false;
-        
-        // Date Range Match
         if (row['상차 요청 일시']) {
             const rowDate = row['상차 요청 일시'].split(' ')[0];
             if (startDateVal && rowDate < startDateVal) return false;
@@ -602,10 +536,20 @@ function filterData() {
             return false;
         }
 
-        // Table Header Specific Matches
-        if (thStatusVal && String(row['주문 상태'] || '').trim() !== thStatusVal) return false;
-        if (thLoadingVal && String(row['상차지명'] || '').trim() !== thLoadingVal) return false;
-        if (thDestVal && String(row['하차지명'] || '').trim() !== thDestVal) return false;
+        if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
+        if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
+        if (!checkMulti(thDestVals, row['하차지명'])) return false;
+        if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
+        if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(thDriverVals, row['운전자명'])) return false;
+        if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
+        if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
+        
+        if (thFareVals.length > 0) {
+            const sales = row['총 매출 금액'] || row['매출 금액'];
+            if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
+        }
+        
         if (thStartDateVal) {
             const parts = thStartDateVal.split(/ to | ~ |~/);
             const rStart = parts[0] ? parts[0].trim() : '';
@@ -620,17 +564,7 @@ function filterData() {
             const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
             if (rowDate < rStart || rowDate > rEnd) return false;
         }
-        if (thWaypointVal && String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim() !== thWaypointVal) return false;
-        if (thToneVal && String(row['요청 톤급'] || '').trim() !== thToneVal) return false;
-        if (thDriverVal && String(row['운전자명'] || '').trim() !== thDriverVal) return false;
-        if (thCarnumVal && String(row['차량번호'] || '').trim() !== thCarnumVal) return false;
-        if (thRemarkVal && String(row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '').trim() !== thRemarkVal) return false;
-        if (thFareVal) {
-            const sales = row['총 매출 금액'] || row['매출 금액'];
-            if (String(sales !== undefined && sales !== null ? sales : '').trim() !== thFareVal) return false;
-        }
 
-        // Search text Match
         if (searchVal) {
             const driver = String(row['운전자명'] || '').toLowerCase();
             const carNum = String(row['차량번호'] || '').toLowerCase();
@@ -639,7 +573,6 @@ function filterData() {
                 return false;
             }
         }
-
         return true;
     });
 
@@ -939,3 +872,109 @@ setInterval(async () => {
         // Ignore fetch errors to prevent console spam
     }
 }, 10000); // Poll every 10 seconds
+
+// Custom MultiSelect Class
+class CustomMultiSelect {
+    constructor(selectElement, defaultText) {
+        if (!selectElement) return;
+        this.selectElement = selectElement;
+        this.defaultText = defaultText;
+        this.options = Array.from(selectElement.options);
+        
+        // Hide the original select
+        this.selectElement.style.display = 'none';
+        
+        // Create the wrapper
+        this.wrapper = document.createElement('div');
+        this.wrapper.className = 'custom-multiselect';
+        this.selectElement.parentNode.insertBefore(this.wrapper, this.selectElement);
+        this.wrapper.appendChild(this.selectElement);
+        
+        // Create the summary button
+        this.btn = document.createElement('div');
+        this.btn.className = this.selectElement.classList.contains('th-filter') ? 'th-filter custom-multiselect-btn' : 'filter-select custom-multiselect-btn';
+        this.btn.textContent = this.defaultText;
+        this.wrapper.appendChild(this.btn);
+        
+        // Create the dropdown panel
+        this.panel = document.createElement('div');
+        this.panel.className = 'custom-multiselect-panel';
+        this.panel.style.display = 'none';
+        this.wrapper.appendChild(this.panel);
+        
+        // Select All Checkbox
+        this.selectAllWrapper = document.createElement('label');
+        this.selectAllWrapper.className = 'custom-multiselect-option select-all';
+        const selectAllCb = document.createElement('input');
+        selectAllCb.type = 'checkbox';
+        this.selectAllWrapper.appendChild(selectAllCb);
+        this.selectAllWrapper.appendChild(document.createTextNode(' 전체 선택/해제'));
+        this.panel.appendChild(this.selectAllWrapper);
+        
+        // Options checkboxes
+        this.checkboxes = [];
+        this.options.forEach(opt => {
+            const lbl = document.createElement('label');
+            lbl.className = 'custom-multiselect-option';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.value = opt.value;
+            cb.checked = opt.selected;
+            lbl.appendChild(cb);
+            lbl.appendChild(document.createTextNode(' ' + opt.textContent));
+            this.panel.appendChild(lbl);
+            this.checkboxes.push(cb);
+            
+            cb.addEventListener('change', () => {
+                opt.selected = cb.checked;
+                this.updateButton();
+                this.updateSelectAllState(selectAllCb);
+                if (typeof filterData === 'function') filterData();
+            });
+        });
+        
+        // Select All logic
+        selectAllCb.addEventListener('change', () => {
+            const isChecked = selectAllCb.checked;
+            this.checkboxes.forEach((cb, i) => {
+                cb.checked = isChecked;
+                this.options[i].selected = isChecked;
+            });
+            this.updateButton();
+            if (typeof filterData === 'function') filterData();
+        });
+        
+        // Toggle panel
+        this.btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = this.panel.style.display === 'block';
+            document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
+            this.panel.style.display = isOpen ? 'none' : 'block';
+        });
+        
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.wrapper.contains(e.target)) {
+                this.panel.style.display = 'none';
+            }
+        });
+        
+        this.updateButton();
+    }
+    
+    updateButton() {
+        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
+        if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
+            this.btn.textContent = this.defaultText;
+            this.btn.classList.remove('has-selection');
+        } else {
+            this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
+            this.btn.classList.add('has-selection');
+        }
+    }
+    
+    updateSelectAllState(selectAllCb) {
+        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
+        selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
+    }
+}
