@@ -108,27 +108,27 @@ function initFilters() {
     const thCarnum = document.getElementById('th-filter-carnum');
 
     if (thStatus) {
-        thStatus.innerHTML = '<option value="">전체</option>';
+        thStatus.innerHTML = '<option value="">🔄 상태 (전체)</option>';
         Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
     }
     if (thLoading) {
-        thLoading.innerHTML = '<option value="">전체</option>';
+        thLoading.innerHTML = '<option value="">📍 상차지 (전체)</option>';
         Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
     }
     if (thDest) {
-        thDest.innerHTML = '<option value="">전체</option>';
+        thDest.innerHTML = '<option value="">📍 하차지 (전체)</option>';
         Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
     }
     if (thTone) {
-        thTone.innerHTML = '<option value="">전체</option>';
+        thTone.innerHTML = '<option value="">⚖️ 톤급 (전체)</option>';
         Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
     }
     if (thDriver) {
-        thDriver.innerHTML = '<option value="">전체</option>';
+        thDriver.innerHTML = '<option value="">👤 운전자 (전체)</option>';
         Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
     }
     if (thCarnum) {
-        thCarnum.innerHTML = '<option value="">전체</option>';
+        thCarnum.innerHTML = '<option value="">🚚 차량번호 (전체)</option>';
         Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
     }
 
