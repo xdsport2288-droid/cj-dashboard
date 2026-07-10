@@ -1257,5 +1257,11 @@ function handleDragEnd(e) {
     const filterItems = document.querySelectorAll('.filters-panel .filter-item');
     filterItems.forEach(item => {
         item.classList.remove('drag-over');
-    });
+}
+
+// App execution
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDashboard);
+} else {
+    initDashboard();
 }
