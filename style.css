@@ -177,6 +177,14 @@ header {
     font-family: inherit;
     transition: var(--transition);
     width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    padding-right: 2.5rem;
 }
 
 .filter-select:focus, .filter-input:focus {
@@ -567,28 +575,6 @@ tbody tr:hover {
     border-radius: 6px;
 }
 .summary-item strong {
-
-
-/* Table Summary Box */
-.table-summary-box {
-    display: flex;
-    gap: 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    padding: 12px 20px;
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    align-items: center;
-    flex-wrap: wrap;
-}
-.summary-item {
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.2);
-    padding: 6px 12px;
-    border-radius: 6px;
-}
-.summary-item strong {
     color: var(--text-secondary);
     margin-right: 6px;
 }
@@ -609,6 +595,16 @@ tbody tr:hover {
     font-family: inherit;
     transition: var(--transition);
     cursor: pointer;
+    margin-top: 0;
+    padding: 0.5rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1em;
+    padding-right: 1.5rem;
 }
 .th-filter:focus {
     border-color: var(--accent);
