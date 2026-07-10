@@ -150,6 +150,8 @@ header {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.25rem;
     align-items: end;
+    position: relative;
+    z-index: 100;
 }
 
 .filter-group {
@@ -443,7 +445,7 @@ header {
 }
 
 .table-wrapper {
-    overflow-x: auto;
+    overflow: visible;
     border-radius: var(--radius-sm);
     border: 1px solid var(--card-border);
 }
@@ -469,6 +471,11 @@ th {
     letter-spacing: 0.5px;
     position: sticky;
     top: 0;
+    z-index: 10;
+}
+
+th:focus-within, th:hover {
+    z-index: 50;
 }
 
 tr:last-child td {
@@ -621,6 +628,10 @@ tbody tr:hover {
 .custom-multiselect {
     position: relative;
     width: 100%;
+}
+
+.custom-multiselect.is-open {
+    z-index: 9999;
 }
 
 .custom-multiselect-btn {
