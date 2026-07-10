@@ -108,14 +108,34 @@ class CustomMultiSelect {
                 this.panel.style.display = 'grid';
                 this.wrapper.classList.add('is-open');
                 
-                // Smart positioning: align to right if on the right side of the screen
-                const rect = this.wrapper.getBoundingClientRect();
-                if (rect.right > window.innerWidth * 0.7) {
+                // Reset positions to default before measuring
+                this.panel.style.top = 'calc(100% + 4px)';
+                this.panel.style.bottom = 'auto';
+                this.panel.style.left = '0';
+                this.panel.style.right = 'auto';
+                
+                // Smart positioning: Horizontal & Vertical
+                const btnRect = this.btn.getBoundingClientRect();
+                const panelRect = this.panel.getBoundingClientRect();
+                
+                // Horizontal: align to right if on the right side of the screen
+                if (btnRect.right > window.innerWidth * 0.7) {
                     this.panel.style.left = 'auto';
                     this.panel.style.right = '0';
+                }
+                
+                // Vertical: pop upwards if there isn't enough space below
+                if (btnRect.bottom + panelRect.height > window.innerHeight) {
+                    // Only pop up if popping up won't cut off the top, or if space above > space below
+                    if (btnRect.top > panelRect.height || btnRect.top > (window.innerHeight - btnRect.bottom)) {
+                        this.panel.style.top = 'auto';
+                        this.panel.style.bottom = 'calc(100% + 4px)';
+                        
+                        // Add shadow upwards
+                        this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
+                    }
                 } else {
-                    this.panel.style.left = '0';
-                    this.panel.style.right = 'auto';
+                    this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
                 }
             }
         });
