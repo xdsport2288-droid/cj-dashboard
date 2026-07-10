@@ -570,3 +570,25 @@ tbody tr:hover {
     color: var(--text-secondary);
     margin-right: 6px;
 }
+
+
+/* Table Header Dropdowns */
+.th-filter {
+    display: block;
+    width: 100%;
+    margin-top: 5px;
+    padding: 2px 4px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    background-color: var(--surface-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    outline: none;
+}
+.th-filter:focus {
+    border-color: var(--primary-color);
+}
+.th-content {
+    display: block;
+    margin-bottom: 2px;
+}
