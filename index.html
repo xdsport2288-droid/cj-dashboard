@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CJ더운반)이천지점 - 배차/정산 대시보드</title>
+    <!-- Open Graph / Link Share Preview -->
+    <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
+    <meta property="og:description" content="배차 및 정산 통계 대시보드">
+    <meta property="og:type" content="website">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr CSS & JS (Date Range Picker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" id="flatpickr-dark-theme">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+</head>
+<body data-theme="dark">
+    <div class="app-container">
+        <!-- Header -->
+        <header>
+            <div class="brand">
+                <span style="font-size: 1.8rem;">🚚</span>
+                <div>
+                    <h1><span class="hd-brand" id="brand-name">CJ더운반)이천지점</span> 통합운송 플랫폼</h1>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">배차 및 정산 통계 대시보드</p>
+                </div>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-secondary" id="btn-export">
+                    <span>📥</span> CSV 내보내기
+                </button>
+                <button class="btn-icon" id="btn-theme" title="테마 전환">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            <!-- Filter Section -->
+            <section class="filters-panel animate-fade">
+                <div class="filter-group">
+                    <label for="filter-shipper">🏢 화주명 (거래처)</label>
+                    <select id="filter-shipper" class="filter-select">
+                        <option value="">전체 거래처</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-destination">📍 하차지명</label>
+                    <select id="filter-destination" class="filter-select">
+                        <option value="">전체 하차지</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-tone">⚖️ 차량 톤급</label>
+                    <select id="filter-tone" class="filter-select">
+                        <option value="">전체 톤급</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-status">🔄 주문 상태</label>
+                    <select id="filter-status" class="filter-select">
+                        <option value="">전체 상태</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="grid-column: span 2;">
+                    <label for="filter-date-range">📅 운송 기간 선택 (시작 ~ 종료)</label>
+                    <input type="text" id="filter-date-range" class="filter-input" placeholder="날짜 범위를 선택하세요">
+                </div>
+                <div class="filter-group">
+                    <div class="filter-btn-group">
+                        <button class="btn btn-secondary" id="btn-reset" style="width: 100%;">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI Cards Section -->
+            <section class="kpi-grid">
+                <!-- Sales KPI -->
+                <!-- Total Orders KPI -->
+                <div class="kpi-card orders animate-fade" style="animation-delay: 0.1s;">
+                    <div class="kpi-header">
+                        <span class="kpi-title">총 배차 건수</span>
+                        <span class="kpi-icon">🚚</span>
+                    </div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-orders">0 건</div>
+                        <div class="kpi-sub-details" id="kpi-orders-detail"></div>
+                    </div>
+                </div>
+                <!-- Sales KPI -->
+                <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
+                    <div class="kpi-header">
+                        <span class="kpi-title">총 매출액</span>
+                        <span class="kpi-icon">💰</span>
+                    </div>
+                    <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                </div>
+                <!-- Purchase KPI -->
+                <div class="kpi-card purchase animate-fade" style="animation-delay: 0.3s;">
+                    <div class="kpi-header">
+                        <span class="kpi-title">총 매입액</span>
+                        <span class="kpi-icon">💸</span>
+                    </div>
+                    <div class="kpi-value" id="kpi-purchase">₩ 0</div>
+                </div>
+                <!-- Profit KPI -->
+                <div class="kpi-card profit animate-fade" style="animation-delay: 0.4s;">
+                    <div class="kpi-header">
+                        <span class="kpi-title">순이익</span>
+                        <span class="kpi-icon">📈</span>
+                    </div>
+                    <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                </div>
+                <!-- Margin KPI -->
+                <div class="kpi-card margin animate-fade" style="animation-delay: 0.5s;">
+                    <div class="kpi-header">
+                        <span class="kpi-title">순이익률</span>
+                        <span class="kpi-icon">📊</span>
+                    </div>
+                    <div class="kpi-value" id="kpi-margin">0%</div>
+                </div>
+            </section>
+
+            <!-- Visual Charts Section -->
+            <section class="charts-grid">
+                <!-- Date Sales & Purchase Trend Chart -->
+                <div class="chart-card animate-fade" style="animation-delay: 0.6s;">
+                    <div class="chart-title">
+                        <span>📅 일별 매출/매입/순이익 추이</span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;">*막대: 매출/매입액, 라인: 순이익</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <!-- Tone Distribution Chart -->
+                <div class="chart-card animate-fade" style="animation-delay: 0.7s;">
+                    <div class="chart-title">
+                        <span>⚖️ 배차 차량 톤급 분포</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="toneChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="charts-grid" style="grid-template-columns: 1fr;">
+                <!-- Destination Ranking Chart -->
+                <div class="chart-card animate-fade" style="animation-delay: 0.8s; min-height: 300px;">
+                    <div class="chart-title">
+                        <span>📍 목적지별 운송 빈도 랭킹 (Top 7)</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="destChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Table Section -->
+            <section class="table-card animate-fade" style="animation-delay: 0.9s;">
+                <div class="table-header">
+                    <h2 style="font-size: 1.1rem; font-weight: 600;">📋 상세 운송 내역 리스트</h2>
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" class="search-input" placeholder="운전자명, 차량번호, 상세주소 검색...">
+                    </div>
+                </div>
+                <div class="table-tabs">
+                    <button class="tab-btn active" data-status="">전체</button>
+                    <button class="tab-btn" data-status="운송실적 확정">운송실적 확정</button>
+                    <button class="tab-btn" data-status="배차확정">배차확정</button>
+                    <button class="tab-btn" data-status="주문 취소">주문 취소</button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>상태</th>
+                                <th>상차 요청 일시</th>
+                                <th>하차지</th>
+                                <th>하차지 상세 주소</th>
+                                <th>요청 차종</th>
+                                <th>차량 번호</th>
+                                <th>운전자명</th>
+                                <th style="text-align: right;">매출 금액</th>
+                                <th style="text-align: right;">매입 금액</th>
+                                <th style="text-align: right;">순이익</th>
+                                <th style="text-align: right;">순이익률</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- JS populated rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Load Embedded Database and Application Code with Cache Busting -->
+    <script>
+        (function() {
+            const dataScript = document.createElement('script');
+            dataScript.src = 'data.js?t=' + Date.now();
+            dataScript.onload = function() {
+                const appScript = document.createElement('script');
+                appScript.src = 'app.js?t=' + Date.now();
+                document.body.appendChild(appScript);
+            };
+            document.body.appendChild(dataScript);
+        })();
+    </script>
+</body>
+</html>
