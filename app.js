@@ -217,7 +217,7 @@ function initFilters() {
     const loadings = new Set();
     const dests = new Set();
     const tones = new Set();
-    const statuses = new Set(['운송실적 확정', '배차확정', '주문 취소']);
+    const statuses = new Set();
     const drivers = new Set();
     const carnums = new Set();
     const waypoints = new Set();
@@ -276,21 +276,21 @@ function initFilters() {
     if (thFare) Array.from(fares).sort((a,b)=>Number(a)-Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
 
     // Initialize Custom MultiSelects
-    new CustomMultiSelect(document.getElementById('filter-shipper'), '거래처 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-loading'), '상차지 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-dest'), '하차지 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-tone'), '톤급 (전체)');
-    new CustomMultiSelect(document.getElementById('filter-status'), '주문상태 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-shipper'), '화주명 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-loading'), '상차지명 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-dest'), '하차지명 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-tone'), '요청 톤급 (전체)');
+    new CustomMultiSelect(document.getElementById('filter-status'), '주문 상태 (전체)');
 
-    new CustomMultiSelect(document.getElementById('th-filter-status'), '상태 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-loading'), '상차지 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-dest'), '하차지 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-status'), '주문 상태 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-loading'), '상차지명 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-dest'), '하차지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-tone'), '톤급 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-driver'), '운전자 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-tone'), '요청 톤급 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-driver'), '운전자명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-fare'), '총 매출 금액 (전체)');
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
@@ -324,26 +324,22 @@ function updateKPIs(statusUnfilteredData) {
     
     let confirmCount = 0;
     let assignCount = 0;
-    let cancelCount = 0;
 
     countSource.forEach(row => {
         const status = row['주문 상태'];
         if (status === '운송실적 확정') confirmCount++;
         else if (status === '배차확정') assignCount++;
-        else if (status === '주문 취소') cancelCount++;
     });
 
     const totalSourceCount = countSource.length;
     const confirmPct = totalSourceCount > 0 ? ((confirmCount / totalSourceCount) * 100).toFixed(1) : 0;
     const assignPct = totalSourceCount > 0 ? ((assignCount / totalSourceCount) * 100).toFixed(1) : 0;
-    const cancelPct = totalSourceCount > 0 ? ((cancelCount / totalSourceCount) * 100).toFixed(1) : 0;
 
     const currentStatus = document.getElementById('filter-status').value;
 
     document.getElementById('kpi-orders-detail').innerHTML = `
         <span class="status-tag success ${currentStatus && currentStatus !== '운송실적 확정' ? 'inactive' : ''}" data-status="운송실적 확정">확정 ${confirmCount} (${confirmPct}%)</span>
         <span class="status-tag warning ${currentStatus && currentStatus !== '배차확정' ? 'inactive' : ''}" data-status="배차확정">배차 ${assignCount} (${assignPct}%)</span>
-        <span class="status-tag danger ${currentStatus && currentStatus !== '주문 취소' ? 'inactive' : ''}" data-status="주문 취소">취소 ${cancelCount} (${cancelPct}%)</span>
     `;
 }
 
