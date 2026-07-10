@@ -107,6 +107,16 @@ class CustomMultiSelect {
             if (!isOpen) {
                 this.panel.style.display = 'grid';
                 this.wrapper.classList.add('is-open');
+                
+                // Smart positioning: align to right if on the right side of the screen
+                const rect = this.wrapper.getBoundingClientRect();
+                if (rect.right > window.innerWidth * 0.7) {
+                    this.panel.style.left = 'auto';
+                    this.panel.style.right = '0';
+                } else {
+                    this.panel.style.left = '0';
+                    this.panel.style.right = 'auto';
+                }
             }
         });
         
