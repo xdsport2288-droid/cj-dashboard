@@ -1,6 +1,6 @@
 // Interactive Transport Dashboard Logic
 
-let activeData = [...TRANSPORT_DATA];
+let activeData = [...window.TRANSPORT_DATA];
 let trendChart = null;
 let toneChart = null;
 let destChart = null;
@@ -27,12 +27,23 @@ function initFilters() {
     const toneSelect = document.getElementById('filter-tone');
     const statusSelect = document.getElementById('filter-status');
 
+    // Keep current values
+    const currentShipper = shipperSelect.value;
+    const currentDest = destSelect.value;
+    const currentTone = toneSelect.value;
+    const currentStatus = statusSelect.value;
+
+    shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
+    destSelect.innerHTML = '<option value="">전체 하차지</option>';
+    toneSelect.innerHTML = '<option value="">전체 톤급</option>';
+    statusSelect.innerHTML = '<option value="">전체 상태</option>';
+
     const shippers = new Set();
     const dests = new Set();
     const tones = new Set();
     const statuses = new Set();
 
-    TRANSPORT_DATA.forEach(row => {
+    window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
         if (row['하차지명']) dests.add(row['하차지명'].strip ? row['하차지명'].strip() : String(row['하차지명']).trim());
         if (row['요청 톤급']) tones.add(row['요청 톤급']);
@@ -70,6 +81,12 @@ function initFilters() {
         opt.textContent = s;
         statusSelect.appendChild(opt);
     });
+
+    // Restore previous selections if they still exist
+    if (currentShipper) shipperSelect.value = currentShipper;
+    if (currentDest) destSelect.value = currentDest;
+    if (currentTone) toneSelect.value = currentTone;
+    if (currentStatus) statusSelect.value = currentStatus;
 }
 
 // Calculate and Render KPIs
@@ -366,7 +383,7 @@ function filterData() {
     updateStatusTab(statusVal);
 
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
-    activeData = TRANSPORT_DATA.filter(row => {
+    activeData = window.TRANSPORT_DATA.filter(row => {
         // Shipper Match
         if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
@@ -402,7 +419,7 @@ function filterData() {
     });
 
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
-    const statusUnfilteredData = TRANSPORT_DATA.filter(row => {
+    const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
         // Shipper Match
         if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
@@ -451,7 +468,7 @@ function resetFilters() {
     document.getElementById('search-input').value = '';
     
     updateStatusTab('');
-    activeData = [...TRANSPORT_DATA];
+    activeData = [...window.TRANSPORT_DATA];
     updateKPIs();
     updateCharts();
     updateTable();
@@ -595,6 +612,9 @@ setInterval(async () => {
             console.log("New data detected! Updating dashboard live...");
             knownDataStrings.add(newStr);
             window.TRANSPORT_DATA = newData;
+            
+            // Update dropdowns in case there are new shippers/dests
+            initFilters();
             
             // Re-apply filters with new data
             filterData();
