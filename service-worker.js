@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transport-dashboard-v3';
+const CACHE_NAME = 'transport-dashboard-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -29,18 +29,23 @@ self.addEventListener('activate', event => {
   return self.clients.claim();
 });
 
+// Network-First 전략: 항상 서버에서 최신 파일을 먼저 받아옵니다. 실패할 경우에만 캐시를 사용합니다.
 self.addEventListener('fetch', event => {
-  // Always fetch dynamic data directly from network
-  if (event.request.url.includes('dashboard_data.json') || event.request.url.includes('data.js')) {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(event.request))
-    );
-    return;
-  }
-  
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then(response => {
+        // 네트워크에서 성공적으로 가져오면 캐시도 최신화
+        if (response && response.status === 200 && response.type === 'basic') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // 네트워크 연결 실패(오프라인 등) 시 캐시에서 반환
+        return caches.match(event.request);
+      })
   );
 });
