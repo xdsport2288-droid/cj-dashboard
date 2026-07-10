@@ -59,29 +59,33 @@
         <main class="main-content">
             <!-- Filter Section -->
             <section class="filters-panel animate-fade">
-                <div class="filter-group">
-                    <label for="filter-shipper">🏢 화주명 (거래처)</label>
-                    <select id="filter-shipper" class="filter-select" multiple>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter-loading">📍 상차지명</label>
-                    <select id="filter-loading" class="filter-select" multiple>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter-dest">📍 하차지명</label>
-                    <select id="filter-dest" class="filter-select" multiple>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter-tone">⚖️ 차량 톤급</label>
-                    <select id="filter-tone" class="filter-select" multiple>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="filter-status">🔄 주문 상태</label>
+                <div class="filter-item">
+                    <label for="filter-status">🔄 접수상태</label>
                     <select id="filter-status" class="filter-select" multiple>
+                        <!-- Options populated via JS -->
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="filter-shipper">🏢 화주사</label>
+                    <select id="filter-shipper" class="filter-select" multiple>
+                        <!-- Options populated via JS -->
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="filter-loading">📍 출발지명</label>
+                    <select id="filter-loading" class="filter-select" multiple>
+                        <!-- Options populated via JS -->
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="filter-dest">📍 도착지명</label>
+                    <select id="filter-dest" class="filter-select" multiple>
+                        <!-- Options populated via JS -->
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label for="filter-tone">⚖️ 차량정보</label>
+                    <select id="filter-tone" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group" style="grid-column: span 2;">
@@ -208,10 +212,10 @@
                                     <select id="th-filter-dest" class="th-filter" multiple></select>
                                 </th>
                                 <th>
-                                    <input type="text" id="th-filter-startdate" class="th-filter" placeholder="상차 요청 일시 (선택)">
+                                    <input type="text" id="th-filter-startdate" class="th-filter" placeholder="출발일시 (선택)">
                                 </th>
                                 <th>
-                                    <input type="text" id="th-filter-enddate" class="th-filter" placeholder="하차 요청 일시 (선택)">
+                                    <input type="text" id="th-filter-enddate" class="th-filter" placeholder="도착일시 (선택)">
                                 </th>
                                 <th>
                                     <select id="th-filter-waypoint" class="th-filter" multiple></select>
