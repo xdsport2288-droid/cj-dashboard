@@ -48,21 +48,72 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+/* Custom Scrollbar for multi-select panel */
+.custom-multiselect-panel::-webkit-scrollbar {
+    width: 6px;
 }
-::-webkit-scrollbar-track {
-    background: var(--bg-primary);
+.custom-multiselect-panel::-webkit-scrollbar-track {
+    background: transparent;
 }
-::-webkit-scrollbar-thumb {
-    background: var(--bg-tertiary);
+.custom-multiselect-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+[data-theme="light"] .custom-multiselect-panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Edit Mode Styles */
+.edit-mode .filter-item {
+    outline: 2px dashed var(--accent);
+    cursor: grab;
+    position: relative;
+    padding: 5px;
+    border-radius: var(--radius-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.edit-mode .filter-item:active {
+    cursor: grabbing;
+    transform: scale(0.98);
+}
+
+.edit-mode .filter-item label {
+    cursor: text;
+    border-bottom: 1px dotted var(--text-secondary);
+    padding-bottom: 2px;
+}
+
+.edit-mode .filter-item.drag-over {
+    outline: 3px solid var(--accent-glow);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.edit-mode .summary-card {
+    outline: 2px dashed var(--accent);
+    cursor: grab;
+}
+.edit-mode .summary-card:active {
+    cursor: grabbing;
+}
+.edit-mode .summary-card.drag-over {
+    outline: 3px solid var(--accent-glow);
+    transform: scale(1.02);
+}
+
+/* Make labels editable visually */
+.edit-mode [contenteditable="true"] {
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
+    padding: 2px 4px;
+    outline: none;
 }
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+.edit-mode [contenteditable="true"]:focus {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px var(--accent);
 }
+
 
 /* Layout */
 .app-container {
