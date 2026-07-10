@@ -23,29 +23,34 @@ function cleanNumeric(val) {
 // Extract unique values for filters
 function initFilters() {
     const shipperSelect = document.getElementById('filter-shipper');
-    const destSelect = document.getElementById('filter-destination');
+    const loadingSelect = document.getElementById('filter-loading');
+    const destSelect = document.getElementById('filter-dest');
     const toneSelect = document.getElementById('filter-tone');
     const statusSelect = document.getElementById('filter-status');
 
     // Keep current values
     const currentShipper = shipperSelect.value;
+    const currentLoading = loadingSelect.value;
     const currentDest = destSelect.value;
     const currentTone = toneSelect.value;
     const currentStatus = statusSelect.value;
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
+    loadingSelect.innerHTML = '<option value="">전체 상차지</option>';
     destSelect.innerHTML = '<option value="">전체 하차지</option>';
     toneSelect.innerHTML = '<option value="">전체 톤급</option>';
     statusSelect.innerHTML = '<option value="">전체 상태</option>';
 
     const shippers = new Set();
+    const loadings = new Set();
     const dests = new Set();
     const tones = new Set();
     const statuses = new Set();
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
-        if (row['하차지명']) dests.add(row['하차지명'].strip ? row['하차지명'].strip() : String(row['하차지명']).trim());
+        if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
+        if (row['하차지명']) dests.add(String(row['하차지명']).trim());
         if (row['요청 톤급']) tones.add(row['요청 톤급']);
         if (row['주문 상태']) statuses.add(row['주문 상태']);
     });
@@ -56,6 +61,14 @@ function initFilters() {
         opt.value = s;
         opt.textContent = s;
         shipperSelect.appendChild(opt);
+    });
+
+    // Populate Loading
+    Array.from(loadings).sort().forEach(l => {
+        const opt = document.createElement('option');
+        opt.value = l;
+        opt.textContent = l;
+        loadingSelect.appendChild(opt);
     });
 
     // Populate Destination
@@ -84,6 +97,7 @@ function initFilters() {
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
+    if (currentLoading) loadingSelect.value = currentLoading;
     if (currentDest) destSelect.value = currentDest;
     if (currentTone) toneSelect.value = currentTone;
     if (currentStatus) statusSelect.value = currentStatus;
@@ -166,18 +180,14 @@ function updateTable() {
 
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
-            <td style="font-weight: 500;">${row['상차 요청 일시'] || '-'}</td>
-            <td>${row['하차지명'] || '-'}</td>
-            <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['하차지 상세 주소'] || ''}">
-                ${row['하차지 상세 주소'] || '-'}
-            </td>
-            <td>${row['요청 톤급'] || '-'} (${row['요청 차량'] || '-'})</td>
-            <td>${row['차량번호'] || '-'}</td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['하차지명'] || ''}">${row['하차지명'] || '-'}</td>
+            <td style="text-align: center;">${row['경유지'] || '0'}</td>
+            <td style="text-align: center;">${row['수량'] || '1'}</td>
+            <td>${row['요청 톤급'] || '-'}</td>
             <td>${row['운전자명'] || '-'}</td>
+            <td>${row['차량번호'] || '-'}</td>
             <td style="font-weight: 600; text-align: right; color: var(--accent);">${sales.toLocaleString()}원</td>
-            <td style="font-weight: 600; text-align: right; color: var(--warning);">${purchase.toLocaleString()}원</td>
-            <td style="font-weight: 600; text-align: right; color: ${profitColor};">${profit.toLocaleString()}원</td>
-            <td style="font-weight: 600; text-align: right; color: ${profitColor};">${margin}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -354,7 +364,8 @@ function updateStatusTab(statusVal) {
 // Filter Action
 function filterData() {
     const shipperVal = document.getElementById('filter-shipper').value;
-    const destVal = document.getElementById('filter-destination').value;
+    const loadingVal = document.getElementById('filter-loading').value;
+    const destVal = document.getElementById('filter-dest').value;
     const toneVal = document.getElementById('filter-tone').value;
     const statusVal = document.getElementById('filter-status').value;
     
@@ -387,6 +398,9 @@ function filterData() {
         // Shipper Match
         if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
+        // Loading Match
+        if (loadingVal && String(row['상차지명'] || '').trim() !== loadingVal) return false;
+
         // Destination Match
         if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
         
@@ -423,6 +437,9 @@ function filterData() {
         // Shipper Match
         if (shipperVal && String(row['화주명'] || '').trim() !== shipperVal) return false;
         
+        // Loading Match
+        if (loadingVal && String(row['상차지명'] || '').trim() !== loadingVal) return false;
+
         // Destination Match
         if (destVal && String(row['하차지명'] || '').trim() !== destVal) return false;
         
@@ -459,7 +476,8 @@ function filterData() {
 // Reset Filters
 function resetFilters() {
     document.getElementById('filter-shipper').value = '';
-    document.getElementById('filter-destination').value = '';
+    document.getElementById('filter-loading').value = '';
+    document.getElementById('filter-dest').value = '';
     document.getElementById('filter-tone').value = '';
     document.getElementById('filter-status').value = '';
     if (datePicker) {
@@ -479,7 +497,7 @@ function exportToCSV() {
     if (activeData.length === 0) return;
     
     // Create header
-    const headers = ['주문상태', '상차요청일시', '하차지명', '하차지상세주소', '톤급', '차량번호', '운전자명', '매출금액', '매입금액', '순이익', '순이익률'];
+    const headers = ['주문상태', '상차지명', '하차지명', '하차지상세주소', '경유지', '수량', '톤급', '차량번호', '운전자명', '상차요청일시', '매출금액', '매입금액', '순이익', '순이익률'];
     
     let csvContent = '\uFEFF'; // UTF-8 BOM
     csvContent += headers.join(',') + '\n';
@@ -492,12 +510,15 @@ function exportToCSV() {
         
         const line = [
             row['주문 상태'] || '',
-            row['상차 요청 일시'] || '',
+            row['상차지명'] || '',
             row['하차지명'] || '',
             `"${(row['하차지 상세 주소'] || '').replace(/"/g, '""')}"`,
+            row['경유지'] || '0',
+            row['수량'] || '1',
             row['요청 톤급'] || '',
             row['차량번호'] || '',
             row['운전자명'] || '',
+            row['상차 요청 일시'] || '',
             sales,
             purchase,
             profit,
@@ -561,7 +582,8 @@ function initDashboard() {
 
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);
-    document.getElementById('filter-destination').addEventListener('change', filterData);
+    document.getElementById('filter-loading').addEventListener('change', filterData);
+    document.getElementById('filter-dest').addEventListener('change', filterData);
     document.getElementById('filter-tone').addEventListener('change', filterData);
     document.getElementById('filter-status').addEventListener('change', filterData);
     document.getElementById('search-input').addEventListener('input', filterData);
