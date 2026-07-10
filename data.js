@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-11 07:13:14';
+window.LAST_UPDATED = '2026-07-11 07:17:20';
 window.TRANSPORT_DATA = [
   {
     "주문 상태": "배차완료",
