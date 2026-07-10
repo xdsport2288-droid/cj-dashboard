@@ -567,6 +567,12 @@ function initDashboard() {
     updateCharts();
     updateTable();
 
+    // Show initial update time if available
+    const timeSpan = document.getElementById('last-updated-time');
+    if (timeSpan && window.LAST_UPDATED) {
+        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+    }
+
     // Initialize Flatpickr date range picker
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
@@ -626,14 +632,21 @@ setInterval(async () => {
         const res = await fetch('dashboard_data.json?t=' + Date.now());
         if (!res.ok) return;
         const newData = await res.json();
-        const newStr = JSON.stringify(newData);
+        const actualData = newData.data || newData;
+        const newStr = JSON.stringify(actualData);
         
         // Use a Set to remember seen versions. This prevents popup spam 
         // if the GitHub CDN flip-flops between old and new versions during deployment.
         if (!knownDataStrings.has(newStr)) {
             console.log("New data detected! Updating dashboard live...");
             knownDataStrings.add(newStr);
-            window.TRANSPORT_DATA = newData;
+            window.TRANSPORT_DATA = actualData;
+            
+            if (newData.last_updated) {
+                window.LAST_UPDATED = newData.last_updated;
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+            }
             
             // Update dropdowns in case there are new shippers/dests
             initFilters();
@@ -641,9 +654,8 @@ setInterval(async () => {
             // Re-apply filters with new data
             filterData();
             
-            // Show a subtle notification (toast) to user
+            // Show a subtle notification (toast) to user (Sticky until closed)
             const toast = document.createElement('div');
-            toast.textContent = "데이터가 실시간으로 최신화되었습니다!";
             toast.style.position = 'fixed';
             toast.style.bottom = '20px';
             toast.style.right = '20px';
@@ -654,10 +666,32 @@ setInterval(async () => {
             toast.style.zIndex = '9999';
             toast.style.fontWeight = 'bold';
             toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            toast.style.animation = 'fadein 0.5s, fadeout 0.5s 3.5s';
+            toast.style.animation = 'fadein 0.5s';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '15px';
             
+            const msgSpan = document.createElement('span');
+            msgSpan.textContent = "데이터가 실시간으로 최신화되었습니다!";
+            toast.appendChild(msgSpan);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '확인 (닫기)';
+            closeBtn.style.background = 'rgba(255,255,255,0.2)';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.padding = '4px 10px';
+            closeBtn.style.borderRadius = '4px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontWeight = 'bold';
+            
+            closeBtn.onclick = function() {
+                toast.style.animation = 'fadeout 0.3s';
+                setTimeout(() => toast.remove(), 290);
+            };
+            
+            toast.appendChild(closeBtn);
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4000);
         }
     } catch(e) {
         // Ignore fetch errors to prevent console spam
