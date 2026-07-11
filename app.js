@@ -213,29 +213,33 @@ function cleanNumeric(val) {
 // Extract unique values for filters
 function initFilters() {
     const shipperSelect = document.getElementById('filter-shipper');
+    const carrierSelect = document.getElementById('filter-carrier');
     const loadingSelect = document.getElementById('filter-loading');
     const destSelect = document.getElementById('filter-dest');
     const toneSelect = document.getElementById('filter-tone');
     const statusSelect = document.getElementById('filter-status');
 
-    // Keep current values
     const currentShipper = shipperSelect.value;
+    const currentCarrier = carrierSelect ? carrierSelect.value : '';
     const currentLoading = loadingSelect.value;
     const currentDest = destSelect.value;
     const currentTone = toneSelect.value;
     const currentStatus = statusSelect.value;
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
+    if (carrierSelect) carrierSelect.innerHTML = '<option value="">간선사 (전체)</option>';
     loadingSelect.innerHTML = '<option value="">전체 상차지</option>';
     destSelect.innerHTML = '<option value="">전체 하차지</option>';
     toneSelect.innerHTML = '<option value="">전체 톤급</option>';
     shipperSelect.innerHTML = '';
+    if (carrierSelect) carrierSelect.innerHTML = '';
     loadingSelect.innerHTML = '';
     destSelect.innerHTML = '';
     toneSelect.innerHTML = '';
     statusSelect.innerHTML = '';
 
     const shippers = new Set();
+    const carriers = new Set();
     const loadings = new Set();
     const dests = new Set();
     const tones = new Set();
@@ -248,6 +252,7 @@ function initFilters() {
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
+        if (row['간선사']) carriers.add(String(row['간선사']).trim());
         if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
         if (row['하차지명']) dests.add(String(row['하차지명']).trim());
         if (row['요청 톤급']) tones.add(String(row['요청 톤급']).trim());
@@ -282,6 +287,7 @@ function initFilters() {
 
     // Populate options in native select elements
     if (shipperSelect) Array.from(shippers).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; shipperSelect.appendChild(o); });
+    if (carrierSelect) Array.from(carriers).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; carrierSelect.appendChild(o); });
     if (loadingSelect) Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; loadingSelect.appendChild(o); });
     if (destSelect) Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; destSelect.appendChild(o); });
     if (toneSelect) Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; toneSelect.appendChild(o); });
@@ -293,12 +299,13 @@ function initFilters() {
     if (thWaypoint) Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
     if (thTone) Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
     if (thDriver) Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
-    if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
+if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
     if (thRemark) Array.from(remarks).sort().forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; thRemark.appendChild(o); });
     if (thFare) Array.from(fares).sort((a, b) => Number(a) - Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
 
     // Initialize Custom MultiSelects
     window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '화주사 (전체)');
+    if (carrierSelect) window.cmsCarrier = new CustomMultiSelect(document.getElementById('filter-carrier'), '간선사 (전체)');
     window.cmsLoading = new CustomMultiSelect(document.getElementById('filter-loading'), '출발지명 (전체)');
     window.cmsDest = new CustomMultiSelect(document.getElementById('filter-dest'), '도착지명 (전체)');
     window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '차량톤수 (전체)');
@@ -339,6 +346,7 @@ function initFilters() {
 
     // Restore previous selections if they still exist
     if (currentShipper) shipperSelect.value = currentShipper;
+    if (currentCarrier) carrierSelect.value = currentCarrier;
     if (currentLoading) loadingSelect.value = currentLoading;
     if (currentDest) destSelect.value = currentDest;
     if (currentTone) toneSelect.value = currentTone;
@@ -640,6 +648,7 @@ function filterData() {
     };
 
     const shipperVals = getSelectedValues('filter-shipper');
+    const carrierVals = getSelectedValues('filter-carrier');
     const loadingVals = getSelectedValues('filter-loading');
     const destVals = getSelectedValues('filter-dest');
     const toneVals = getSelectedValues('filter-tone');
@@ -692,6 +701,7 @@ function filterData() {
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
         if (!checkMulti(shipperVals, row['화주명'])) return false;
+        if (!checkMulti(carrierVals, row['간선사'])) return false;
         if (!checkMulti(loadingVals, row['상차지명'])) return false;
         if (!checkMulti(destVals, row['하차지명'])) return false;
         if (!checkMulti(toneVals, row['요청 톤급'])) return false;
@@ -748,6 +758,7 @@ function filterData() {
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
         if (!checkMulti(shipperVals, row['화주명'])) return false;
+        if (!checkMulti(carrierVals, row['간선사'])) return false;
         if (!checkMulti(loadingVals, row['상차지명'])) return false;
         if (!checkMulti(destVals, row['하차지명'])) return false;
         if (!checkMulti(toneVals, row['요청 톤급'])) return false;
@@ -807,6 +818,7 @@ function filterData() {
 // Reset Filters
 function resetFilters() {
     if (window.cmsShipper) window.cmsShipper.setValue('');
+    if (window.cmsCarrier) window.cmsCarrier.setValue('');
     if (window.cmsLoading) window.cmsLoading.setValue('');
     if (window.cmsDest) window.cmsDest.setValue('');
     if (window.cmsTone) window.cmsTone.setValue('');
