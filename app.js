@@ -173,10 +173,10 @@ class CustomMultiSelect {
             this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
             this.btn.title = selectedText;
         } else {
-            const firstSelectedText = selectedCheckboxes[0].parentElement.textContent.trim();
-            this.btn.textContent = `${firstSelectedText} 외 ${selectedCount - 1}건`;
+            const allSelectedTexts = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
+            this.btn.textContent = allSelectedTexts;
             this.btn.className = `${this.baseBtnClass} has-selection primary-text`;
-            this.btn.title = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
+            this.btn.title = allSelectedTexts;
         }
     }
 
