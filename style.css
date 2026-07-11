@@ -727,6 +727,24 @@ tbody tr:hover {
     border-color: rgba(72, 187, 120, 0.3);
 }
 
+.custom-multiselect-btn.has-selection.success-text {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.custom-multiselect-btn.has-selection.warning-text {
+    background-color: rgba(245, 158, 11, 0.1) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+
+.custom-multiselect-btn.has-selection.danger-text {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: #ef4444 !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
 .custom-multiselect-panel {
     position: absolute;
     top: calc(100% + 4px);
