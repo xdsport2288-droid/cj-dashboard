@@ -64,7 +64,7 @@ body {
 }
 
 /* Edit Mode Styles */
-.edit-mode .filter-item {
+.edit-mode .filter-item, .edit-mode .filter-group {
     outline: 2px dashed var(--accent);
     cursor: grab;
     position: relative;
@@ -90,8 +90,8 @@ body {
     background: rgba(59, 130, 246, 0.1);
 }
 
-.edit-mode .custom-multiselect {
-    pointer-events: none; /* Disable dropdown toggle so the whole button acts as a drag handle */
+.edit-mode .custom-multiselect, .edit-mode .filter-input, .edit-mode #btn-reset {
+    pointer-events: none; /* Disable inputs so the whole box acts as a drag handle */
 }
 
 .edit-mode .summary-card {
