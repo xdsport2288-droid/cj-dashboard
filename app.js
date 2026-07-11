@@ -252,7 +252,8 @@ function initFilters() {
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
-        if (row['간선사']) carriers.add(String(row['간선사']).trim());
+        let c = String(row['간선사'] || '').trim();
+        carriers.add(c === '' ? '(미지정)' : c);
         if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
         if (row['하차지명']) dests.add(String(row['하차지명']).trim());
         if (row['요청 톤급']) tones.add(String(row['요청 톤급']).trim());
@@ -701,7 +702,8 @@ function filterData() {
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
         if (!checkMulti(shipperVals, row['화주명'])) return false;
-        if (!checkMulti(carrierVals, row['간선사'])) return false;
+        let c = String(row['간선사'] || '').trim();
+        if (!checkMulti(carrierVals, c === '' ? '(미지정)' : c)) return false;
         if (!checkMulti(loadingVals, row['상차지명'])) return false;
         if (!checkMulti(destVals, row['하차지명'])) return false;
         if (!checkMulti(toneVals, row['요청 톤급'])) return false;
@@ -758,7 +760,8 @@ function filterData() {
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
         if (!checkMulti(shipperVals, row['화주명'])) return false;
-        if (!checkMulti(carrierVals, row['간선사'])) return false;
+        let c = String(row['간선사'] || '').trim();
+        if (!checkMulti(carrierVals, c === '' ? '(미지정)' : c)) return false;
         if (!checkMulti(loadingVals, row['상차지명'])) return false;
         if (!checkMulti(destVals, row['하차지명'])) return false;
         if (!checkMulti(toneVals, row['요청 톤급'])) return false;
