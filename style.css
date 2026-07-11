@@ -90,6 +90,10 @@ body {
     background: rgba(59, 130, 246, 0.1);
 }
 
+.edit-mode .custom-multiselect {
+    pointer-events: none; /* Disable dropdown toggle so the whole button acts as a drag handle */
+}
+
 .edit-mode .summary-card {
     outline: 2px dashed var(--accent);
     cursor: grab;
@@ -113,6 +117,15 @@ body {
     background: rgba(255, 255, 255, 0.2);
     box-shadow: 0 0 0 2px var(--accent);
 }
+
+/* Prevent ghost elements from stealing mouse events during drag-and-drop */
+body > .filter-item {
+    pointer-events: none !important;
+}
+body > .filter-item * {
+    pointer-events: none !important;
+}
+
 
 
 /* Layout */
