@@ -390,6 +390,10 @@ function updateKPIs(statusUnfilteredData) {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         const colorClass = classes[colorIdx % classes.length];
+        
+        window.statusColorMap = window.statusColorMap || {};
+        window.statusColorMap[status] = colorClass;
+        
         colorIdx++;
         
         const isInactive = activeStatuses.length > 0 && !activeStatuses.includes(status);
@@ -421,10 +425,10 @@ function updateTable() {
         const tr = document.createElement('tr');
         tr.className = 'animate-fade';
 
-        // Order status badge styling
-        let badgeClass = 'badge-warning';
-        if (row['주문 상태'] === '운송실적 확정') badgeClass = 'badge-success';
-        if (row['주문 상태'] === '주문 취소') badgeClass = 'badge-danger';
+        // Order status badge styling matching KPI tags
+        const statusVal = row['주문 상태'] || '대기';
+        const mappedColor = (window.statusColorMap && window.statusColorMap[statusVal]) ? window.statusColorMap[statusVal] : 'warning';
+        const badgeClass = `badge-${mappedColor}`;
 
         const sales = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
         const purchase = cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
