@@ -1148,7 +1148,7 @@ function initEditMode() {
             if (!label && el.tagName === 'BUTTON') {
                 label = el;
             }
-            if(label && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
+            if(label && window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
                 if(label.tagName === 'BUTTON') {
                     label.innerText = window.DASHBOARD_CONFIG[key].display_name;
                 } else {
