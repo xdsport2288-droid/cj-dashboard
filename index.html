@@ -58,6 +58,9 @@
                 <button class="btn btn-secondary" id="btn-export">
                     <span>📥</span> CSV 내보내기
                 </button>
+                <button class="btn btn-secondary" id="btn-reset" style="background: rgba(255, 255, 255, 0.05);">
+                    ↺ 필터 초기화
+                </button>
                 <button class="btn-icon" id="btn-theme" title="테마 전환">
                     <span id="theme-icon">🌙</span>
                 </button>
@@ -98,13 +101,8 @@
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label for="filter-date-range">📅 운송 기간 선택 (시작 ~ 종료)</label>
+                    <label for="filter-date-range">📅 운송 기간</label>
                     <input type="text" id="filter-date-range" class="filter-input" placeholder="날짜 범위를 선택하세요">
-                </div>
-                <div class="filter-group">
-                    <div class="filter-btn-group">
-                        <button class="btn btn-secondary" id="btn-reset" style="width: 100%;">초기화</button>
-                    </div>
                 </div>
             </section>
 
