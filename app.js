@@ -748,7 +748,6 @@ function filterData() {
             return false;
         }
 
-        if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
         if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
