@@ -152,10 +152,14 @@ class CustomMultiSelect {
     }
 
     updateButton() {
-        const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
+        const selectedCheckboxes = this.checkboxes.filter(cb => cb.checked);
+        const selectedCount = selectedCheckboxes.length;
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
             this.btn.classList.remove('has-selection');
+        } else if (selectedCount === 1) {
+            this.btn.textContent = selectedCheckboxes[0].parentElement.textContent.trim();
+            this.btn.classList.add('has-selection');
         } else {
             this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
             this.btn.classList.add('has-selection');
