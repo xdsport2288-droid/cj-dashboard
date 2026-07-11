@@ -1494,6 +1494,37 @@ document.addEventListener('mouseup', () => {
     }
 });
 
+// Floating Scroll Buttons Logic
+const btnScrollTop = document.getElementById('btn-scroll-top');
+const btnScrollBottom = document.getElementById('btn-scroll-bottom');
+
+if (btnScrollTop) {
+    btnScrollTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    btnScrollTop.style.display = 'none'; // hidden initially
+}
+if (btnScrollBottom) {
+    btnScrollBottom.addEventListener('click', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
+}
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        if (btnScrollTop) btnScrollTop.style.display = 'flex';
+    } else {
+        if (btnScrollTop) btnScrollTop.style.display = 'none';
+    }
+    
+    const scrollBottom = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+    if (scrollBottom > 100) {
+        if (btnScrollBottom) btnScrollBottom.style.display = 'flex';
+    } else {
+        if (btnScrollBottom) btnScrollBottom.style.display = 'none';
+    }
+});
+
 // App execution
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
