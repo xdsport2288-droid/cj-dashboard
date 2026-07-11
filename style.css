@@ -403,6 +403,8 @@ header {
 .status-tag.success { background: rgba(16, 185, 129, 0.12); color: #10b981; }
 .status-tag.warning { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
 .status-tag.danger { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+.status-tag.info { background: rgba(6, 182, 212, 0.12); color: #06b6d4; }
+.status-tag.primary { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
 
 .status-tag.inactive {
     opacity: 0.3;
@@ -734,9 +736,15 @@ tbody tr:hover {
     justify-content: space-between;
 }
 .custom-multiselect-btn.has-selection {
-    background-color: rgba(72, 187, 120, 0.1);
-    color: #48bb78;
-    border-color: rgba(72, 187, 120, 0.3);
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.custom-multiselect-btn.has-selection.primary-text {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
 .custom-multiselect-btn.has-selection.success-text {
@@ -755,6 +763,12 @@ tbody tr:hover {
     background-color: rgba(239, 68, 68, 0.1) !important;
     color: #ef4444 !important;
     border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+.custom-multiselect-btn.has-selection.info-text {
+    background-color: rgba(6, 182, 212, 0.1) !important;
+    color: #06b6d4 !important;
+    border-color: rgba(6, 182, 212, 0.3) !important;
 }
 
 .custom-multiselect-panel {
