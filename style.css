@@ -90,7 +90,7 @@ body {
     background: rgba(59, 130, 246, 0.1);
 }
 
-.edit-mode .custom-multiselect, .edit-mode .filter-input, .edit-mode #btn-reset {
+.edit-mode .custom-multiselect, .edit-mode .filter-input {
     pointer-events: none; /* Disable inputs so the whole box acts as a drag handle */
 }
 
@@ -211,9 +211,9 @@ header {
     border-radius: var(--radius-lg);
     padding: 1.5rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.25rem;
-    align-items: stretch;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    align-items: end;
     position: relative;
     z-index: 100;
 }
@@ -222,7 +222,6 @@ header {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    justify-content: flex-end;
 }
 
 .filter-group label {
