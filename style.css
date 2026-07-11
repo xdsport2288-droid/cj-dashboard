@@ -213,15 +213,16 @@ header {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.25rem;
-    align-items: end;
+    align-items: stretch;
     position: relative;
     z-index: 100;
 }
 
-.filter-group {
+.filter-item, .filter-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    justify-content: flex-end;
 }
 
 .filter-group label {
