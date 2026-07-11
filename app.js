@@ -1134,22 +1134,29 @@ function initEditMode() {
         }
     });
 
+    let originalFilterStates = [];
+
     btnEdit.addEventListener('click', () => {
         isEditMode = !isEditMode;
+        const btnCancel = document.getElementById('btn-cancel-edit');
+        
         if(isEditMode) {
             document.body.classList.add('edit-mode');
             btnEdit.textContent = '✅ 편집 완료';
             btnEdit.classList.replace('btn-secondary', 'btn-primary');
             btnDownload.style.display = 'inline-block';
+            if (btnCancel) btnCancel.style.display = 'inline-block';
+            
+            // Backup initial state for cancellation
+            originalFilterStates = Array.from(filterItems).map((item, index) => ({
+                element: item,
+                order: item.style.order || (index + 1), // Default order if empty
+                label: item.querySelector('label') ? item.querySelector('label').innerText : ''
+            }));
             
             filterItems.forEach(item => {
-                item.setAttribute('draggable', 'true');
-                item.addEventListener('dragstart', handleDragStart, false);
-                item.addEventListener('dragenter', handleDragEnter, false);
-                item.addEventListener('dragover', handleDragOver, false);
-                item.addEventListener('dragleave', handleDragLeave, false);
-                item.addEventListener('drop', handleDrop, false);
-                item.addEventListener('dragend', handleDragEnd, false);
+                item.addEventListener('mousedown', handleSortableDragStart);
+
                 
                 const label = item.querySelector('label');
                 if(label) label.setAttribute('contenteditable', 'true');
@@ -1161,13 +1168,8 @@ function initEditMode() {
             btnDownload.style.display = 'none';
             
             filterItems.forEach(item => {
-                item.removeAttribute('draggable');
-                item.removeEventListener('dragstart', handleDragStart, false);
-                item.removeEventListener('dragenter', handleDragEnter, false);
-                item.removeEventListener('dragover', handleDragOver, false);
-                item.removeEventListener('dragleave', handleDragLeave, false);
-                item.removeEventListener('drop', handleDrop, false);
-                item.removeEventListener('dragend', handleDragEnd, false);
+                item.removeEventListener('mousedown', handleSortableDragStart);
+
                 
                 const label = item.querySelector('label');
                 if(label) label.removeAttribute('contenteditable');
@@ -1213,47 +1215,120 @@ function initEditMode() {
     });
 }
 
-function handleDragStart(e) {
-    this.style.opacity = '0.4';
-    dragSrcEl = this;
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.innerHTML);
-}
+let isSortableDragging = false;
+let sortableDragEl = null;
+let sortableGhost = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
 
-function handleDragOver(e) {
-    if (e.preventDefault) e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    return false;
-}
-
-function handleDragEnter(e) {
-    this.classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-    this.classList.remove('drag-over');
-}
-
-function handleDrop(e) {
-    if (e.stopPropagation) e.stopPropagation();
-    if (dragSrcEl !== this) {
-        // Swap orders
-        const srcOrder = dragSrcEl.style.order || getComputedStyle(dragSrcEl).order;
-        const targetOrder = this.style.order || getComputedStyle(this).order;
-        
-        dragSrcEl.style.order = targetOrder;
-        this.style.order = srcOrder;
+function handleSortableDragStart(e) {
+    if (!isEditMode) return;
+    
+    // If clicking on label, allow click to pass through for editing title, don't drag
+    if (e.target.tagName === 'LABEL') {
+        return;
     }
-    return false;
+
+    isSortableDragging = true;
+    sortableDragEl = this;
+    
+    // Ensure all items have an explicit order before starting
+    const siblings = Array.from(sortableDragEl.parentNode.children);
+    siblings.forEach((sib, index) => {
+        if (!sib.style.order) sib.style.order = index + 1;
+    });
+    
+    // Calculate initial offset
+    const rect = sortableDragEl.getBoundingClientRect();
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
+    
+    // Create ghost for smooth visual follow
+    sortableGhost = sortableDragEl.cloneNode(true);
+    sortableGhost.style.position = 'fixed';
+    sortableGhost.style.zIndex = '9999';
+    sortableGhost.style.left = rect.left + 'px';
+    sortableGhost.style.top = rect.top + 'px';
+    sortableGhost.style.width = rect.width + 'px';
+    sortableGhost.style.height = rect.height + 'px';
+    sortableGhost.style.opacity = '0.9';
+    sortableGhost.style.pointerEvents = 'none'; // let mouse events pass through
+    sortableGhost.style.margin = '0';
+    sortableGhost.style.transform = 'scale(1.05)';
+    sortableGhost.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+    sortableGhost.style.transition = 'none';
+    
+    document.body.appendChild(sortableGhost);
+    
+    // Hide original element visually but keep its space in the grid
+    sortableDragEl.style.opacity = '0.2';
+    
+    e.preventDefault();
 }
 
-function handleDragEnd(e) {
-    this.style.opacity = '1';
-    const filterItems = document.querySelectorAll('.filters-panel .filter-item');
-    filterItems.forEach(item => {
-        item.classList.remove('drag-over');
-    });
-}
+document.addEventListener('mousemove', (e) => {
+    if (!isSortableDragging || !sortableGhost || !sortableDragEl) return;
+    
+    sortableGhost.style.left = (e.clientX - dragOffsetX) + 'px';
+    sortableGhost.style.top = (e.clientY - dragOffsetY) + 'px';
+    
+    // Find grid item under the mouse
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    if (!target) return;
+
+    const targetItem = target.closest('.filter-item');
+    
+    // Debug logging for troubleshooting
+    if (targetItem) {
+        if (targetItem === sortableGhost) {
+            console.warn("[Drag debug] Detected target is GHOST element (pointer-events failed):", target);
+        } else if (targetItem === sortableDragEl) {
+            // Hovering over the translucent original element
+        } else if (targetItem.parentNode !== sortableDragEl.parentNode) {
+            console.warn("[Drag debug] Parent mismatch. Target parent:", targetItem.parentNode, "Drag parent:", sortableDragEl.parentNode);
+        } else {
+            console.log("[Drag debug] Valid swap target found:", targetItem);
+        }
+    } else {
+        console.log("[Drag debug] No filter-item under mouse. Target element:", target);
+    }
+
+    // Ensure targetItem is a sibling of the dragged element to prevent matching the ghost element (which lives in document.body)
+    if (targetItem && targetItem !== sortableDragEl && targetItem.parentNode === sortableDragEl.parentNode) {
+        console.log("Swapping", sortableDragEl.id || "dragEl", "with", targetItem.id || "targetItem");
+        // True sortable behavior using DOM insertion
+        const parent = sortableDragEl.parentNode;
+        const targetRect = targetItem.getBoundingClientRect();
+        
+        // Insert before or after based on horizontal center
+        // Grid items wrap, so we could also check vertical center, but horizontal is usually enough for a grid if moving along the row
+        if (e.clientX > targetRect.left + targetRect.width / 2) {
+            parent.insertBefore(sortableDragEl, targetItem.nextSibling);
+        } else {
+            parent.insertBefore(sortableDragEl, targetItem);
+        }
+        
+        // Update style.order to match the new DOM sequence so save logic works
+        const newSiblings = Array.from(parent.children);
+        newSiblings.forEach((sib, index) => {
+            sib.style.order = index + 1;
+        });
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isSortableDragging) {
+        isSortableDragging = false;
+        if (sortableGhost) {
+            sortableGhost.remove();
+            sortableGhost = null;
+        }
+        if (sortableDragEl) {
+            sortableDragEl.style.opacity = '1';
+            sortableDragEl = null;
+        }
+    }
+});
 
 // App execution
 if (document.readyState === 'loading') {
