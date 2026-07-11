@@ -171,8 +171,9 @@ class CustomMultiSelect {
 
             this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
         } else {
-            this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
-            this.btn.className = `${this.baseBtnClass} has-selection`;
+            const firstSelectedText = selectedCheckboxes[0].parentElement.textContent.trim();
+            this.btn.textContent = `${firstSelectedText} 외 ${selectedCount - 1}건`;
+            this.btn.className = `${this.baseBtnClass} has-selection primary-text`;
         }
     }
 
