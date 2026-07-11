@@ -27,7 +27,8 @@ class CustomMultiSelect {
 
         // Create the summary button
         this.btn = document.createElement('div');
-        this.btn.className = this.selectElement.classList.contains('th-filter') ? 'th-filter custom-multiselect-btn' : 'filter-select custom-multiselect-btn';
+        this.baseBtnClass = this.selectElement.classList.contains('th-filter') ? 'th-filter custom-multiselect-btn' : 'filter-select custom-multiselect-btn';
+        this.btn.className = this.baseBtnClass;
         this.btn.textContent = this.defaultText;
         this.wrapper.appendChild(this.btn);
 
@@ -156,7 +157,7 @@ class CustomMultiSelect {
         const selectedCount = selectedCheckboxes.length;
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
-            this.btn.className = 'filter-select custom-multiselect-btn';
+            this.btn.className = this.baseBtnClass;
         } else if (selectedCount === 1) {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             this.btn.textContent = selectedText;
@@ -166,10 +167,10 @@ class CustomMultiSelect {
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
 
-            this.btn.className = `filter-select custom-multiselect-btn has-selection ${extraClass}`;
+            this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
         } else {
             this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
-            this.btn.className = 'filter-select custom-multiselect-btn has-selection';
+            this.btn.className = `${this.baseBtnClass} has-selection`;
         }
     }
 
