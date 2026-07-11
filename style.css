@@ -636,12 +636,12 @@ tbody tr:hover {
 .status-tag.danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
 
 .status-tag.inactive {
-    opacity: 0.3;
-    filter: grayscale(80%);
+    opacity: 0.6;
+    filter: grayscale(40%);
     transition: all 0.3s ease;
 }
 .status-tag.inactive:hover {
-    opacity: 0.6;
+    opacity: 0.8;
 }
 
 /* Charts Section */
