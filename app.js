@@ -166,6 +166,8 @@ class CustomMultiSelect {
             if (selectedText.includes('배차완료')) extraClass = 'success-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
+            else if (selectedText.includes('접수')) extraClass = 'info-text';
+            else extraClass = 'primary-text';
 
             this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
         } else {
@@ -392,18 +394,19 @@ function updateKPIs(statusUnfilteredData) {
     }
 
     let kpiHtml = '';
-    const classes = ['success', 'warning', 'info', 'primary', 'danger'];
-    let colorIdx = 0;
 
     Object.keys(statusCounts).sort().forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
-        const colorClass = classes[colorIdx % classes.length];
+        
+        let colorClass = 'primary';
+        if (status.includes('배차완료')) colorClass = 'success';
+        else if (status.includes('운송완료')) colorClass = 'warning';
+        else if (status.includes('취소')) colorClass = 'danger';
+        else if (status.includes('접수')) colorClass = 'info';
         
         window.statusColorMap = window.statusColorMap || {};
         window.statusColorMap[status] = colorClass;
-        
-        colorIdx++;
         
         const isInactive = activeStatuses.length > 0 && !activeStatuses.includes(status);
         kpiHtml += `<span class="status-tag ${colorClass} ${isInactive ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
