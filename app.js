@@ -365,7 +365,14 @@ function updateKPIs(statusUnfilteredData) {
     });
 
     const totalSourceCount = countSource.length;
-    const currentStatus = document.getElementById('filter-status').value;
+    
+    let activeStatuses = [];
+    if (window.cmsStatus && window.cmsStatus.checkboxes) {
+        const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
+        if (checkedBoxes.length > 0 && checkedBoxes.length < window.cmsStatus.checkboxes.length) {
+            activeStatuses = checkedBoxes.map(cb => cb.value);
+        }
+    }
 
     let kpiHtml = '';
     const classes = ['success', 'warning', 'info', 'primary', 'danger'];
@@ -376,7 +383,9 @@ function updateKPIs(statusUnfilteredData) {
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         const colorClass = classes[colorIdx % classes.length];
         colorIdx++;
-        kpiHtml += `<span class="status-tag ${colorClass} ${currentStatus && currentStatus !== status ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
+        
+        const isInactive = activeStatuses.length > 0 && !activeStatuses.includes(status);
+        kpiHtml += `<span class="status-tag ${colorClass} ${isInactive ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
@@ -1020,8 +1029,25 @@ function initDashboard() {
         const target = e.target.closest('.status-tag');
         if (target) {
             const statusVal = target.getAttribute('data-status');
-            if (window.cmsStatus) window.cmsStatus.setValue(statusVal);
-            if (window.cmsThStatus) window.cmsThStatus.setValue(statusVal);
+            
+            if (window.cmsStatus && window.cmsStatus.checkboxes) {
+                const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
+                // If it's already the ONLY one selected, toggle it off (reset to all)
+                if (checkedBoxes.length === 1 && checkedBoxes[0].value === statusVal) {
+                    window.cmsStatus.setValue('');
+                    if (window.cmsThStatus) window.cmsThStatus.setValue('');
+                } else {
+                    // Otherwise, set to only this status
+                    window.cmsStatus.setValue(statusVal);
+                    if (window.cmsThStatus) window.cmsThStatus.setValue(statusVal);
+                }
+            } else {
+                // Fallback for native select
+                const selectEl = document.getElementById('filter-status');
+                if (selectEl) {
+                    selectEl.value = (selectEl.value === statusVal) ? '' : statusVal;
+                }
+            }
             filterData();
         }
     });
