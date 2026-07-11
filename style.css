@@ -231,13 +231,7 @@ header {
     gap: 0.5rem;
 }
 
-.filter-group label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+
 
 .filter-select, .filter-input {
     background: var(--bg-secondary);
@@ -258,6 +252,11 @@ header {
     background-position: right 1rem center;
     background-size: 1em;
     padding-right: 2.5rem;
+}
+
+.filter-input::placeholder {
+    color: var(--text-primary);
+    opacity: 1;
 }
 
 .filter-select:focus, .filter-input:focus {
