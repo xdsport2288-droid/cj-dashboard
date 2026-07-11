@@ -325,8 +325,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '접수상태 (전체)');
 
     window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
+    window.cmsThShipper = new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
+    window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
@@ -674,6 +674,8 @@ function filterData() {
 
     // Read Table Header Filters
     const thStatusVals = getSelectedValues('th-filter-status');
+    const thShipperVals = getSelectedValues('th-filter-shipper');
+    const thCarrierVals = getSelectedValues('th-filter-carrier');
     const thLoadingVals = getSelectedValues('th-filter-loading');
     const thDestVals = getSelectedValues('th-filter-dest');
     const thWaypointVals = getSelectedValues('th-filter-waypoint');
@@ -736,8 +738,7 @@ function filterData() {
 
         if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
         if (!checkMulti(thShipperVals, row['화주명'])) return false;
-        let cTh = String(row['간선사'] || '').trim();
-        if (!checkMulti(thCarrierVals, cTh === '' ? '(미지정)' : cTh)) return false;
+        if (!checkMulti(thCarrierVals, c === '' ? '(미지정)' : c)) return false;
         if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
@@ -794,6 +795,8 @@ function filterData() {
             return false;
         }
 
+        if (!checkMulti(thShipperVals, row['화주명'])) return false;
+        if (!checkMulti(thCarrierVals, c === '' ? '(미지정)' : c)) return false;
         if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
