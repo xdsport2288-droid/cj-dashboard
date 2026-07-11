@@ -1249,14 +1249,34 @@ function initEditMode() {
         });
 
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(newConfig, null, 2));
-        const dlAnchorElem = document.createElement('a');
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", "config.json");
-        document.body.appendChild(dlAnchorElem);
-        dlAnchorElem.click();
-        dlAnchorElem.remove();
-        
-        alert("config.json 파일이 다운로드 되었습니다.\n이 파일을 현재 폴더에 덮어쓰고 파이썬 스크립트를 실행하면 전체 깃허브 페이지에 설정이 동기화됩니다!");
+
+        window.DASHBOARD_CONFIG = newConfig;
+
+        // 시크릿 로컬 웹서버(파이썬)로 1-Click 자동 전송
+        fetch('http://127.0.0.1:8888/save-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newConfig)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("✅ 설정이 성공적으로 저장되어 서버에 자동 반영 중입니다!\n(약 10~20초 뒤 새로고침 시 반영됩니다)");
+            } else {
+                throw new Error("Local server error");
+            }
+        })
+        .catch(err => {
+            console.error("Local sync server not found, falling back to manual download.", err);
+            // Fallback: Download file if local server is not running
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "config.json");
+            document.body.appendChild(dlAnchorElem);
+            dlAnchorElem.click();
+            dlAnchorElem.remove();
+            
+            alert("❌ 로컬 동기화 프로그램(파이썬)이 실행되어 있지 않거나 연결할 수 없습니다.\n\n수동 저장을 위해 config.json 파일이 다운로드 되었습니다.\n이 파일을 현재 폴더에 덮어쓰고 파이썬 스크립트를 실행해 주세요.");
+        });
     });
 }
 
