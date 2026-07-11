@@ -156,13 +156,20 @@ class CustomMultiSelect {
         const selectedCount = selectedCheckboxes.length;
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
-            this.btn.classList.remove('has-selection');
+            this.btn.className = 'filter-select custom-multiselect-btn';
         } else if (selectedCount === 1) {
-            this.btn.textContent = selectedCheckboxes[0].parentElement.textContent.trim();
-            this.btn.classList.add('has-selection');
+            const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
+            this.btn.textContent = selectedText;
+            
+            let extraClass = '';
+            if (selectedText.includes('배차완료')) extraClass = 'success-text';
+            else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
+            else if (selectedText.includes('취소')) extraClass = 'danger-text';
+
+            this.btn.className = `filter-select custom-multiselect-btn has-selection ${extraClass}`;
         } else {
             this.btn.textContent = `${this.defaultText.split(' ')[0]} (${selectedCount}개)`;
-            this.btn.classList.add('has-selection');
+            this.btn.className = 'filter-select custom-multiselect-btn has-selection';
         }
     }
 
@@ -794,11 +801,19 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    document.getElementById('filter-shipper').value = '';
-    document.getElementById('filter-loading').value = '';
-    document.getElementById('filter-dest').value = '';
-    document.getElementById('filter-tone').value = '';
-    document.getElementById('filter-status').value = '';
+    if (window.cmsShipper) window.cmsShipper.setValue('');
+    if (window.cmsLoading) window.cmsLoading.setValue('');
+    if (window.cmsDest) window.cmsDest.setValue('');
+    if (window.cmsTone) window.cmsTone.setValue('');
+    if (window.cmsStatus) window.cmsStatus.setValue('');
+    if (window.cmsThStatus) window.cmsThStatus.setValue('');
+    
+    // Fallback for native selects
+    const selects = ['filter-shipper', 'filter-loading', 'filter-dest', 'filter-tone', 'filter-status'];
+    selects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
     if (datePicker) {
         datePicker.clear();
     }
