@@ -1324,13 +1324,11 @@ document.addEventListener('mousemove', (e) => {
 
     // Ensure targetItem is a sibling of the dragged element to prevent matching the ghost element (which lives in document.body)
     if (targetItem && targetItem !== sortableDragEl && targetItem.parentNode === sortableDragEl.parentNode) {
-        console.log("Swapping", sortableDragEl.id || "dragEl", "with", targetItem.id || "targetItem");
         // True sortable behavior using DOM insertion
         const parent = sortableDragEl.parentNode;
         const targetRect = targetItem.getBoundingClientRect();
         
         // Insert before or after based on horizontal center
-        // Grid items wrap, so we could also check vertical center, but horizontal is usually enough for a grid if moving along the row
         if (e.clientX > targetRect.left + targetRect.width / 2) {
             parent.insertBefore(sortableDragEl, targetItem.nextSibling);
         } else {
@@ -1342,6 +1340,22 @@ document.addEventListener('mousemove', (e) => {
         newSiblings.forEach((sib, index) => {
             sib.style.order = index + 1;
         });
+    } else if (!targetItem && target.closest('.filters-panel') === sortableDragEl.parentNode) {
+        // Mouse is hovering over empty space inside the filters-panel
+        const parent = sortableDragEl.parentNode;
+        const lastChild = parent.lastElementChild;
+        if (lastChild && sortableDragEl !== lastChild) {
+            const lastRect = lastChild.getBoundingClientRect();
+            // If the mouse is generally after or below the last item
+            if (e.clientY > lastRect.bottom || (e.clientY > lastRect.top && e.clientX > lastRect.right)) {
+                parent.appendChild(sortableDragEl);
+                
+                const newSiblings = Array.from(parent.querySelectorAll('.filter-item, .filter-group'));
+                newSiblings.forEach((sib, index) => {
+                    sib.style.order = index + 1;
+                });
+            }
+        }
     }
 });
 
