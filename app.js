@@ -1118,10 +1118,9 @@ const filterIdToConfigKey = {
 
 function initEditMode() {
     const btnEdit = document.getElementById('btn-edit');
-    const btnDownload = document.getElementById('btn-download-config');
     const filterItems = document.querySelectorAll('.filters-panel .filter-item, .filters-panel .filter-group');
     
-    if(!btnEdit || !btnDownload) return;
+    if(!btnEdit) return;
 
     // Map all interactive elements to config keys
     const filterIdToConfigKey = {
@@ -1169,7 +1168,6 @@ function initEditMode() {
             document.body.classList.add('edit-mode');
             btnEdit.textContent = '✅ 편집 완료';
             btnEdit.classList.replace('btn-secondary', 'btn-primary');
-            btnDownload.style.display = 'inline-block';
             if (btnCancel) btnCancel.style.display = 'inline-block';
             
             // Backup initial state for cancellation (keep reference to elements in original order)
