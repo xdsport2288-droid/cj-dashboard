@@ -1159,6 +1159,7 @@ function initEditMode() {
     });
 
     let originalFilterStates = [];
+    let skipSaveOnExit = false;
 
     btnEdit.addEventListener('click', () => {
         isEditMode = !isEditMode;
@@ -1189,6 +1190,7 @@ function initEditMode() {
                     });
                     
                     // Re-trigger click to exit edit mode
+                    skipSaveOnExit = true;
                     btnEdit.click();
                 });
             }
@@ -1204,13 +1206,19 @@ function initEditMode() {
             document.body.classList.remove('edit-mode');
             btnEdit.textContent = '⚙️ 편집 모드';
             btnEdit.classList.replace('btn-primary', 'btn-secondary');
-            if(btnCancel) btnCancel.style.display = 'none';
+            const currentBtnCancel = document.getElementById('btn-cancel-edit');
+            if(currentBtnCancel) currentBtnCancel.style.display = 'none';
             
             filterItems.forEach(item => {
                 item.removeEventListener('mousedown', handleSortableDragStart);
                 const label = item.querySelector('label');
                 if(label) label.removeAttribute('contenteditable');
             });
+
+            if (skipSaveOnExit) {
+                skipSaveOnExit = false;
+                return;
+            }
 
             // 편집 완료 시 자동 저장 실행
             const newConfig = window.DASHBOARD_CONFIG ? JSON.parse(JSON.stringify(window.DASHBOARD_CONFIG)) : {};
