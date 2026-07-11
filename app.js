@@ -273,6 +273,8 @@ function initFilters() {
     });
 
     const thStatus = document.getElementById('th-filter-status');
+    const thShipper = document.getElementById('th-filter-shipper');
+    const thCarrier = document.getElementById('th-filter-carrier');
     const thLoading = document.getElementById('th-filter-loading');
     const thDest = document.getElementById('th-filter-dest');
     const thTone = document.getElementById('th-filter-tone');
@@ -283,6 +285,8 @@ function initFilters() {
     const thFare = document.getElementById('th-filter-fare');
 
     if (thStatus) thStatus.innerHTML = '';
+    if (thShipper) thShipper.innerHTML = '';
+    if (thCarrier) thCarrier.innerHTML = '';
     if (thLoading) thLoading.innerHTML = '';
     if (thDest) thDest.innerHTML = '';
     if (thWaypoint) thWaypoint.innerHTML = '';
@@ -301,6 +305,8 @@ function initFilters() {
     if (statusSelect) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; statusSelect.appendChild(o); });
 
     if (thStatus) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
+    if (thShipper) Array.from(shippers).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thShipper.appendChild(o); });
+    if (thCarrier) Array.from(carriers).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarrier.appendChild(o); });
     if (thLoading) Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
     if (thDest) Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
     if (thWaypoint) Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
@@ -319,6 +325,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '접수상태 (전체)');
 
     window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
@@ -430,7 +438,7 @@ function updateTable() {
     let totalCount = activeData.length;
 
     if (totalCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="11" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
         if (summaryBox) {
             summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
         }
@@ -455,6 +463,8 @@ function updateTable() {
 
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['화주명'] || ''}">${row['화주명'] || '-'}</td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['간선사'] || ''}">${row['간선사'] || '-'}</td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['하차지명'] || ''}">${row['하차지명'] || '-'}</td>
             <td>${row['상차 요청 일시'] || '-'}</td>
@@ -725,6 +735,9 @@ function filterData() {
         }
 
         if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
+        if (!checkMulti(thShipperVals, row['화주명'])) return false;
+        let cTh = String(row['간선사'] || '').trim();
+        if (!checkMulti(thCarrierVals, cTh === '' ? '(미지정)' : cTh)) return false;
         if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
