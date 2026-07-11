@@ -1204,7 +1204,6 @@ function initEditMode() {
             document.body.classList.remove('edit-mode');
             btnEdit.textContent = '⚙️ 편집 모드';
             btnEdit.classList.replace('btn-primary', 'btn-secondary');
-            btnDownload.style.display = 'none';
             if(btnCancel) btnCancel.style.display = 'none';
             
             filterItems.forEach(item => {
