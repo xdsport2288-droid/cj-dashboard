@@ -1022,7 +1022,12 @@ function initDashboard() {
         }
     });
 
-    document.getElementById('btn-reset').addEventListener('click', resetFilters);
+    const btnReset = document.getElementById('btn-reset');
+    if (btnReset) btnReset.addEventListener('click', resetFilters);
+    
+    const btnReload = document.getElementById('btn-reload');
+    if (btnReload) btnReload.addEventListener('click', () => window.location.reload(true));
+
     document.getElementById('btn-export').addEventListener('click', exportToCSV);
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
 }
