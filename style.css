@@ -621,7 +621,18 @@ tbody tr:hover {
     border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* Animations */
+.status-tag.danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+.status-tag.inactive {
+    opacity: 0.3;
+    filter: grayscale(80%);
+    transition: all 0.3s ease;
+}
+.status-tag.inactive:hover {
+    opacity: 0.6;
+}
+
+/* Charts Section */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
