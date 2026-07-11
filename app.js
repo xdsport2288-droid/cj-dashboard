@@ -1119,9 +1119,20 @@ const filterIdToConfigKey = {
 function initEditMode() {
     const btnEdit = document.getElementById('btn-edit');
     const btnDownload = document.getElementById('btn-download-config');
-    const filterItems = document.querySelectorAll('.filters-panel .filter-item');
+    const filterItems = document.querySelectorAll('.filters-panel .filter-item, .filters-panel .filter-group');
     
     if(!btnEdit || !btnDownload) return;
+
+    // Map all interactive elements to config keys
+    const filterIdToConfigKey = {
+        'filter-status': 'status_filter',
+        'filter-shipper': 'shipper_filter',
+        'filter-loading': 'loading_filter',
+        'filter-dest': 'dest_filter',
+        'filter-tone': 'tone_filter',
+        'filter-date-range': 'date_filter',
+        'btn-reset': 'reset_button'
+    };
 
     // Apply order from config on load
     filterItems.forEach(item => {
@@ -1147,12 +1158,28 @@ function initEditMode() {
             btnDownload.style.display = 'inline-block';
             if (btnCancel) btnCancel.style.display = 'inline-block';
             
-            // Backup initial state for cancellation
-            originalFilterStates = Array.from(filterItems).map((item, index) => ({
-                element: item,
-                order: item.style.order || (index + 1), // Default order if empty
-                label: item.querySelector('label') ? item.querySelector('label').innerText : ''
-            }));
+            // Backup initial state for cancellation (keep reference to elements in original order)
+            originalFilterStates = Array.from(filterItems);
+            
+            // Re-bind cancel logic every time we enter edit mode
+            if (btnCancel) {
+                // Remove existing listeners if any
+                const newBtnCancel = btnCancel.cloneNode(true);
+                btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+                
+                newBtnCancel.addEventListener('click', () => {
+                    const parent = document.querySelector('.filters-panel');
+                    // Appending elements in original sequence restores the DOM
+                    originalFilterStates.forEach(item => {
+                        parent.appendChild(item);
+                        // Also restore style.order just in case
+                        item.style.order = '';
+                    });
+                    
+                    // Re-trigger click to exit edit mode
+                    btnEdit.click();
+                });
+            }
             
             filterItems.forEach(item => {
                 item.addEventListener('mousedown', handleSortableDragStart);
@@ -1188,10 +1215,13 @@ function initEditMode() {
         });
 
         itemsArray.forEach((item, index) => {
-            const select = item.querySelector('select');
-            const label = item.querySelector('label');
-            if(select && label && filterIdToConfigKey[select.id]) {
-                const key = filterIdToConfigKey[select.id];
+            const el = item.querySelector('select, input, button');
+            let label = item.querySelector('label');
+            if (!label && el && el.tagName === 'BUTTON') {
+                label = el; // For reset button, use the button itself as label
+            }
+            if(el && label && filterIdToConfigKey[el.id]) {
+                const key = filterIdToConfigKey[el.id];
                 if(!newConfig[key]) newConfig[key] = {};
                 // Keep emoji, just extract text
                 const textParts = label.innerText.split(' ');
@@ -1233,7 +1263,7 @@ function handleSortableDragStart(e) {
     sortableDragEl = this;
     
     // Ensure all items have an explicit order before starting
-    const siblings = Array.from(sortableDragEl.parentNode.children);
+    const siblings = Array.from(sortableDragEl.parentNode.querySelectorAll('.filter-item, .filter-group'));
     siblings.forEach((sib, index) => {
         if (!sib.style.order) sib.style.order = index + 1;
     });
@@ -1276,9 +1306,8 @@ document.addEventListener('mousemove', (e) => {
     const target = document.elementFromPoint(e.clientX, e.clientY);
     if (!target) return;
 
-    const targetItem = target.closest('.filter-item');
+    const targetItem = target.closest('.filter-item, .filter-group');
     
-    // Debug logging for troubleshooting
     if (targetItem) {
         if (targetItem === sortableGhost) {
             console.warn("[Drag debug] Detected target is GHOST element (pointer-events failed):", target);
@@ -1309,7 +1338,7 @@ document.addEventListener('mousemove', (e) => {
         }
         
         // Update style.order to match the new DOM sequence so save logic works
-        const newSiblings = Array.from(parent.children);
+        const newSiblings = Array.from(parent.querySelectorAll('.filter-item, .filter-group'));
         newSiblings.forEach((sib, index) => {
             sib.style.order = index + 1;
         });
