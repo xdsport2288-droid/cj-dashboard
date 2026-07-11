@@ -1130,8 +1130,7 @@ function initEditMode() {
         'filter-loading': 'loading_filter',
         'filter-dest': 'dest_filter',
         'filter-tone': 'tone_filter',
-        'filter-date-range': 'date_filter',
-        'btn-reset': 'reset_button'
+        'filter-date-range': 'date_filter'
     };
 
     // Apply order from config on load
