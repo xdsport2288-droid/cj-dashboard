@@ -1136,11 +1136,26 @@ function initEditMode() {
 
     // Apply order from config on load
     filterItems.forEach(item => {
-        const select = item.querySelector('select');
-        if(select && filterIdToConfigKey[select.id]) {
-            const key = filterIdToConfigKey[select.id];
+        const el = item.querySelector('select, input, button');
+        if(el && filterIdToConfigKey[el.id]) {
+            const key = filterIdToConfigKey[el.id];
             if(window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].order !== undefined) {
                 item.style.order = window.DASHBOARD_CONFIG[key].order;
+            }
+            
+            // Also apply custom name if edited
+            let label = item.querySelector('label');
+            if (!label && el.tagName === 'BUTTON') {
+                label = el;
+            }
+            if(label && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
+                if(label.tagName === 'BUTTON') {
+                    label.innerText = window.DASHBOARD_CONFIG[key].display_name;
+                } else {
+                    const textParts = label.innerText.split(' ');
+                    const icon = textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) ? textParts[0] + ' ' : '';
+                    label.innerText = icon + window.DASHBOARD_CONFIG[key].display_name;
+                }
             }
         }
     });
