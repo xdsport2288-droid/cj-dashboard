@@ -1027,11 +1027,6 @@ function initDashboard() {
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initDashboard);
-} else {
-    initDashboard();
-}
 
 // Live auto-polling mechanism
 const knownDataStrings = new Set([JSON.stringify(window.TRANSPORT_DATA)]);
