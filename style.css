@@ -731,9 +731,10 @@ tbody tr:hover {
 
 .custom-multiselect-btn {
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: block;
+    white-space: normal;
+    word-break: keep-all;
+    text-align: left;
 }
 .custom-multiselect-btn.has-selection {
     background-color: rgba(59, 130, 246, 0.1);
