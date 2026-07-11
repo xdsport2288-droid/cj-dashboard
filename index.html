@@ -68,11 +68,12 @@
         <!-- Main Body -->
         <main class="main-content">
             <!-- Filter Section -->
-            <div class="filters-header animate-fade" style="display: flex; justify-content: flex-end; margin-bottom: -1rem; position: relative; z-index: 101;">
-                <button class="btn btn-secondary" id="btn-reset" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1);">
-                    ↺ 필터 초기화
-                </button>
-            </div>
+            <div class="filters-wrapper">
+                <div class="filters-header animate-fade" style="display: flex; justify-content: flex-end; margin-bottom: 0.5rem;">
+                    <button class="btn btn-secondary" id="btn-reset" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1);">
+                        ↺ 필터 초기화
+                    </button>
+                </div>
             <section class="filters-panel animate-fade">
                 <div class="filter-item">
                     <label for="filter-status">🔄 접수상태</label>
@@ -108,6 +109,7 @@
                     <input type="text" id="filter-date-range" class="filter-input" placeholder="전체 기간">
                 </div>
             </section>
+            </div>
 
             <!-- KPI Cards Section -->
             <section class="kpi-grid">
