@@ -517,7 +517,8 @@ header {
 }
 
 .table-wrapper {
-    overflow: visible;
+    overflow-x: auto;
+    min-height: 400px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--card-border);
 }
