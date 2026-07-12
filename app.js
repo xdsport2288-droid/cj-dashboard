@@ -256,6 +256,8 @@ function initFilters() {
     const waypoints = new Set();
     const remarks = new Set();
     const fares = new Set();
+    const startdates = new Set();
+    const enddates = new Set();
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
@@ -272,6 +274,8 @@ function initFilters() {
         if (row['비고'] !== undefined && row['비고'] !== null) remarks.add(String(row['비고']).trim());
         const sales = row['총 매출 금액'] || row['매출 금액'];
         if (sales !== undefined && sales !== null && String(sales).trim() !== '') fares.add(String(sales).trim());
+        if (row['상차 요청 일시']) startdates.add(String(row['상차 요청 일시']).trim());
+        if (row['하차 요청 일시']) enddates.add(String(row['하차 요청 일시']).trim());
     });
 
     const thStatus = document.getElementById('th-filter-status');
@@ -286,6 +290,8 @@ function initFilters() {
     const thWaypoint = document.getElementById('th-filter-waypoint');
     const thRemark = document.getElementById('th-filter-remark');
     const thFare = document.getElementById('th-filter-fare');
+    const thStartdate = document.getElementById('th-filter-startdate');
+    const thEnddate = document.getElementById('th-filter-enddate');
 
     if (thStatus) thStatus.innerHTML = '';
     if (thShipper) thShipper.innerHTML = '';
@@ -299,6 +305,8 @@ function initFilters() {
     if (thCarnum) thCarnum.innerHTML = '';
     if (thRemark) thRemark.innerHTML = '';
     if (thFare) thFare.innerHTML = '';
+    if (thStartdate) thStartdate.innerHTML = '';
+    if (thEnddate) thEnddate.innerHTML = '';
 
     // Populate options in native select elements
     if (shipperSelect) Array.from(shippers).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; shipperSelect.appendChild(o); });
@@ -320,6 +328,8 @@ function initFilters() {
 if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
     if (thRemark) Array.from(remarks).sort().forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; thRemark.appendChild(o); });
     if (thFare) Array.from(fares).sort((a, b) => Number(a) - Number(b)).forEach(f => { const o = document.createElement('option'); o.value = f; o.textContent = f; thFare.appendChild(o); });
+    if (thStartdate) Array.from(startdates).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thStartdate.appendChild(o); });
+    if (thEnddate) Array.from(enddates).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thEnddate.appendChild(o); });
 
     // Initialize Custom MultiSelects
     window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '화주사 (전체)');
@@ -334,6 +344,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-startdate'), '출발일시 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-enddate'), '도착일시 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
@@ -692,8 +704,8 @@ function filterData() {
     const thRemarkVals = getSelectedValues('th-filter-remark');
     const thFareVals = getSelectedValues('th-filter-fare');
 
-    const thStartDateVal = document.getElementById('th-filter-startdate')?.value || '';
-    const thEndDateVal = document.getElementById('th-filter-enddate')?.value || '';
+    const thStartDateVals = getSelectedValues('th-filter-startdate');
+    const thEndDateVals = getSelectedValues('th-filter-enddate');
 
     // Update main header title dynamically
     const brandNameSpan = document.getElementById('brand-name');
@@ -760,20 +772,8 @@ function filterData() {
             if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
         }
 
-        if (thStartDateVal) {
-            const parts = thStartDateVal.split(/ to | ~ |~/);
-            const rStart = parts[0] ? parts[0].trim() : '';
-            const rEnd = parts[1] ? parts[1].trim() : rStart;
-            const rowDate = String(row['상차 요청 일시'] || '').split(' ')[0];
-            if (rowDate < rStart || rowDate > rEnd) return false;
-        }
-        if (thEndDateVal) {
-            const parts = thEndDateVal.split(/ to | ~ |~/);
-            const rStart = parts[0] ? parts[0].trim() : '';
-            const rEnd = parts[1] ? parts[1].trim() : rStart;
-            const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
-            if (rowDate < rStart || rowDate > rEnd) return false;
-        }
+        if (!checkMulti(thStartDateVals, row['상차 요청 일시'])) return false;
+        if (!checkMulti(thEndDateVals, row['하차 요청 일시'])) return false;
 
         if (searchVal) {
             const driver = String(row['운전자명'] || '').toLowerCase();
