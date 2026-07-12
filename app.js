@@ -444,7 +444,7 @@ function updateTable() {
     let totalCount = activeData.length;
 
     if (totalCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
         if (summaryBox) {
             summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
         }
@@ -478,8 +478,6 @@ function updateTable() {
             <td style="text-align: center;">${row['경유지'] || '0'}</td>
             <td>${row['요청 톤급'] || '-'}</td>
             <td>${row['요청 차량'] || '-'}</td>
-            <td>${row['운전자명'] || '-'}</td>
-            <td>${row['차량번호'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['비고'] || ''}">${row['비고'] || '-'}</td>
             <td style="font-weight: 600; text-align: right; color: var(--accent);">${sales.toLocaleString()}원</td>
         `;
