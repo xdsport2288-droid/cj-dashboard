@@ -249,6 +249,7 @@ function initFilters() {
     const loadings = new Set();
     const dests = new Set();
     const tones = new Set();
+    const carTypes = new Set();
     const statuses = new Set();
     const drivers = new Set();
     const carnums = new Set();
@@ -263,6 +264,7 @@ function initFilters() {
         if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
         if (row['하차지명']) dests.add(String(row['하차지명']).trim());
         if (row['요청 톤급']) tones.add(String(row['요청 톤급']).trim());
+        if (row['요청 차량']) carTypes.add(String(row['요청 차량']).trim());
         if (row['주문 상태']) statuses.add(String(row['주문 상태']).trim());
         if (row['운전자명']) drivers.add(String(row['운전자명']).trim());
         if (row['차량번호']) carnums.add(String(row['차량번호']).trim());
@@ -278,6 +280,7 @@ function initFilters() {
     const thLoading = document.getElementById('th-filter-loading');
     const thDest = document.getElementById('th-filter-dest');
     const thTone = document.getElementById('th-filter-tone');
+    const thCartype = document.getElementById('th-filter-cartype');
     const thDriver = document.getElementById('th-filter-driver');
     const thCarnum = document.getElementById('th-filter-carnum');
     const thWaypoint = document.getElementById('th-filter-waypoint');
@@ -291,6 +294,7 @@ function initFilters() {
     if (thDest) thDest.innerHTML = '';
     if (thWaypoint) thWaypoint.innerHTML = '';
     if (thTone) thTone.innerHTML = '';
+    if (thCartype) thCartype.innerHTML = '';
     if (thDriver) thDriver.innerHTML = '';
     if (thCarnum) thCarnum.innerHTML = '';
     if (thRemark) thRemark.innerHTML = '';
@@ -311,6 +315,7 @@ function initFilters() {
     if (thDest) Array.from(dests).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thDest.appendChild(o); });
     if (thWaypoint) Array.from(waypoints).sort().forEach(w => { const o = document.createElement('option'); o.value = w; o.textContent = w; thWaypoint.appendChild(o); });
     if (thTone) Array.from(tones).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thTone.appendChild(o); });
+    if (thCartype) Array.from(carTypes).sort().forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; thCartype.appendChild(o); });
     if (thDriver) Array.from(drivers).sort().forEach(dr => { const o = document.createElement('option'); o.value = dr; o.textContent = dr; thDriver.appendChild(o); });
 if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarnum.appendChild(o); });
     if (thRemark) Array.from(remarks).sort().forEach(r => { const o = document.createElement('option'); o.value = r; o.textContent = r; thRemark.appendChild(o); });
@@ -331,7 +336,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-driver'), '운전자명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
@@ -438,7 +444,7 @@ function updateTable() {
     let totalCount = activeData.length;
 
     if (totalCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
         if (summaryBox) {
             summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
         }
@@ -471,6 +477,7 @@ function updateTable() {
             <td>${row['하차 요청 일시'] || '-'}</td>
             <td style="text-align: center;">${row['경유지'] || '0'}</td>
             <td>${row['요청 톤급'] || '-'}</td>
+            <td>${row['요청 차량'] || '-'}</td>
             <td>${row['운전자명'] || '-'}</td>
             <td>${row['차량번호'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['비고'] || ''}">${row['비고'] || '-'}</td>
@@ -680,6 +687,7 @@ function filterData() {
     const thDestVals = getSelectedValues('th-filter-dest');
     const thWaypointVals = getSelectedValues('th-filter-waypoint');
     const thToneVals = getSelectedValues('th-filter-tone');
+    const thCartypeVals = getSelectedValues('th-filter-cartype');
     const thDriverVals = getSelectedValues('th-filter-driver');
     const thCarnumVals = getSelectedValues('th-filter-carnum');
     const thRemarkVals = getSelectedValues('th-filter-remark');
@@ -743,6 +751,7 @@ function filterData() {
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
         if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(thCartypeVals, row['요청 차량'])) return false;
         if (!checkMulti(thDriverVals, row['운전자명'])) return false;
         if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
         if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
@@ -801,6 +810,7 @@ function filterData() {
         if (!checkMulti(thDestVals, row['하차지명'])) return false;
         if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
         if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(thCartypeVals, row['요청 차량'])) return false;
         if (!checkMulti(thDriverVals, row['운전자명'])) return false;
         if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
         if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
