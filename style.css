@@ -903,37 +903,72 @@ th .custom-multiselect-panel {
     height: 16px;
 }
 
-/* Floating Scroll Buttons */
-.floating-scroll-btns {
+/* Unified Floating Control Panel */
+.floating-control-panel {
     position: fixed;
-    bottom: 30px;
-    right: 30px;
+    bottom: 2rem;
+    right: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.85); /* dark theme glass */
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--card-border);
+    border-radius: 40px;
+    padding: 0.6rem 0.5rem;
+    gap: 0.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     z-index: 1000;
 }
 
-.scroll-btn {
-    background-color: var(--card-bg);
-    border: 1px solid var(--card-border);
+.floating-control-panel .scroll-btn {
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    background: transparent;
+    border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-    opacity: 0.8;
+    transition: var(--transition);
 }
 
-.scroll-btn:hover {
-    background-color: var(--accent);
+.floating-control-panel .scroll-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 화면 맨 위로 & 상세 내역으로 */
+.floating-control-panel .ctrl-page {
+    color: #94a3b8; /* slate-400 */
+}
+.floating-control-panel .ctrl-page:hover {
     color: white;
-    opacity: 1;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* 테이블 위/아래 */
+.floating-control-panel .ctrl-table {
+    color: #60a5fa; /* blue-400 */
+    background: rgba(59, 130, 246, 0.15);
+}
+.floating-control-panel .ctrl-table:hover {
+    background: #3b82f6; /* blue-500 */
+    color: white;
+}
+
+/* 새로고침 */
+.floating-control-panel .ctrl-action {
+    color: #10b981; /* emerald-500 */
+    background: rgba(16, 185, 129, 0.15);
+}
+.floating-control-panel .ctrl-action:hover {
+    background: #10b981;
+    color: white;
+}
+
+.floating-control-panel .panel-divider {
+    width: 24px;
+    height: 1px;
+    background: var(--card-border);
+    margin: 0.2rem 0;
 }
