@@ -36,7 +36,16 @@ class CustomMultiSelect {
         this.panel = document.createElement('div');
         this.panel.className = 'custom-multiselect-panel';
         this.panel.style.display = 'none';
-        this.wrapper.appendChild(this.panel);
+        document.body.appendChild(this.panel);
+
+        // Add global scroll listener ONCE to close popups on scroll
+        if (!window.__cmsScrollListenerAttached) {
+            window.addEventListener('scroll', () => {
+                document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
+                document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
+            }, { capture: true, passive: true });
+            window.__cmsScrollListenerAttached = true;
+        }
 
         // Select All Checkbox
         this.selectAllWrapper = document.createElement('label');
@@ -112,40 +121,45 @@ class CustomMultiSelect {
                 this.wrapper.classList.add('is-open');
 
                 // Reset positions to default before measuring
-                this.panel.style.top = 'calc(100% + 4px)';
-                this.panel.style.bottom = 'auto';
+                this.panel.style.position = 'fixed';
+                this.panel.style.top = '0';
                 this.panel.style.left = '0';
                 this.panel.style.right = 'auto';
+                this.panel.style.bottom = 'auto';
 
-                // Smart positioning: Horizontal & Vertical
                 const btnRect = this.btn.getBoundingClientRect();
                 const panelRect = this.panel.getBoundingClientRect();
 
-                // Horizontal: align to right if on the right side of the screen
-                if (btnRect.right > window.innerWidth * 0.7) {
-                    this.panel.style.left = 'auto';
-                    this.panel.style.right = '0';
+                // Horizontal Positioning
+                let left = btnRect.left;
+                // If it overflows the right edge of the screen, align right
+                if (btnRect.left + panelRect.width > window.innerWidth) {
+                    left = btnRect.right - panelRect.width;
                 }
+                // Clamp to screen edges
+                if (left < 10) left = 10;
+                this.panel.style.left = left + 'px';
 
-                // Vertical: pop upwards if there isn't enough space below
+                // Vertical Positioning
+                let top = btnRect.bottom + 4;
+                this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
+                
+                // Pop upwards if there isn't enough space below AND there is more space above
                 if (btnRect.bottom + panelRect.height > window.innerHeight) {
-                    // Only pop up if popping up won't cut off the top, or if space above > space below
-                    if (btnRect.top > panelRect.height || btnRect.top > (window.innerHeight - btnRect.bottom)) {
-                        this.panel.style.top = 'auto';
-                        this.panel.style.bottom = 'calc(100% + 4px)';
-
-                        // Add shadow upwards
+                    if (btnRect.top > window.innerHeight - btnRect.bottom) {
+                        top = btnRect.top - panelRect.height - 4;
                         this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
                     }
-                } else {
-                    this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
                 }
+                // Clamp to screen top edge
+                if (top < 10) top = 10;
+                this.panel.style.top = top + 'px';
             }
         });
 
         // Close when clicking outside
         document.addEventListener('click', (e) => {
-            if (!this.wrapper.contains(e.target)) {
+            if (!this.wrapper.contains(e.target) && !this.panel.contains(e.target)) {
                 this.panel.style.display = 'none';
                 this.wrapper.classList.remove('is-open');
             }
