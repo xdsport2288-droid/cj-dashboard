@@ -235,6 +235,8 @@ header {
 
 #filter-date-range {
     background-image: none !important; /* Remove dropdown chevron */
+    padding-top: 0.85rem !important;
+    padding-bottom: 0.85rem !important;
     padding-left: 0.4rem !important;
     padding-right: 0.4rem !important; /* Reclaim space */
     font-size: 0.75rem !important;
