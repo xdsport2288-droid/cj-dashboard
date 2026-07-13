@@ -192,6 +192,7 @@ class CustomMultiSelect {
         const selectedCheckboxes = this.checkboxes.filter(cb => cb.checked);
         const selectedCount = selectedCheckboxes.length;
         const headerName = this.defaultText.split(' ')[0]; // "화주사 (전체)" -> "화주사"
+        const isThFilter = this.originalSelect && this.originalSelect.id && this.originalSelect.id.startsWith('th-filter');
 
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
@@ -207,14 +208,26 @@ class CustomMultiSelect {
             else if (selectedText.includes('접수')) extraClass = 'info-text';
             else extraClass = 'primary-text';
 
-            this.btn.innerHTML = `${headerName}: <span class="${extraClass}">${selectedText}</span>`;
-            this.btn.className = `${this.baseBtnClass} has-selection`;
-            this.btn.title = `${headerName}: ${selectedText}`;
+            if (isThFilter) {
+                this.btn.innerHTML = `${headerName}: <span class="${extraClass}">${selectedText}</span>`;
+                this.btn.className = `${this.baseBtnClass} has-selection`;
+                this.btn.title = `${headerName}: ${selectedText}`;
+            } else {
+                this.btn.textContent = selectedText;
+                this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
+                this.btn.title = selectedText;
+            }
         } else {
             const allSelectedTexts = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
-            this.btn.innerHTML = `${headerName}: <span class="primary-text">${allSelectedTexts}</span>`;
-            this.btn.className = `${this.baseBtnClass} has-selection`;
-            this.btn.title = `${headerName}: ${allSelectedTexts}`;
+            if (isThFilter) {
+                this.btn.innerHTML = `${headerName}: <span class="primary-text">${allSelectedTexts}</span>`;
+                this.btn.className = `${this.baseBtnClass} has-selection`;
+                this.btn.title = `${headerName}: ${allSelectedTexts}`;
+            } else {
+                this.btn.textContent = allSelectedTexts;
+                this.btn.className = `${this.baseBtnClass} has-selection primary-text`;
+                this.btn.title = allSelectedTexts;
+            }
         }
     }
 
