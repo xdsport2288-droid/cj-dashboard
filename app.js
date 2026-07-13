@@ -40,7 +40,8 @@ class CustomMultiSelect {
 
         // Add global scroll listener ONCE to close popups on scroll
         if (!window.__cmsScrollListenerAttached) {
-            window.addEventListener('scroll', () => {
+            window.addEventListener('scroll', (e) => {
+                if (e.target && e.target.closest && e.target.closest('.custom-multiselect-panel')) return;
                 document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
                 document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
             }, { capture: true, passive: true });
@@ -128,6 +129,12 @@ class CustomMultiSelect {
                 this.panel.style.bottom = 'auto';
 
                 const btnRect = this.btn.getBoundingClientRect();
+                
+                this.panel.style.minWidth = btnRect.width + 'px';
+                this.panel.style.width = 'max-content';
+                this.panel.style.maxHeight = '50vh';
+                this.panel.style.overflowY = 'auto';
+                
                 const panelRect = this.panel.getBoundingClientRect();
 
                 // Horizontal Positioning
@@ -917,58 +924,7 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    const allCms = [
-        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, window.cmsThDest,
-        window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, window.cmsThCartype,
-        window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
-    ];
-    allCms.forEach(cms => { if (cms) cms.setValue(''); });
-    
-    // Fallback for native selects
-    const selects = ['filter-shipper', 'filter-loading', 'filter-dest', 'filter-tone', 'filter-status'];
-    selects.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-    if (datePicker) {
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        datePicker.setDate([firstDay, today]);
-    }
-    document.getElementById('search-input').value = '';
-
-    // Show toast notification for feedback
-    const toast = document.createElement('div');
-    toast.textContent = "✓ 필터가 초기화되었습니다.";
-    toast.style.position = 'fixed';
-    toast.style.bottom = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // Green accent
-    toast.style.color = '#fff';
-    toast.style.padding = '12px 24px';
-    toast.style.borderRadius = '50px';
-    toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
-    toast.style.zIndex = '9999';
-    toast.style.fontWeight = 'bold';
-    toast.style.fontSize = '0.9rem';
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.3s ease';
-    document.body.appendChild(toast);
-    
-    // Fade in and out
-    setTimeout(() => toast.style.opacity = '1', 10);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
-
-    updateStatusTab('');
-    activeData = [...window.TRANSPORT_DATA];
-    updateKPIs();
-    updateCharts();
-    updateTable();
+    window.location.reload(true);
 }
 
 // Export CSV
