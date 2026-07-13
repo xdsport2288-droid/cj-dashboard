@@ -1,4 +1,4 @@
-const CACHE_NAME = 'transport-dashboard-v70';
+const CACHE_NAME = 'transport-dashboard-v71';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
