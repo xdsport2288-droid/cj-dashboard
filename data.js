@@ -1,8 +1,8 @@
-window.LAST_UPDATED = '2026-07-13 14:41:59';
+window.LAST_UPDATED = '2026-07-13 14:59:19';
 window.DASHBOARD_CONFIG = {
   "shipper_filter": {
     "display_name": "화주사",
-    "order": 3
+    "order": 4
   },
   "date_filter": {
     "display_name": "운송 기간",
@@ -10,7 +10,7 @@ window.DASHBOARD_CONFIG = {
   },
   "status_filter": {
     "display_name": "접수상태",
-    "order": 2
+    "order": 3
   },
   "loading_filter": {
     "display_name": "출발지명",
