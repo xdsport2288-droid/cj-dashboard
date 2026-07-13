@@ -192,7 +192,7 @@ class CustomMultiSelect {
         const selectedCheckboxes = this.checkboxes.filter(cb => cb.checked);
         const selectedCount = selectedCheckboxes.length;
         const headerName = this.defaultText.split(' ')[0]; // "화주사 (전체)" -> "화주사"
-        const isThFilter = this.originalSelect && this.originalSelect.id && this.originalSelect.id.startsWith('th-filter');
+        const isThFilter = this.selectElement && this.selectElement.id && this.selectElement.id.startsWith('th-filter');
 
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
