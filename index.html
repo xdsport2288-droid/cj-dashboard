@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=13">
+    <link rel="stylesheet" href="style.css?v=14">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -280,7 +280,7 @@
     <div class="floating-scroll-btns">
         <button id="btn-scroll-top" class="scroll-btn animate-fade" title="맨 위로">🔼</button>
         <button id="btn-scroll-middle" class="scroll-btn animate-fade" title="상세 내역으로">📊</button>
-        <button id="btn-scroll-bottom" class="scroll-btn animate-fade" title="맨 아래로">🔽</button>
+        <button id="btn-float-reset" class="scroll-btn animate-fade" title="필터 초기화" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.3);">↺</button>
     </div>
 
     <!-- Load Embedded Database and Application Code with Cache Busting -->
@@ -290,7 +290,7 @@
             dataScript.src = 'data.js?t=' + Date.now();
             dataScript.onload = function() {
                 const appScript = document.createElement('script');
-                appScript.src = 'app2.js?t=' + Date.now();
+                appScript.src = 'app2.js?v=2&t=' + Date.now();
                 document.body.appendChild(appScript);
             };
             document.body.appendChild(dataScript);
