@@ -785,6 +785,7 @@ tbody tr:hover {
     z-index: 999;
     padding: 10px;
     gap: 4px 16px;
+    overscroll-behavior: contain;
 }
 
 /* Th-filter variant specifically */
