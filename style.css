@@ -586,7 +586,8 @@ header {
 }
 .table-wrapper::-webkit-scrollbar-track:vertical {
     background: rgba(0, 0, 0, 0.2);
-    /* margin-top: var(--header-height, 46px); 제거하여 네이티브 버튼이 헤더 영역 최상단에 일체형으로 붙도록 함 */
+    margin-top: 46px; /* DOM 커스텀 버튼(위) 영역 확보 (헤더 높이) */
+    margin-bottom: 28px; /* DOM 커스텀 버튼(아래) 영역 확보 */
 }
 .table-wrapper::-webkit-scrollbar-thumb {
     background-color: var(--accent);
@@ -597,35 +598,34 @@ header {
     background-color: #60a5fa;
 }
 
-/* 스크롤바 상단 버튼 (위로) */
-.table-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement {
-    display: block;
-    height: 28px;
-    width: 26px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 14px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+/* Custom DOM Table Jump Buttons */
+.btn-table-jump {
+    position: absolute;
+    right: 1px; /* table-wrapper border width */
+    width: 26px; /* scrollbar width */
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    color: #60a5fa;
+    transition: background-color 0.2s;
 }
-.table-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+.btn-table-jump:hover {
     background-color: rgba(59, 130, 246, 0.3);
+    color: #ffffff;
 }
-
-/* 스크롤바 하단 버튼 (아래로) */
-.table-wrapper::-webkit-scrollbar-button:single-button:vertical:increment {
-    display: block;
+.btn-jump-up {
+    top: 1px;
+    height: 46px; /* 헤더 영역에만 버튼 표시 */
+    border-top-right-radius: var(--radius-sm);
+}
+.btn-jump-down {
+    bottom: 1px;
     height: 28px;
-    width: 26px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 14px;
-
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-}
-.table-wrapper::-webkit-scrollbar-button:single-button:vertical:increment:hover {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
-    background-color: rgba(59, 130, 246, 0.3);
+    border-bottom-right-radius: var(--radius-sm);
 }
 
 table {
