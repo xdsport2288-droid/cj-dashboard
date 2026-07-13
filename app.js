@@ -1063,30 +1063,14 @@ function initDashboard() {
     };
 
     // Initialize Flatpickr date range picker
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
         locale: "ko",
         dateFormat: "Y-m-d",
-        onChange: function (selectedDates, dateStr, instance) {
-            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
-        },
-        onReady: addCustomButtons
-    });
-
-    flatpickr("#th-filter-startdate", {
-        mode: "range",
-        locale: "ko",
-        dateFormat: "Y-m-d",
-        onChange: function (selectedDates, dateStr, instance) {
-            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
-        },
-        onReady: addCustomButtons
-    });
-
-    flatpickr("#th-filter-enddate", {
-        mode: "range",
-        locale: "ko",
-        dateFormat: "Y-m-d",
+        defaultDate: [firstDay, today],
         onChange: function (selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
