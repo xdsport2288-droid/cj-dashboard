@@ -536,7 +536,7 @@ header {
 
 /* 상단 스크롤바 */
 .top-scrollbar {
-    width: 100%;
+    width: calc(100% - 12px); /* 세로 스크롤바(12px) 공간 제외하여 하단 가로 스크롤바와 길이 완벽히 맞춤 */
     overflow-x: auto;
     overflow-y: hidden;
     height: 14px;
@@ -562,7 +562,7 @@ header {
 
 .table-wrapper {
     overflow-x: auto;
-    overflow-y: auto; /* Allow vertical scrolling inside container for freeze pane! */
+    overflow-y: scroll; /* 항상 세로 스크롤바 표시하여 상단 가로 스크롤바와의 길이 언발란스 방지 */
     flex: 1; /* table-card 내 남은 공간을 완벽히 채움 */
     min-height: 0; /* flex 자식의 overflow 처리를 위한 필수 속성 */
     border-radius: var(--radius-sm);
