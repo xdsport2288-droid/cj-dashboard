@@ -790,14 +790,18 @@ function filterData() {
         const dateInput = document.getElementById('filter-date-range');
         const dateRangeVal = dateInput ? dateInput.value : '';
         if (dateRangeVal) {
-            const parts = dateRangeVal.split(/ to | ~ |~| \- /); // only spaces around dash
+            const parts = dateRangeVal.split(/ to | ~ |~| \- /);
             startDateVal = parts[0] ? parts[0].trim() : '';
             endDateVal = parts[1] ? parts[1].trim() : startDateVal;
         }
     }
     
-    // DEBUG: Show internal state on screen
-    brandNameSpan.textContent = `[DEBUG] s:${startDateVal} e:${endDateVal} val:${document.getElementById('filter-date-range').value}`;
+    // BULLETPROOF DEFAULT: If still empty (e.g., initial load before flatpickr is ready), force current month 1st to today.
+    if (!startDateVal) {
+        const t = new Date();
+        startDateVal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-01`;
+        endDateVal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+    }
 
     const searchVal = document.getElementById('search-input').value.toLowerCase();
 
