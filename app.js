@@ -773,13 +773,24 @@ function filterData() {
         brandNameSpan.textContent = "더운반)이천지점";
     }
 
-    const dateRangeVal = document.getElementById('filter-date-range').value;
     let startDateVal = '';
     let endDateVal = '';
-    if (dateRangeVal) {
-        const parts = dateRangeVal.split(/ to | ~ |~/);
-        startDateVal = parts[0] ? parts[0].trim() : '';
-        endDateVal = parts[1] ? parts[1].trim() : startDateVal;
+    if (window.datePicker && window.datePicker.selectedDates && window.datePicker.selectedDates.length > 0) {
+        const start = window.datePicker.selectedDates[0];
+        startDateVal = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
+        if (window.datePicker.selectedDates.length > 1) {
+            const end = window.datePicker.selectedDates[1];
+            endDateVal = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+        } else {
+            endDateVal = startDateVal;
+        }
+    } else {
+        const dateRangeVal = document.getElementById('filter-date-range').value;
+        if (dateRangeVal) {
+            const parts = dateRangeVal.split(/ to | ~ |~/);
+            startDateVal = parts[0] ? parts[0].trim() : '';
+            endDateVal = parts[1] ? parts[1].trim() : startDateVal;
+        }
     }
 
     const searchVal = document.getElementById('search-input').value.toLowerCase();
