@@ -536,7 +536,7 @@ header {
 
 /* 상단 스크롤바 */
 .top-scrollbar {
-    width: calc(100% - 12px); /* 세로 스크롤바(12px) 공간 제외하여 하단 가로 스크롤바와 길이 완벽히 맞춤 */
+    width: 100%; /* 세로 스크롤바를 없앴으므로 다시 100%로 복원 */
     overflow-x: auto;
     overflow-y: hidden;
     height: 14px;
@@ -573,25 +573,49 @@ header {
     /* scrollbar-width: none; Firefox용 하단 스크롤바 숨김 제거 (세로 스크롤바 표시를 위해) */
 }
 
-/* 스크롤바 디자인 (상단 가로 스크롤바와 완벽히 동일하게 일치) */
-.table-wrapper::-webkit-scrollbar {
-    width: 12px;
-    height: 12px;
+/* 하단 가로 스크롤바 숨기기 (상단만 사용) */
+.table-wrapper::-webkit-scrollbar:horizontal {
+    height: 0px !important;
+    display: none !important;
 }
-.table-wrapper::-webkit-scrollbar-track:vertical {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
-    margin-top: var(--header-height, 46px); /* 자바스크립트에서 계산된 동적 헤더 높이(틀 고정 영역)를 적용 */
+
+/* 세로 스크롤바 완전히 숨기기 (단축 아이콘으로 대체) */
+.table-wrapper::-webkit-scrollbar:vertical {
+    display: none !important;
+    width: 0px !important;
 }
-.table-wrapper::-webkit-scrollbar-track:horizontal {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+
+/* 리스트 내장 위/아래 스크롤 아이콘 */
+.table-inner-scroll-btns {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 100;
 }
-.table-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--accent);
-    border-radius: 6px;
+
+.inner-scroll-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    opacity: 0.6;
+    transition: var(--transition);
 }
-.table-wrapper::-webkit-scrollbar-thumb:hover {
+
+.inner-scroll-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
     background-color: #60a5fa;
 }
 
