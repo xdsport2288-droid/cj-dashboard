@@ -644,6 +644,11 @@ th, td {
     white-space: nowrap;
 }
 
+/* 플로팅 스크롤 아이콘 영역(우측 하단) 확보를 위해 마지막 열에 넓은 우측 여백 추가 */
+th:last-child, td:last-child {
+    padding-right: 64px;
+}
+
 th {
     background-color: var(--bg-secondary);
     color: var(--text-secondary);
