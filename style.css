@@ -236,11 +236,8 @@ header {
 
 #filter-date-range {
     background-image: none !important; /* Remove dropdown chevron */
-    padding-top: 0.85rem !important;
-    padding-bottom: 0.85rem !important;
-    padding-left: 0.4rem !important;
-    padding-right: 0.4rem !important; /* Reclaim space */
-    font-size: 0.75rem !important;
+    padding: 0.75rem 0.2rem !important; /* Match height with other dropdowns */
+    font-size: 0.95rem !important; /* Match text size with other dropdowns */
     letter-spacing: -0.5px;
     text-align: center;
 }
