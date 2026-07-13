@@ -191,13 +191,15 @@ class CustomMultiSelect {
     updateButton() {
         const selectedCheckboxes = this.checkboxes.filter(cb => cb.checked);
         const selectedCount = selectedCheckboxes.length;
+        const headerName = this.defaultText.split(' ')[0]; // "화주사 (전체)" -> "화주사"
+
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
             this.btn.textContent = this.defaultText;
             this.btn.className = this.baseBtnClass;
             this.btn.title = this.defaultText;
         } else if (selectedCount === 1) {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
-            this.btn.textContent = selectedText;
+            this.btn.textContent = `${headerName}: ${selectedText}`;
             
             let extraClass = '';
             if (selectedText.includes('배차완료')) extraClass = 'success-text';
@@ -207,12 +209,12 @@ class CustomMultiSelect {
             else extraClass = 'primary-text';
 
             this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
-            this.btn.title = selectedText;
+            this.btn.title = `${headerName}: ${selectedText}`;
         } else {
             const allSelectedTexts = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
-            this.btn.textContent = allSelectedTexts;
+            this.btn.textContent = `${headerName}: ${allSelectedTexts}`;
             this.btn.className = `${this.baseBtnClass} has-selection primary-text`;
-            this.btn.title = allSelectedTexts;
+            this.btn.title = `${headerName}: ${allSelectedTexts}`;
         }
     }
 
