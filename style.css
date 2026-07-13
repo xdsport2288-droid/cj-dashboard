@@ -941,8 +941,10 @@ th .custom-multiselect-panel {
 /* 화면 맨 위로 & 상세 내역으로 */
 .floating-control-panel .ctrl-page {
     color: #94a3b8; /* slate-400 */
+    background: rgba(148, 163, 184, 0.15); /* 다른 버튼들과 동일한 배경 추가하여 크기 통일 */
 }
 .floating-control-panel .ctrl-page:hover {
+    background: #94a3b8;
     color: white;
 }
 
