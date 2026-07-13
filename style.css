@@ -203,7 +203,7 @@ header {
     flex: 1;
     padding: 2rem;
     padding-bottom: 0; /* 완벽한 하단 밀착을 위해 여백 제거 */
-    max-width: 1600px;
+    max-width: 1850px; /* 엽 공간 낭비 방지 및 테이블 활용도 극대화를 위해 너비 확장 */
     width: 100%;
     margin: 0 auto;
     display: flex;
