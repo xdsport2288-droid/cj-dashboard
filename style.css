@@ -234,10 +234,11 @@ header {
 
 
 #filter-date-range {
-    min-width: 235px;
+    min-width: 240px;
     background-image: none !important; /* Remove dropdown chevron */
-    padding-right: 1rem !important; /* Reclaim space */
-    font-size: 0.9rem;
+    padding-left: 0.75rem !important;
+    padding-right: 0.5rem !important; /* Reclaim space */
+    font-size: 0.85rem !important;
     letter-spacing: -0.5px;
 }
 
@@ -481,6 +482,7 @@ header {
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
+    scroll-margin-top: 120px; /* Offset for sticky header */
     display: flex;
     flex-direction: column;
     gap: 1rem;
