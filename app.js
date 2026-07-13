@@ -819,20 +819,8 @@ function filterData() {
             if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
         }
 
-        if (thStartDateVal) {
-            const parts = thStartDateVal.split(/ to | ~ |~/);
-            const rStart = parts[0] ? parts[0].trim() : '';
-            const rEnd = parts[1] ? parts[1].trim() : rStart;
-            const rowDate = String(row['상차 요청 일시'] || '').split(' ')[0];
-            if (rowDate < rStart || rowDate > rEnd) return false;
-        }
-        if (thEndDateVal) {
-            const parts = thEndDateVal.split(/ to | ~ |~/);
-            const rStart = parts[0] ? parts[0].trim() : '';
-            const rEnd = parts[1] ? parts[1].trim() : rStart;
-            const rowDate = String(row['하차 요청 일시'] || '').split(' ')[0];
-            if (rowDate < rStart || rowDate > rEnd) return false;
-        }
+        if (!checkMulti(thStartDateVals, row['상차 요청 일시'])) return false;
+        if (!checkMulti(thEndDateVals, row['하차 요청 일시'])) return false;
 
         if (searchVal) {
             const driver = String(row['운전자명'] || '').toLowerCase();
