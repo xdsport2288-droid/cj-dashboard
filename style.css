@@ -581,20 +581,51 @@ header {
 
 /* 스크롤바 디자인 복구 (상단 가로 스크롤바와 통일감 유지) */
 .table-wrapper::-webkit-scrollbar {
-    width: 12px;
+    width: 16px; /* 아이콘 버튼 클릭을 위해 너비 확장 */
     height: 12px;
 }
 .table-wrapper::-webkit-scrollbar-track:vertical {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 6px;
+    /* 버튼 배경과 자연스럽게 이어지도록 border-radius 조정 */
     margin-top: var(--header-height, 46px); /* 자바스크립트에서 계산된 동적 헤더 높이(틀 고정 영역)를 적용 */
 }
 .table-wrapper::-webkit-scrollbar-thumb {
     background-color: var(--accent);
-    border-radius: 6px;
+    border-radius: 8px;
+    border: 3px solid rgba(15, 23, 42, 0.8); /* 배경색과 맞물리는 테두리 추가로 여백 효과 */
 }
 .table-wrapper::-webkit-scrollbar-thumb:hover {
     background-color: #60a5fa;
+}
+
+/* 스크롤바 상단 버튼 (위로) */
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement {
+    display: block;
+    height: 24px;
+    width: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+}
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='18 15 12 9 6 15'></polyline></svg>");
+    background-color: rgba(59, 130, 246, 0.3);
+}
+
+/* 스크롤바 하단 버튼 (아래로) */
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:increment {
+    display: block;
+    height: 24px;
+    width: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 12px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+}
+.table-wrapper::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-color: rgba(59, 130, 246, 0.3);
 }
 
 table {
@@ -945,16 +976,6 @@ th .custom-multiselect-panel {
 }
 .floating-control-panel .ctrl-page:hover {
     background: #94a3b8;
-    color: white;
-}
-
-/* 테이블 위/아래 */
-.floating-control-panel .ctrl-table {
-    color: #60a5fa; /* blue-400 */
-    background: rgba(59, 130, 246, 0.15);
-}
-.floating-control-panel .ctrl-table:hover {
-    background: #3b82f6; /* blue-500 */
     color: white;
 }
 
