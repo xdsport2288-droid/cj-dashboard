@@ -40,8 +40,21 @@ class CustomMultiSelect {
 
         // Add global scroll listener ONCE to close popups on scroll
         if (!window.__cmsScrollListenerAttached) {
+            window.__cmsLastScrollLeft = 0;
             window.addEventListener('scroll', (e) => {
                 if (e.target && e.target.closest && e.target.closest('.custom-multiselect-panel')) return;
+                
+                // DOM 업데이트로 인한 윈도우 레벨 스크롤 이벤트 무시
+                if (e.target === document || e.target === window || e.target === document.documentElement || e.target === document.body) return;
+
+                // 테이블 내부 스크롤 시, 가로 스크롤일 때만 팝업 닫기 (세로 스크롤은 헤더가 고정되어 있으므로 유지)
+                if (e.target && e.target.id === 'table-wrapper') {
+                    if (e.target.scrollLeft === window.__cmsLastScrollLeft) {
+                        return; // 가로 스크롤 변경 없음 (세로 스크롤이거나 높이 변경)
+                    }
+                    window.__cmsLastScrollLeft = e.target.scrollLeft;
+                }
+
                 document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
                 document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
             }, { capture: true, passive: true });
