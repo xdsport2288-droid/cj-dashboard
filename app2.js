@@ -209,7 +209,7 @@ class CustomMultiSelect {
             else extraClass = 'primary-text';
 
             if (isThFilter) {
-                this.btn.innerHTML = `${headerName}: <span class="${extraClass}">${selectedText}</span>`;
+                this.btn.innerHTML = `<span style="color: var(--text-primary);">${headerName}:</span> <span class="${extraClass}">${selectedText}</span>`;
                 this.btn.className = `${this.baseBtnClass} has-selection`;
                 this.btn.title = `${headerName}: ${selectedText}`;
             } else {
@@ -220,7 +220,7 @@ class CustomMultiSelect {
         } else {
             const allSelectedTexts = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
             if (isThFilter) {
-                this.btn.innerHTML = `${headerName}: <span class="primary-text">${allSelectedTexts}</span>`;
+                this.btn.innerHTML = `<span style="color: var(--text-primary);">${headerName}:</span> <span class="primary-text">${allSelectedTexts}</span>`;
                 this.btn.className = `${this.baseBtnClass} has-selection`;
                 this.btn.title = `${headerName}: ${allSelectedTexts}`;
             } else {
