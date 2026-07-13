@@ -555,9 +555,14 @@ header {
     overflow-x: auto;
     overflow-y: auto; /* Allow vertical scrolling inside container for freeze pane! */
     max-height: 65vh; /* Trigger vertical scroll */
-    min-height: 400px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--card-border);
+}
+
+/* 하단 가로 스크롤바 숨기기 (상단만 사용) */
+.table-wrapper::-webkit-scrollbar:horizontal {
+    height: 0px !important;
+    display: none !important;
 }
 
 table {
