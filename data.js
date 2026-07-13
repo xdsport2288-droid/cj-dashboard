@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-13 14:59:19';
+window.LAST_UPDATED = '2026-07-13 15:03:12';
 window.DASHBOARD_CONFIG = {
   "shipper_filter": {
     "display_name": "화주사",
@@ -23,6 +23,10 @@ window.DASHBOARD_CONFIG = {
   "tone_filter": {
     "display_name": "⚖️ 차량톤수",
     "order": 7
+  },
+  "carrier_filter": {
+    "display_name": "간선사",
+    "order": 2
   }
 };
 window.TRANSPORT_DATA = [
