@@ -775,11 +775,11 @@ function filterData() {
 
     let startDateVal = '';
     let endDateVal = '';
-    if (window.datePicker && window.datePicker.selectedDates && window.datePicker.selectedDates.length > 0) {
-        const start = window.datePicker.selectedDates[0];
+    if (datePicker && datePicker.selectedDates && datePicker.selectedDates.length > 0) {
+        const start = datePicker.selectedDates[0];
         startDateVal = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
-        if (window.datePicker.selectedDates.length > 1) {
-            const end = window.datePicker.selectedDates[1];
+        if (datePicker.selectedDates.length > 1) {
+            const end = datePicker.selectedDates[1];
             endDateVal = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
         } else {
             endDateVal = startDateVal;
