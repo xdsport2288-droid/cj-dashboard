@@ -557,6 +557,7 @@ header {
     max-height: 65vh; /* Trigger vertical scroll */
     border-radius: var(--radius-sm);
     border: 1px solid var(--card-border);
+    scrollbar-width: none; /* Firefox용 하단 스크롤바 숨김 */
 }
 
 /* 하단 가로 스크롤바 숨기기 (상단만 사용) */
