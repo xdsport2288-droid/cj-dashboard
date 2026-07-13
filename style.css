@@ -202,6 +202,7 @@ header {
 .main-content {
     flex: 1;
     padding: 2rem;
+    padding-bottom: 0; /* 완벽한 하단 밀착을 위해 여백 제거 */
     max-width: 1600px;
     width: 100%;
     margin: 0 auto;
@@ -484,6 +485,10 @@ header {
     border: 1px solid var(--card-border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
+    padding-bottom: 0; /* 하단 밀착 */
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom: none;
     scroll-margin-top: 120px; /* Offset for sticky header */
     display: flex;
     flex-direction: column;
@@ -557,9 +562,12 @@ header {
 .table-wrapper {
     overflow-x: auto;
     overflow-y: auto; /* Allow vertical scrolling inside container for freeze pane! */
-    max-height: 65vh; /* Trigger vertical scroll */
+    max-height: calc(100vh - 310px); /* 브라우저 하단에 정확히 맞추기 위한 동적 높이 */
     border-radius: var(--radius-sm);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     border: 1px solid var(--card-border);
+    border-bottom: none;
     scrollbar-width: none; /* Firefox용 하단 스크롤바 숨김 */
 }
 
