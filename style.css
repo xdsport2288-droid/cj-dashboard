@@ -578,7 +578,12 @@ header {
     width: 12px;
     height: 12px;
 }
-.table-wrapper::-webkit-scrollbar-track {
+.table-wrapper::-webkit-scrollbar-track:vertical {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    margin-top: 46px; /* 틀 고정 헤더 영역(약 46px)을 피해 그 아래부터 세로 스크롤바가 시작되도록 마진 추가 */
+}
+.table-wrapper::-webkit-scrollbar-track:horizontal {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 6px;
 }
