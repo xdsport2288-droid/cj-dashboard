@@ -586,8 +586,7 @@ header {
 }
 .table-wrapper::-webkit-scrollbar-track:vertical {
     background: rgba(0, 0, 0, 0.2);
-    /* 버튼 배경과 자연스럽게 이어지도록 border-radius 조정 */
-    margin-top: var(--header-height, 46px); /* 자바스크립트에서 계산된 동적 헤더 높이(틀 고정 영역)를 적용 */
+    /* margin-top: var(--header-height, 46px); 제거하여 네이티브 버튼이 헤더 영역 최상단에 일체형으로 붙도록 함 */
 }
 .table-wrapper::-webkit-scrollbar-thumb {
     background-color: var(--accent);
@@ -936,25 +935,26 @@ th .custom-multiselect-panel {
 
 /* Unified Floating Control Panel */
 .floating-control-panel {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    pointer-events: auto;
+    position: absolute;
+    bottom: 0;
+    right: calc(3.5rem - 8px); /* 테이블의 스크롤바와 완벽한 센터 정렬을 위한 계산식 */
     display: flex;
     flex-direction: column;
     align-items: center;
     background: rgba(30, 41, 59, 0.85); /* dark theme glass */
     backdrop-filter: blur(12px);
     border: 1px solid var(--card-border);
-    border-radius: 40px;
-    padding: 0.6rem 0.5rem;
-    gap: 0.5rem;
+    border-radius: 20px; /* 작아진 패널 크기에 맞춤 */
+    padding: 0.3rem 0.2rem;
+    gap: 0.3rem;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     z-index: 1000;
 }
 
 .floating-control-panel .scroll-btn {
-    width: 42px;
-    height: 42px;
+    width: 32px;  /* 42px에서 32px로 축소 */
+    height: 32px;
     border-radius: 50%;
     background: transparent;
     border: none;
