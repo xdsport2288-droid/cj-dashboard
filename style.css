@@ -570,13 +570,29 @@ header {
     border-bottom-right-radius: 0;
     border: 1px solid var(--card-border);
     border-bottom: none;
-    scrollbar-width: none; /* Firefox용 하단 스크롤바 숨김 */
+    /* scrollbar-width: none; Firefox용 하단 스크롤바 숨김 제거 (세로 스크롤바 표시를 위해) */
 }
 
 /* 하단 가로 스크롤바 숨기기 (상단만 사용) */
 .table-wrapper::-webkit-scrollbar:horizontal {
     height: 0px !important;
     display: none !important;
+}
+
+/* 세로 스크롤바 디자인 (상단 가로 스크롤바와 동일하게 일치) */
+.table-wrapper::-webkit-scrollbar:vertical {
+    width: 12px;
+}
+.table-wrapper::-webkit-scrollbar-track:vertical {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:vertical {
+    background-color: var(--accent);
+    border-radius: 6px;
+}
+.table-wrapper::-webkit-scrollbar-thumb:vertical:hover {
+    background-color: #60a5fa;
 }
 
 table {
