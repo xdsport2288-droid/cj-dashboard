@@ -189,12 +189,13 @@ class CustomMultiSelect {
 
     setValue(val) {
         this.checkboxes.forEach((cb, i) => {
-            cb.checked = (val === '' || this.options[i].value === val);
+            cb.checked = (val !== '' && this.options[i].value === val);
             this.options[i].selected = cb.checked;
         });
         this.updateButton();
         const selectAllCb = this.selectAllWrapper.querySelector('input');
         if (selectAllCb) this.updateSelectAllState(selectAllCb);
+        if (this.syncTarget) this.syncTarget.syncFrom(this);
     }
 
     setSyncTarget(targetCms) {
@@ -361,13 +362,15 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
     window.cmsThLoading = new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
     window.cmsThDest = new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-startdate'), '출발일시 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-enddate'), '도착일시 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
+    window.cmsThStartdate = new CustomMultiSelect(document.getElementById('th-filter-startdate'), '출발일시 (전체)');
+    window.cmsThEnddate = new CustomMultiSelect(document.getElementById('th-filter-enddate'), '도착일시 (전체)');
+    window.cmsThWaypoint = new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
     window.cmsThTone = new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
+    window.cmsThCartype = new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
+    window.cmsThDriver = new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
+    window.cmsThCarnum = new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
+    window.cmsThRemark = new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
+    window.cmsThFare = new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
 
@@ -900,13 +903,13 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    if (window.cmsShipper) window.cmsShipper.setValue('');
-    if (window.cmsCarrier) window.cmsCarrier.setValue('');
-    if (window.cmsLoading) window.cmsLoading.setValue('');
-    if (window.cmsDest) window.cmsDest.setValue('');
-    if (window.cmsTone) window.cmsTone.setValue('');
-    if (window.cmsStatus) window.cmsStatus.setValue('');
-    if (window.cmsThStatus) window.cmsThStatus.setValue('');
+    const allCms = [
+        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+        window.cmsThStatus, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, window.cmsThDest,
+        window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, window.cmsThCartype,
+        window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
+    ];
+    allCms.forEach(cms => { if (cms) cms.setValue(''); });
     
     // Fallback for native selects
     const selects = ['filter-shipper', 'filter-loading', 'filter-dest', 'filter-tone', 'filter-status'];
@@ -915,7 +918,9 @@ function resetFilters() {
         if (el) el.value = '';
     });
     if (datePicker) {
-        datePicker.clear();
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        datePicker.setDate([firstDay, today]);
     }
     document.getElementById('search-input').value = '';
 
