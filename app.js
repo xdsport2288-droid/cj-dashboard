@@ -775,8 +775,7 @@ function filterData() {
 
     let startDateVal = '';
     let endDateVal = '';
-    const dateInput = document.getElementById('filter-date-range');
-    const fp = dateInput ? dateInput._flatpickr : null;
+    const fp = Array.isArray(datePicker) ? datePicker[0] : (datePicker || null);
     
     if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
         const start = fp.selectedDates[0];
@@ -788,9 +787,10 @@ function filterData() {
             endDateVal = startDateVal;
         }
     } else {
+        const dateInput = document.getElementById('filter-date-range');
         const dateRangeVal = dateInput ? dateInput.value : '';
         if (dateRangeVal) {
-            const parts = dateRangeVal.split(/ to | ~ |~| - |-/);
+            const parts = dateRangeVal.split(/ to | ~ |~| \- /); // only spaces around dash
             startDateVal = parts[0] ? parts[0].trim() : '';
             endDateVal = parts[1] ? parts[1].trim() : startDateVal;
         }
