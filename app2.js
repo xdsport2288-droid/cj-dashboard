@@ -199,7 +199,6 @@ class CustomMultiSelect {
             this.btn.title = this.defaultText;
         } else if (selectedCount === 1) {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
-            this.btn.textContent = `${headerName}: ${selectedText}`;
             
             let extraClass = '';
             if (selectedText.includes('배차완료')) extraClass = 'success-text';
@@ -208,12 +207,13 @@ class CustomMultiSelect {
             else if (selectedText.includes('접수')) extraClass = 'info-text';
             else extraClass = 'primary-text';
 
-            this.btn.className = `${this.baseBtnClass} has-selection ${extraClass}`;
+            this.btn.innerHTML = `${headerName}: <span class="${extraClass}">${selectedText}</span>`;
+            this.btn.className = `${this.baseBtnClass} has-selection`;
             this.btn.title = `${headerName}: ${selectedText}`;
         } else {
             const allSelectedTexts = selectedCheckboxes.map(cb => cb.parentElement.textContent.trim()).join(', ');
-            this.btn.textContent = `${headerName}: ${allSelectedTexts}`;
-            this.btn.className = `${this.baseBtnClass} has-selection primary-text`;
+            this.btn.innerHTML = `${headerName}: <span class="primary-text">${allSelectedTexts}</span>`;
+            this.btn.className = `${this.baseBtnClass} has-selection`;
             this.btn.title = `${headerName}: ${allSelectedTexts}`;
         }
     }
