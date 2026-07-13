@@ -554,7 +554,7 @@ function updateTable() {
 
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
-            <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['접수번호'] || ''}">${row['접수번호'] || '-'}</td>
+            <td style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['접수번호'] || ''}">${row['접수번호'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['화주명'] || ''}">${row['화주명'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['간선사'] || ''}">${row['간선사'] || '-'}</td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
