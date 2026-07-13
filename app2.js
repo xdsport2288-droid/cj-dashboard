@@ -310,9 +310,11 @@ function initFilters() {
     const fares = new Set();
     const startdates = new Set();
     const enddates = new Set();
+    const ordernums = new Set();
 
     window.TRANSPORT_DATA.forEach(row => {
         if (row['화주명']) shippers.add(String(row['화주명']).trim());
+        if (row['접수번호']) ordernums.add(String(row['접수번호']).trim());
         let c = String(row['간선사'] || '').trim();
         carriers.add(c === '' ? '(미지정)' : c);
         if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
@@ -331,6 +333,7 @@ function initFilters() {
     });
 
     const thStatus = document.getElementById('th-filter-status');
+    const thOrdernum = document.getElementById('th-filter-ordernum');
     const thShipper = document.getElementById('th-filter-shipper');
     const thCarrier = document.getElementById('th-filter-carrier');
     const thLoading = document.getElementById('th-filter-loading');
@@ -346,6 +349,7 @@ function initFilters() {
     const thEnddate = document.getElementById('th-filter-enddate');
 
     if (thStatus) thStatus.innerHTML = '';
+    if (thOrdernum) thOrdernum.innerHTML = '';
     if (thShipper) thShipper.innerHTML = '';
     if (thCarrier) thCarrier.innerHTML = '';
     if (thLoading) thLoading.innerHTML = '';
@@ -369,6 +373,7 @@ function initFilters() {
     if (statusSelect) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; statusSelect.appendChild(o); });
 
     if (thStatus) Array.from(statuses).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thStatus.appendChild(o); });
+    if (thOrdernum) Array.from(ordernums).sort().forEach(o_num => { const o = document.createElement('option'); o.value = o_num; o.textContent = o_num; thOrdernum.appendChild(o); });
     if (thShipper) Array.from(shippers).sort().forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; thShipper.appendChild(o); });
     if (thCarrier) Array.from(carriers).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; thCarrier.appendChild(o); });
     if (thLoading) Array.from(loadings).sort().forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; thLoading.appendChild(o); });
@@ -392,6 +397,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '접수상태 (전체)');
 
     window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
+    window.cmsThOrdernum = new CustomMultiSelect(document.getElementById('th-filter-ordernum'), '접수번호 (전체)');
     window.cmsThShipper = new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
     window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
     window.cmsThLoading = new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
@@ -548,6 +554,7 @@ function updateTable() {
 
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
+            <td style="max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['접수번호'] || ''}">${row['접수번호'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['화주명'] || ''}">${row['화주명'] || '-'}</td>
             <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['간선사'] || ''}">${row['간선사'] || '-'}</td>
             <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
@@ -763,6 +770,7 @@ function filterData() {
 
     // Read Table Header Filters
     const thStatusVals = getSelectedValues('th-filter-status');
+    const thOrdernumVals = getSelectedValues('th-filter-ordernum');
     const thShipperVals = getSelectedValues('th-filter-shipper');
     const thCarrierVals = getSelectedValues('th-filter-carrier');
     const thLoadingVals = getSelectedValues('th-filter-loading');
@@ -848,6 +856,7 @@ function filterData() {
         }
 
         if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
+        if (!checkMulti(thOrdernumVals, row['접수번호'])) return false;
         if (!checkMulti(thShipperVals, row['화주명'])) return false;
         if (!checkMulti(thCarrierVals, c === '' ? '(미지정)' : c)) return false;
         if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
@@ -877,6 +886,7 @@ function filterData() {
             const loading = String(row['상차지명'] || '').toLowerCase();
             const dest = String(row['하차지명'] || '').toLowerCase();
             const remark = String(row['비고'] || '').toLowerCase();
+            const ordernum = String(row['접수번호'] || '').toLowerCase();
 
             if (!driver.includes(searchVal) && 
                 !carNum.includes(searchVal) && 
@@ -886,7 +896,8 @@ function filterData() {
                 !shipper.includes(searchVal) &&
                 !loading.includes(searchVal) &&
                 !dest.includes(searchVal) &&
-                !remark.includes(searchVal)) {
+                !remark.includes(searchVal) &&
+                !ordernum.includes(searchVal)) {
                 return false;
             }
         }
