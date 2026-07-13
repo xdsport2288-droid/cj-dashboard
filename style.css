@@ -233,6 +233,10 @@ header {
 
 
 
+#filter-date-range {
+    min-width: 220px;
+}
+
 .filter-select, .filter-input {
     background: var(--bg-secondary);
     border: 1px solid var(--card-border);
