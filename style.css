@@ -597,40 +597,6 @@ header {
     background-color: #60a5fa;
 }
 
-/* 리스트 내장 위/아래 스크롤 아이콘 */
-.table-inner-scroll-btns {
-    position: absolute;
-    bottom: 2rem;
-    right: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    z-index: 100;
-}
-
-.inner-scroll-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: white;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    opacity: 0.6;
-    transition: var(--transition);
-}
-
-.inner-scroll-btn:hover {
-    opacity: 1;
-    transform: scale(1.1);
-    background-color: #60a5fa;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
@@ -642,11 +608,6 @@ th, td {
     padding: 0.4rem 0.6rem;
     border-bottom: 1px solid var(--card-border);
     white-space: nowrap;
-}
-
-/* 플로팅 스크롤 아이콘 영역(우측 하단) 확보를 위해 마지막 열에 넓은 우측 여백 추가 */
-th:last-child, td:last-child {
-    padding-right: 64px;
 }
 
 th {
