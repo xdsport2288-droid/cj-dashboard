@@ -775,19 +775,22 @@ function filterData() {
 
     let startDateVal = '';
     let endDateVal = '';
-    if (datePicker && datePicker.selectedDates && datePicker.selectedDates.length > 0) {
-        const start = datePicker.selectedDates[0];
+    const dateInput = document.getElementById('filter-date-range');
+    const fp = dateInput ? dateInput._flatpickr : null;
+    
+    if (fp && fp.selectedDates && fp.selectedDates.length > 0) {
+        const start = fp.selectedDates[0];
         startDateVal = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`;
-        if (datePicker.selectedDates.length > 1) {
-            const end = datePicker.selectedDates[1];
+        if (fp.selectedDates.length > 1) {
+            const end = fp.selectedDates[1];
             endDateVal = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
         } else {
             endDateVal = startDateVal;
         }
     } else {
-        const dateRangeVal = document.getElementById('filter-date-range').value;
+        const dateRangeVal = dateInput ? dateInput.value : '';
         if (dateRangeVal) {
-            const parts = dateRangeVal.split(/ to | ~ |~/);
+            const parts = dateRangeVal.split(/ to | ~ |~| - |-/);
             startDateVal = parts[0] ? parts[0].trim() : '';
             endDateVal = parts[1] ? parts[1].trim() : startDateVal;
         }
