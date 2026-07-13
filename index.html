@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=23">
+    <link rel="stylesheet" href="style.css?v=24">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -272,19 +272,16 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- 리스트 내장 위/아래 스크롤 아이콘 -->
-                <div class="table-inner-scroll-btns">
-                    <button id="btn-table-scroll-up" class="inner-scroll-btn" title="위로 스크롤">▲</button>
-                    <button id="btn-table-scroll-down" class="inner-scroll-btn" title="아래로 스크롤">▼</button>
-                </div>
             </section>
         </main>
     </div>
 
     <!-- Floating Scroll Buttons -->
     <div class="floating-scroll-btns">
-        <button id="btn-scroll-top" class="scroll-btn animate-fade" title="맨 위로">🔼</button>
+        <button id="btn-scroll-top" class="scroll-btn animate-fade" title="화면 맨 위로">🔼</button>
         <button id="btn-scroll-middle" class="scroll-btn animate-fade" title="상세 내역으로">📊</button>
+        <button id="btn-table-scroll-up" class="scroll-btn animate-fade" title="리스트 맨 처음으로" style="color: #60a5fa; font-size: 1.2rem;">▲</button>
+        <button id="btn-table-scroll-down" class="scroll-btn animate-fade" title="리스트 맨 끝으로" style="color: #60a5fa; font-size: 1.2rem;">▼</button>
         <button id="btn-float-reset" class="scroll-btn animate-fade" title="필터 초기화" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #10b981; font-weight: bold; font-size: 1.4rem;">↺</button>
     </div>
 
