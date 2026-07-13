@@ -81,6 +81,7 @@ class CustomMultiSelect {
                 opt.selected = cb.checked;
                 this.updateButton();
                 this.updateSelectAllState(selectAllCb);
+                if (this.syncTarget) this.syncTarget.syncFrom(this);
                 if (typeof filterData === 'function') filterData();
             });
         });
@@ -93,6 +94,7 @@ class CustomMultiSelect {
                 this.options[i].selected = isChecked;
             });
             this.updateButton();
+            if (this.syncTarget) this.syncTarget.syncFrom(this);
             if (typeof filterData === 'function') filterData();
         });
 
@@ -188,6 +190,21 @@ class CustomMultiSelect {
     setValue(val) {
         this.checkboxes.forEach((cb, i) => {
             cb.checked = (val === '' || this.options[i].value === val);
+            this.options[i].selected = cb.checked;
+        });
+        this.updateButton();
+        const selectAllCb = this.selectAllWrapper.querySelector('input');
+        if (selectAllCb) this.updateSelectAllState(selectAllCb);
+    }
+
+    setSyncTarget(targetCms) {
+        this.syncTarget = targetCms;
+    }
+
+    syncFrom(otherCms) {
+        if (!otherCms) return;
+        this.checkboxes.forEach((cb, i) => {
+            cb.checked = otherCms.checkboxes[i].checked;
             this.options[i].selected = cb.checked;
         });
         this.updateButton();
@@ -342,17 +359,30 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
     window.cmsThShipper = new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
     window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
+    window.cmsThLoading = new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
+    window.cmsThDest = new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-startdate'), '출발일시 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-enddate'), '도착일시 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
+    window.cmsThTone = new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
     new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
+
+    const bindSync = (cms1, cms2) => {
+        if (cms1 && cms2) {
+            cms1.setSyncTarget(cms2);
+            cms2.setSyncTarget(cms1);
+        }
+    };
+    bindSync(window.cmsShipper, window.cmsThShipper);
+    bindSync(window.cmsCarrier, window.cmsThCarrier);
+    bindSync(window.cmsLoading, window.cmsThLoading);
+    bindSync(window.cmsDest, window.cmsThDest);
+    bindSync(window.cmsTone, window.cmsThTone);
+    bindSync(window.cmsStatus, window.cmsThStatus);
 
     // Dynamically generate tabs
     const tableTabs = document.querySelector('.table-tabs');
