@@ -234,7 +234,11 @@ header {
 
 
 #filter-date-range {
-    min-width: 220px;
+    min-width: 235px;
+    background-image: none !important; /* Remove dropdown chevron */
+    padding-right: 1rem !important; /* Reclaim space */
+    font-size: 0.9rem;
+    letter-spacing: -0.5px;
 }
 
 .filter-select, .filter-input {
