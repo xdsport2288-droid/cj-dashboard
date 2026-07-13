@@ -809,7 +809,22 @@ function filterData() {
             const driver = String(row['운전자명'] || '').toLowerCase();
             const carNum = String(row['차량번호'] || '').toLowerCase();
             const address = String(row['하차지 상세 주소'] || '').toLowerCase();
-            if (!driver.includes(searchVal) && !carNum.includes(searchVal) && !address.includes(searchVal)) {
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+
+            if (!driver.includes(searchVal) && 
+                !carNum.includes(searchVal) && 
+                !address.includes(searchVal) &&
+                !carType.includes(searchVal) &&
+                !tone.includes(searchVal) &&
+                !shipper.includes(searchVal) &&
+                !loading.includes(searchVal) &&
+                !dest.includes(searchVal) &&
+                !remark.includes(searchVal)) {
                 return false;
             }
         }
@@ -856,7 +871,22 @@ function filterData() {
             const driver = String(row['운전자명'] || '').toLowerCase();
             const carNum = String(row['차량번호'] || '').toLowerCase();
             const address = String(row['하차지 상세 주소'] || '').toLowerCase();
-            if (!driver.includes(searchVal) && !carNum.includes(searchVal) && !address.includes(searchVal)) {
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+
+            if (!driver.includes(searchVal) && 
+                !carNum.includes(searchVal) && 
+                !address.includes(searchVal) &&
+                !carType.includes(searchVal) &&
+                !tone.includes(searchVal) &&
+                !shipper.includes(searchVal) &&
+                !loading.includes(searchVal) &&
+                !dest.includes(searchVal) &&
+                !remark.includes(searchVal)) {
                 return false;
             }
         }
