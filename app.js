@@ -795,6 +795,9 @@ function filterData() {
             endDateVal = parts[1] ? parts[1].trim() : startDateVal;
         }
     }
+    
+    // DEBUG: Show internal state on screen
+    brandNameSpan.textContent = `[DEBUG] s:${startDateVal} e:${endDateVal} val:${document.getElementById('filter-date-range').value}`;
 
     const searchVal = document.getElementById('search-input').value.toLowerCase();
 
