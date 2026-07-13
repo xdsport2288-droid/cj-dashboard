@@ -1659,12 +1659,12 @@ const btnTableScrollDown = document.getElementById('btn-table-scroll-down');
 
 if (btnTableScrollUp && dynamicTableWrapper) {
     btnTableScrollUp.addEventListener('click', () => {
-        dynamicTableWrapper.scrollBy({ top: -400, behavior: 'smooth' });
+        dynamicTableWrapper.scrollTo({ top: 0, behavior: 'smooth' }); // 맨 위로
     });
 }
 if (btnTableScrollDown && dynamicTableWrapper) {
     btnTableScrollDown.addEventListener('click', () => {
-        dynamicTableWrapper.scrollBy({ top: 400, behavior: 'smooth' });
+        dynamicTableWrapper.scrollTo({ top: dynamicTableWrapper.scrollHeight, behavior: 'smooth' }); // 맨 아래로
     });
 }
 
