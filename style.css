@@ -939,7 +939,7 @@ th .custom-multiselect-panel {
     pointer-events: auto;
     position: absolute;
     bottom: 0;
-    right: 58px; /* 정밀한 CSS 계산식: main-content 패딩(32px) + card 테두리(1px) + card 패딩(24px) + wrapper 테두리(1px) = 58px (표의 스크롤바 우측 끝선) */
+    right: 30px; /* 스크롤바와 겹치지 않게 우측 패딩 영역으로 이동 (스크롤바 우측 엣지 58px, 패널 좌측 엣지 56px) */
     display: flex;
     flex-direction: column;
     align-items: center;
