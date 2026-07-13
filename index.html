@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=31">
+    <link rel="stylesheet" href="style.css?v=32">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -222,7 +222,8 @@
                     <div class="top-scrollbar-fake-content" id="top-scrollbar-fake-content"></div>
                 </div>
 
-                <div class="table-wrapper" id="table-wrapper">
+                <div class="table-container-outer" style="position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                    <div class="table-wrapper" id="table-wrapper">
                     <table>
                         <thead>
                             <tr>
@@ -272,6 +273,14 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Custom DOM Scrollbar Buttons for Smooth Scroll -->
+                <button class="btn-table-jump btn-jump-up" onclick="document.getElementById('table-wrapper').scrollTo({top: 0, behavior: 'smooth'})" title="리스트 맨 위로">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <button class="btn-table-jump btn-jump-down" onclick="const tw = document.getElementById('table-wrapper'); tw.scrollTo({top: tw.scrollHeight, behavior: 'smooth'})" title="리스트 맨 아래로">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
             </section>
         </main>
     </div>
