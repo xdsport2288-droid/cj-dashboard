@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -216,7 +216,13 @@
                 </div>
                 <!-- Dynamic Summary Box -->
                 <div class="table-summary-box animate-fade" id="table-summary"></div>
-                <div class="table-wrapper">
+                
+                <!-- 상단 가로 스크롤바 추가 -->
+                <div class="top-scrollbar" id="top-scrollbar">
+                    <div class="top-scrollbar-fake-content" id="top-scrollbar-fake-content"></div>
+                </div>
+
+                <div class="table-wrapper" id="table-wrapper">
                     <table>
                         <thead>
                             <tr>
