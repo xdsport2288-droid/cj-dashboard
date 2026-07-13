@@ -1637,6 +1637,22 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// Dynamic Header Height for Vertical Scrollbar
+const dynamicTableWrapper = document.getElementById('table-wrapper');
+if (dynamicTableWrapper) {
+    // thead가 동적으로 추가될 수 있으므로, DOMContentLoaded나 MutationObserver로 감지하는 게 안전하지만,
+    // table element 내부에 이미 thead가 index.html에 하드코딩되어 있으므로 바로 선택 가능
+    const dynamicThead = dynamicTableWrapper.querySelector('thead');
+    if (dynamicThead) {
+        const theadResizeObserver = new ResizeObserver(() => {
+            dynamicTableWrapper.style.setProperty('--header-height', `${dynamicThead.offsetHeight}px`);
+        });
+        theadResizeObserver.observe(dynamicThead);
+        // Initial setup
+        dynamicTableWrapper.style.setProperty('--header-height', `${dynamicThead.offsetHeight}px`);
+    }
+}
+
 // App execution
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
