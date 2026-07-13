@@ -1653,6 +1653,21 @@ if (dynamicTableWrapper) {
     }
 }
 
+// Inner Table Scroll Buttons Logic
+const btnTableScrollUp = document.getElementById('btn-table-scroll-up');
+const btnTableScrollDown = document.getElementById('btn-table-scroll-down');
+
+if (btnTableScrollUp && dynamicTableWrapper) {
+    btnTableScrollUp.addEventListener('click', () => {
+        dynamicTableWrapper.scrollBy({ top: -400, behavior: 'smooth' });
+    });
+}
+if (btnTableScrollDown && dynamicTableWrapper) {
+    btnTableScrollDown.addEventListener('click', () => {
+        dynamicTableWrapper.scrollBy({ top: 400, behavior: 'smooth' });
+    });
+}
+
 // App execution
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
