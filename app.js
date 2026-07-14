@@ -447,8 +447,11 @@ function updateKPIs(statusUnfilteredData) {
     let ordersCount = activeData.length;
 
     activeData.forEach(row => {
-        salesTotal += cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-        purchaseTotal += cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
+        const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임 * 1.01 / 100) * 100;
+        const purchase = Math.floor(운임 * 0.96);
+        salesTotal += sales;
+        purchaseTotal += purchase;
     });
 
     let profitTotal = salesTotal - purchaseTotal;
@@ -457,7 +460,7 @@ function updateKPIs(statusUnfilteredData) {
     document.getElementById('kpi-sales').textContent = formatKRW(salesTotal);
     document.getElementById('kpi-purchase').textContent = formatKRW(purchaseTotal);
     document.getElementById('kpi-profit').textContent = formatKRW(profitTotal);
-    document.getElementById('kpi-margin').textContent = margin.toFixed(2) + '%';
+    document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
     document.getElementById('kpi-orders').textContent = ordersCount.toLocaleString() + ' 건';
 
     const countSource = statusUnfilteredData || activeData;
@@ -526,8 +529,9 @@ function updateTable() {
         const mappedColor = (window.statusColorMap && window.statusColorMap[statusVal]) ? window.statusColorMap[statusVal] : 'warning';
         const badgeClass = `badge-${mappedColor}`;
 
-        const sales = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-        const purchase = cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
+        const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임 * 1.01 / 100) * 100;
+        const purchase = Math.floor(운임 * 0.96);
         const profit = sales - purchase;
 
         totalSales += sales;
@@ -570,8 +574,9 @@ function updateCharts() {
         if (!trendMap[dateStr]) {
             trendMap[dateStr] = { sales: 0, purchase: 0 };
         }
-        trendMap[dateStr].sales += cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-        trendMap[dateStr].purchase += cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
+        const 운임_t = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        trendMap[dateStr].sales += Math.floor(운임_t * 1.01 / 100) * 100;
+        trendMap[dateStr].purchase += Math.floor(운임_t * 0.96);
     });
 
     const sortedDates = Object.keys(trendMap).sort();
@@ -960,10 +965,11 @@ function exportToCSV() {
     csvContent += headers.join(',') + '\n';
 
     activeData.forEach(row => {
-        const sales = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-        const purchase = cleanNumeric(row['총 매입 금액'] || row['매입 금액']);
+        const 운임_csv = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임_csv * 1.01 / 100) * 100;
+        const purchase = Math.floor(운임_csv * 0.96);
         const profit = sales - purchase;
-        const margin = sales > 0 ? (profit / sales * 100).toFixed(2) + '%' : '0%';
+        const margin = sales > 0 ? (profit / sales * 100).toFixed(1) + '%' : '0%';
 
         const line = [
             row['주문 상태'] || '',
