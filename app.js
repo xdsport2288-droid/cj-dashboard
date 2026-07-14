@@ -444,6 +444,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 function updateKPIs(statusUnfilteredData) {
     let salesTotal = 0;
     let purchaseTotal = 0;
+    let freightTotal = 0;
     let ordersCount = activeData.length;
 
     activeData.forEach(row => {
@@ -452,6 +453,7 @@ function updateKPIs(statusUnfilteredData) {
         const purchase = Math.floor(운임 * 0.96);
         salesTotal += sales;
         purchaseTotal += purchase;
+        freightTotal += 운임;
     });
 
     let profitTotal = salesTotal - purchaseTotal;
@@ -462,6 +464,8 @@ function updateKPIs(statusUnfilteredData) {
     document.getElementById('kpi-profit').textContent = formatKRW(profitTotal);
     document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
     document.getElementById('kpi-orders').textContent = ordersCount.toLocaleString() + ' 건';
+    const freightEl = document.getElementById('kpi-freight');
+    if (freightEl) freightEl.textContent = formatKRW(freightTotal);
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
