@@ -504,6 +504,48 @@ function updateKPIs(statusUnfilteredData) {
     // 예측 분석 패널 업데이트
     updatePrediction(salesTotal);
 
+    // ====== 전월 대비 (MoM) 계산 ======
+    const today = new Date();
+    const thisYear = today.getFullYear();
+    const thisMonth = today.getMonth(); // 0-indexed
+    const prevMonthDate = new Date(thisYear, thisMonth - 1, 1);
+    const prevYear = prevMonthDate.getFullYear();
+    const prevMonth = prevMonthDate.getMonth();
+    const prevMonthStr = `${prevYear}-${String(prevMonth + 1).padStart(2, '0')}`;
+
+    let prevSales = 0, prevCount = 0;
+    if (window.TRANSPORT_DATA) {
+        window.TRANSPORT_DATA.forEach(row => {
+            const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
+            if (dateStr.startsWith(prevMonthStr)) {
+                prevCount++;
+                const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+                prevSales += Math.floor(f * 1.01 / 100) * 100;
+            }
+        });
+    }
+
+    const makeMomBadge = (current, prev) => {
+        if (!prev) return '';
+        const pct = ((current - prev) / prev * 100);
+        const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
+        const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+        return `<span class="mom-badge ${cls}">${sign} ${Math.abs(pct).toFixed(1)}% 전월대비</span>`;
+    };
+
+    const salesEl = document.getElementById('kpi-sales');
+    if (salesEl && prevSales) {
+        const existing = salesEl.parentElement.querySelector('.mom-badge');
+        if (existing) existing.remove();
+        salesEl.insertAdjacentHTML('afterend', makeMomBadge(salesTotal, prevSales));
+    }
+    const countEl = document.getElementById('kpi-orders');
+    if (countEl && prevCount) {
+        const existing = countEl.parentElement.querySelector('.mom-badge');
+        if (existing) existing.remove();
+        countEl.parentElement.insertAdjacentHTML('beforeend', makeMomBadge(ordersCount, prevCount));
+    }
+
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
@@ -712,37 +754,43 @@ function updateCharts() {
             labels: sortedDates,
             datasets: [
                 {
-                    label: '총 매출액',
+                    label: '이달 매출',
                     data: trendSales,
-                    backgroundColor: '#3b82f6',
-                    borderRadius: 4
+                    backgroundColor: 'rgba(59,130,246,0.85)',
+                    borderRadius: 6,
+                    borderSkipped: false
                 },
                 {
-                    label: '총 매입액',
+                    label: '매입',
                     data: trendPurchase,
-                    backgroundColor: '#f59e0b',
-                    borderRadius: 4
+                    backgroundColor: 'rgba(245,158,11,0.75)',
+                    borderRadius: 6,
+                    borderSkipped: false
                 },
                 {
                     label: '순이익',
                     data: trendProfit,
                     type: 'line',
                     borderColor: '#10b981',
-                    borderWidth: 3,
-                    fill: false,
-                    tension: 0.3
+                    backgroundColor: 'rgba(16,185,129,0.08)',
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.45,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#10b981'
                 }
             ]
         },
         options: {
+            animation: { duration: 900, easing: 'easeOutQuart' },
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary') } }
+                legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary'), font: { size: 11 } } }
             },
             scales: {
-                x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') } },
-                y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary') } }
+                x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary'), font: { size: 10 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: getComputedStyle(document.body).getPropertyValue('--text-secondary'), font: { size: 10 } } }
             }
         }
     });
@@ -765,16 +813,20 @@ function updateCharts() {
             labels: toneLabels,
             datasets: [{
                 data: sortedToneEntries.map(([, val]) => val),
-                backgroundColor: ['#8b5cf6', '#3b82f6', '#10b981', '#06b6d4', '#f59e0b', '#ef4444'],
-                borderWidth: 1,
-                borderColor: getComputedStyle(document.body).getPropertyValue('--bg-secondary')
+                backgroundColor: ['#8b5cf6','#3b82f6','#10b981','#06b6d4','#f59e0b','#ef4444','#ec4899'],
+                borderWidth: 2,
+                borderColor: 'rgba(15,23,42,0.8)',
+                hoverBorderWidth: 3,
+                hoverOffset: 8
             }]
         },
         options: {
+            animation: { duration: 900, easing: 'easeOutQuart', animateRotate: true, animateScale: true },
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '62%',
             plugins: {
-                legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary') } },
+                legend: { position: 'bottom', labels: { color: getComputedStyle(document.body).getPropertyValue('--text-primary'), font: { size: 10 }, padding: 8, boxWidth: 12 } },
                 tooltip: {
                     callbacks: {
                         label: function (context) {
