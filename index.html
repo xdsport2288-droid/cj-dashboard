@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=45">
+    <link rel="stylesheet" href="style.css?v=46">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -173,6 +173,46 @@
                         <span class="kpi-icon">📊</span>
                     </div>
                     <div class="kpi-value" id="kpi-margin">0%</div>
+                </div>
+            </section>
+
+            <!-- Monthly Prediction Panel -->
+            <section class="prediction-panel animate-fade" id="prediction-panel" style="animation-delay: 0.7s;">
+                <div class="prediction-header">
+                    <span class="prediction-title">📈 당월 실적 예측 분석</span>
+                    <span class="prediction-badge" id="prediction-period-label">—</span>
+                </div>
+                <div class="prediction-grid">
+                    <div class="prediction-item">
+                        <div class="pred-label">📅 경과 / 잔여 일수</div>
+                        <div class="pred-value" id="pred-elapsed">—</div>
+                        <div class="pred-sub" id="pred-days-info">—</div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="pred-label">🚚 일 평균 건수</div>
+                        <div class="pred-value" id="pred-daily-count">—</div>
+                        <div class="pred-sub">건 / 일</div>
+                    </div>
+                    <div class="prediction-item highlight">
+                        <div class="pred-label">🎯 월 예상 총 건수</div>
+                        <div class="pred-value" id="pred-monthly-count">—</div>
+                        <div class="pred-sub" id="pred-count-sub">—</div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="pred-label">💰 일 평균 매출</div>
+                        <div class="pred-value" id="pred-daily-sales">—</div>
+                        <div class="pred-sub">원 / 일</div>
+                    </div>
+                    <div class="prediction-item highlight">
+                        <div class="pred-label">🎯 월 예상 매출</div>
+                        <div class="pred-value" id="pred-monthly-sales">—</div>
+                        <div class="pred-sub" id="pred-sales-sub">—</div>
+                    </div>
+                    <div class="prediction-item">
+                        <div class="pred-label">📊 월 예상 순이익</div>
+                        <div class="pred-value" id="pred-monthly-profit">—</div>
+                        <div class="pred-sub">예상 수익</div>
+                    </div>
                 </div>
             </section>
 
