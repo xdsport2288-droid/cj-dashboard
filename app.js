@@ -649,9 +649,10 @@ function updateCharts() {
     if (toneChart) toneChart.destroy();
     const ctxTone = document.getElementById('toneChart').getContext('2d');
 
-    // 톤급별 점유율(%) 및 대수(건수) 계산을 위한 총 건수 도출
-    const totalTones = Object.values(toneMap).reduce((sum, count) => sum + count, 0);
-    const toneLabels = Object.entries(toneMap).map(([tone, val]) => {
+    // 톤급별 점유율(%) 및 대수(건수) 계산을 위한 총 건수 도출 - 많은 순서대로 정렬
+    const sortedToneEntries = Object.entries(toneMap).sort((a, b) => b[1] - a[1]);
+    const totalTones = sortedToneEntries.reduce((sum, [, count]) => sum + count, 0);
+    const toneLabels = sortedToneEntries.map(([tone, val]) => {
         const pct = totalTones > 0 ? ((val / totalTones) * 100).toFixed(1) : 0;
         return `${tone} (${val}대 / ${pct}%)`;
     });
@@ -661,7 +662,7 @@ function updateCharts() {
         data: {
             labels: toneLabels,
             datasets: [{
-                data: Object.values(toneMap),
+                data: sortedToneEntries.map(([, val]) => val),
                 backgroundColor: ['#8b5cf6', '#3b82f6', '#10b981', '#06b6d4', '#f59e0b', '#ef4444'],
                 borderWidth: 1,
                 borderColor: getComputedStyle(document.body).getPropertyValue('--bg-secondary')
