@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=47">
+    <link rel="stylesheet" href="style.css?v=48">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -46,6 +46,9 @@
                 </div>
             </div>
             <div class="header-controls">
+                <button class="btn btn-secondary" id="btn-reset" title="필터 초기화" style="padding: 0.5rem 1rem; font-size: 0.82rem; background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15);">
+                    ↺ 필터 초기화
+                </button>
                 <button class="btn btn-secondary" id="btn-edit">
                     ⚙️ 편집 모드
                 </button>
@@ -68,12 +71,6 @@
         <!-- Main Body -->
         <main class="main-content">
             <!-- Filter Section -->
-            <div class="filters-wrapper">
-                <div class="filters-header animate-fade" style="display: flex; justify-content: flex-start; margin-bottom: 0.5rem; padding-left: 1.5rem;">
-                    <button class="btn btn-secondary" id="btn-reset" style="padding: 0.4rem 1rem; font-size: 0.85rem; background: rgba(255, 255, 255, 0.08); border-color: rgba(255,255,255,0.2); color: var(--text-primary);">
-                        ↺ 필터 초기화
-                    </button>
-                </div>
             <section class="filters-panel animate-fade">
                 <div class="filter-item">
                     <label for="filter-status">🔄 접수상태</label>
@@ -115,11 +112,9 @@
                     <input type="text" id="filter-date-range" class="filter-input" placeholder="전체 기간">
                 </div>
             </section>
-            </div>
 
             <!-- KPI Cards Section -->
             <section class="kpi-grid">
-                <!-- Sales KPI -->
                 <!-- Total Orders KPI -->
                 <div class="kpi-card orders animate-fade" style="animation-delay: 0.1s;">
                     <div class="kpi-header">
@@ -130,6 +125,7 @@
                         <div class="kpi-value" id="kpi-orders">0 건</div>
                         <div class="kpi-sub-details" id="kpi-orders-detail"></div>
                     </div>
+                    <div class="mom-slot" id="mom-orders"></div>
                 </div>
                 <!-- Sales KPI -->
                 <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
@@ -138,7 +134,8 @@
                         <span class="kpi-icon">💰</span>
                     </div>
                     <div class="kpi-value" id="kpi-sales">₩ 0</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">운임 × 101% (백원 버림)</div>
+                    <div class="mom-slot" id="mom-sales"></div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×101% (백원버림)</div>
                 </div>
                 <!-- 순수운임 KPI -->
                 <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
@@ -147,7 +144,7 @@
                         <span class="kpi-icon">🚛</span>
                     </div>
                     <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">원본 운임 100%</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">원본 운임 100%</div>
                 </div>
                 <!-- Purchase KPI -->
                 <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
@@ -156,7 +153,7 @@
                         <span class="kpi-icon">💸</span>
                     </div>
                     <div class="kpi-value" id="kpi-purchase">₩ 0</div>
-                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">운임 × 96%</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×96%</div>
                 </div>
                 <!-- Profit KPI -->
                 <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
@@ -165,6 +162,7 @@
                         <span class="kpi-icon">📈</span>
                     </div>
                     <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    <div class="mom-slot" id="mom-profit"></div>
                 </div>
                 <!-- Margin KPI -->
                 <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
@@ -339,10 +337,10 @@
         </main>
     </div>
 
-    <!-- Unified Floating Control Panel -->
+    <!-- Unified Floating Control Panel - Always Fixed -->
     <div style="position: fixed; bottom: 2rem; left: 0; width: 100%; pointer-events: none; display: flex; justify-content: center; z-index: 1000;">
         <div style="width: 100%; max-width: 1850px; position: relative;">
-            <div class="floating-control-panel animate-fade">
+            <div class="floating-control-panel" style="opacity:1; animation:none;">
                 <!-- 화면 맨 위로 -->
                 <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="화면 맨 위로">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
