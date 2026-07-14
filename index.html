@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=44">
+    <link rel="stylesheet" href="style.css?v=45">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -138,17 +138,28 @@
                         <span class="kpi-icon">💰</span>
                     </div>
                     <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">운임 × 101% (백원 버림)</div>
+                </div>
+                <!-- 순수운임 KPI -->
+                <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
+                    <div class="kpi-header">
+                        <span class="kpi-title">순수 운임</span>
+                        <span class="kpi-icon">🚛</span>
+                    </div>
+                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">원본 운임 100%</div>
                 </div>
                 <!-- Purchase KPI -->
-                <div class="kpi-card purchase animate-fade" style="animation-delay: 0.3s;">
+                <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
                     <div class="kpi-header">
                         <span class="kpi-title">총 매입액</span>
                         <span class="kpi-icon">💸</span>
                     </div>
                     <div class="kpi-value" id="kpi-purchase">₩ 0</div>
+                    <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 4px;">운임 × 96%</div>
                 </div>
                 <!-- Profit KPI -->
-                <div class="kpi-card profit animate-fade" style="animation-delay: 0.4s;">
+                <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
                     <div class="kpi-header">
                         <span class="kpi-title">순이익</span>
                         <span class="kpi-icon">📈</span>
@@ -156,7 +167,7 @@
                     <div class="kpi-value" id="kpi-profit">₩ 0</div>
                 </div>
                 <!-- Margin KPI -->
-                <div class="kpi-card margin animate-fade" style="animation-delay: 0.5s;">
+                <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
                     <div class="kpi-header">
                         <span class="kpi-title">순이익률</span>
                         <span class="kpi-icon">📊</span>
