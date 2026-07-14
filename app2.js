@@ -501,6 +501,9 @@ function updateKPIs(statusUnfilteredData) {
     const freightEl = document.getElementById('kpi-freight');
     if (freightEl) freightEl.textContent = formatKRW(freightTotal);
 
+    // 예측 분석 패널 업데이트
+    updatePrediction(salesTotal);
+
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
@@ -538,6 +541,57 @@ function updateKPIs(statusUnfilteredData) {
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
+}
+
+// Monthly Prediction Analysis
+function updatePrediction(salesTotal) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-indexed
+
+    // 당월 1일 ~ 말일
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const totalDaysInMonth = lastDay.getDate();
+
+    // 경과 일수: 당월 1일부터 오늘까지 (오늘 포함)
+    const elapsedDays = today.getDate();
+    const remainingDays = totalDaysInMonth - elapsedDays;
+
+    const totalCount = activeData.length;
+
+    if (elapsedDays < 1 || totalCount === 0) {
+        document.getElementById('pred-elapsed').textContent = '—';
+        return;
+    }
+
+    const dailyAvgCount = totalCount / elapsedDays;
+    const predictedCount = Math.round(dailyAvgCount * totalDaysInMonth);
+
+    const dailyAvgSales = salesTotal / elapsedDays;
+    const predictedSales = Math.round(dailyAvgSales * totalDaysInMonth);
+
+    // 예상 순이익: 예상 매출의 (매출-매입) 비율 적용 (약 5%)
+    // 매출=운임×101%, 매입=운임×96% → 순이익률≈(5/101)≈4.95%
+    const predictedFreight = predictedSales / 1.01; // 역산
+    const predictedPurchase = Math.floor(predictedFreight * 0.96);
+    const predictedProfit = predictedSales - predictedPurchase;
+
+    const monthName = `${year}년 ${month + 1}월`;
+
+    // Update DOM
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    setEl('prediction-period-label', `${monthName} 기준 (${elapsedDays}일 경과 / ${remainingDays}일 잔여)`);
+    setEl('pred-elapsed', `${elapsedDays}일 / ${totalDaysInMonth}일`);
+    setEl('pred-days-info', `잔여 ${remainingDays}일`);
+    setEl('pred-daily-count', dailyAvgCount.toFixed(1));
+    setEl('pred-monthly-count', predictedCount.toLocaleString() + ' 건');
+    setEl('pred-count-sub', `현재 ${totalCount}건 + 예상 ${predictedCount - totalCount}건`);
+    setEl('pred-daily-sales', Math.round(dailyAvgSales).toLocaleString());
+    setEl('pred-monthly-sales', formatKRW(predictedSales));
+    setEl('pred-sales-sub', `현재 대비 ${((predictedSales / salesTotal - 1) * 100).toFixed(1)}% 추가 예상`);
+    setEl('pred-monthly-profit', formatKRW(predictedProfit));
 }
 
 // Populate and Update Table
