@@ -507,39 +507,57 @@ function updateKPIs(statusUnfilteredData) {
     // ====== 전월 대비 (MoM) 계산 ======
     const today = new Date();
     const thisYear = today.getFullYear();
-    const thisMonth = today.getMonth(); // 0-indexed
-    const prevMonthDate = new Date(thisYear, thisMonth - 1, 1);
-    const prevYear = prevMonthDate.getFullYear();
-    const prevMonth = prevMonthDate.getMonth();
-    const prevMonthStr = `${prevYear}-${String(prevMonth + 1).padStart(2, '0')}`;
+    // ====== 전월 동기간 대비 계산 ======
+    // 현재 활성 데이터의 날짜 범위를 파악
+    const currentDates = activeData
+        .map(r => (r['상차 요청 일시'] || '').split(' ')[0])
+        .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
+        .sort();
 
-    let prevSales = 0, prevCount = 0;
-    if (window.TRANSPORT_DATA) {
-        window.TRANSPORT_DATA.forEach(row => {
-            const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
-            if (dateStr.startsWith(prevMonthStr)) {
-                prevCount++;
-                const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-                prevSales += Math.floor(f * 1.01 / 100) * 100;
-            }
-        });
+    let prevSales = 0, prevCount = 0, momLabel = '';
+
+    if (currentDates.length > 0) {
+        const firstDate = new Date(currentDates[0]);
+        const lastDate  = new Date(currentDates[currentDates.length - 1]);
+
+        // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
+        const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
+        const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
+
+        const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const prevFirstStr = fmt(prevFirst);
+        const prevLastStr  = fmt(prevLast);
+
+        momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
+
+        if (window.TRANSPORT_DATA) {
+            window.TRANSPORT_DATA.forEach(row => {
+                const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
+                if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                    prevCount++;
+                    const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+                    prevSales += Math.floor(f * 1.01 / 100) * 100;
+                }
+            });
+        }
     }
 
-    const makeMomBadge = (current, prev) => {
+    const makeMomBadge = (current, prev, label) => {
         if (!prev) return '';
         const pct = ((current - prev) / prev * 100);
         const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem;">${sign} ${Math.abs(pct).toFixed(1)}% 전월대비</span>`;
+        const tip = label ? ` title="${label}"` : '';
+        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%</span>`;
     };
 
     const fillSlot = (slotId, current, prev) => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev);
+        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel);
     };
     fillSlot('mom-orders', ordersCount, prevCount);
     fillSlot('mom-sales', salesTotal, prevSales);
-    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / salesTotal || 0) : 0);
+    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / (salesTotal || 1)) : 0);
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
