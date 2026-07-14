@@ -530,21 +530,16 @@ function updateKPIs(statusUnfilteredData) {
         const pct = ((current - prev) / prev * 100);
         const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-        return `<span class="mom-badge ${cls}">${sign} ${Math.abs(pct).toFixed(1)}% 전월대비</span>`;
+        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem;">${sign} ${Math.abs(pct).toFixed(1)}% 전월대비</span>`;
     };
 
-    const salesEl = document.getElementById('kpi-sales');
-    if (salesEl && prevSales) {
-        const existing = salesEl.parentElement.querySelector('.mom-badge');
-        if (existing) existing.remove();
-        salesEl.insertAdjacentHTML('afterend', makeMomBadge(salesTotal, prevSales));
-    }
-    const countEl = document.getElementById('kpi-orders');
-    if (countEl && prevCount) {
-        const existing = countEl.parentElement.querySelector('.mom-badge');
-        if (existing) existing.remove();
-        countEl.parentElement.insertAdjacentHTML('beforeend', makeMomBadge(ordersCount, prevCount));
-    }
+    const fillSlot = (slotId, current, prev) => {
+        const el = document.getElementById(slotId);
+        if (el) el.innerHTML = makeMomBadge(current, prev);
+    };
+    fillSlot('mom-orders', ordersCount, prevCount);
+    fillSlot('mom-sales', salesTotal, prevSales);
+    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / salesTotal || 0) : 0);
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
