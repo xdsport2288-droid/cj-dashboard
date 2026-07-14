@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=48">
+    <link rel="stylesheet" href="style.css?v=49">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -337,12 +337,12 @@
         </main>
     </div>
 
-    <!-- Unified Floating Control Panel - Always Fixed -->
+    <!-- Unified Floating Control Panel - Scroll-aware -->
     <div style="position: fixed; bottom: 2rem; left: 0; width: 100%; pointer-events: none; display: flex; justify-content: center; z-index: 1000;">
         <div style="width: 100%; max-width: 1850px; position: relative;">
-            <div class="floating-control-panel" style="opacity:1; animation:none;">
-                <!-- 화면 맨 위로 -->
-                <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="화면 맨 위로">
+            <div class="floating-control-panel">
+                <!-- 화면 맨 위로 (스크롤 300px 이상시 표시) -->
+                <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="화면 맨 위로" style="display:none;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                 </button>
                 <!-- 상세 내역으로 (테이블 아이콘) -->
