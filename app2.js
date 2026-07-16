@@ -684,6 +684,13 @@ function updateTable() {
         totalSales += sales;
         totalPurchase += purchase;
 
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', () => {
+            if (typeof showRowModal === 'function') {
+                showRowModal(row, sales, profit, purchase);
+            }
+        });
+
         tr.innerHTML = `
             <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
             <td style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['접수번호'] || ''}">${row['접수번호'] || '-'}</td>
@@ -1814,6 +1821,118 @@ if (dynamicPanel) {
     }
     
     requestAnimationFrame(animatePanel);
+}
+
+// Row Click Modal Logic
+function showRowModal(row, sales, profit, purchase) {
+    let modal = document.getElementById('detail-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'detail-modal';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        modal.style.backdropFilter = 'blur(5px)';
+        modal.style.zIndex = '10000';
+        modal.style.display = 'flex';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
+        modal.style.opacity = '0';
+        modal.style.transition = 'opacity 0.3s ease';
+
+        // Add CSS for modal scrollbar
+        const style = document.createElement('style');
+        style.textContent = `
+            .modal-content-scroll::-webkit-scrollbar {
+                width: 26px;
+                height: 12px;
+            }
+            .modal-content-scroll::-webkit-scrollbar-track:vertical {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 13px;
+                margin: 4px;
+            }
+            .modal-content-scroll::-webkit-scrollbar-thumb {
+                background-color: var(--accent);
+                border-radius: 13px;
+                border: 5px solid #1e293b; /* Match modal bg color */
+            }
+            .modal-content-scroll::-webkit-scrollbar-thumb:hover {
+                background-color: #60a5fa;
+            }
+        `;
+        document.head.appendChild(style);
+
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.opacity = '0';
+                setTimeout(() => modal.style.display = 'none', 300);
+            }
+        });
+    }
+
+    const modalBgColor = '#1e293b'; // slate-800
+
+    // Construct content
+    let detailsHtml = '';
+    for (let key in row) {
+        // Skip internal or display only ones with values
+        let val = row[key];
+        if (val === null || val === undefined || val === '') val = '-';
+        detailsHtml += \`
+            <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.8rem 0;">
+                <div style="flex: 1; color: var(--text-secondary); font-size: 0.9rem;">\${key}</div>
+                <div style="flex: 2; color: var(--text-primary); font-weight: 500; text-align: right; word-break: break-all;">\${val}</div>
+            </div>
+        \`;
+    }
+
+    modal.innerHTML = \`
+        <div style="background: \${modalBgColor}; width: 90%; max-width: 650px; height: 85vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); transform: translateY(20px); transition: transform 0.3s ease;" id="detail-modal-box">
+            
+            <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
+                    <span class="badge badge-\${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">\${row['주문 상태'] || '대기'}</span>
+                </div>
+                <button onclick="document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
+            </div>
+
+            <div class="modal-content-scroll" style="padding: 1.5rem; overflow-y: auto; flex: 1;">
+                
+                <!-- 상단 금액 요약 카드 (매출액, 순운임, 매입액 순서) -->
+                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                    <div>
+                        <div style="font-size: 0.85rem; color: #60a5fa; margin-bottom: 0.5rem; font-weight: 500;">💰 매출액</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${sales.toLocaleString()}원</div>
+                    </div>
+                    <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size: 0.85rem; color: #10b981; margin-bottom: 0.5rem; font-weight: 500;">✨ 순운임 (이익)</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${profit.toLocaleString()}원</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.85rem; color: #f59e0b; margin-bottom: 0.5rem; font-weight: 500;">💳 매입액</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${purchase.toLocaleString()}원</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 1rem; color: var(--text-primary);">
+                    \${detailsHtml}
+                </div>
+            </div>
+        </div>
+    \`;
+
+    modal.style.display = 'flex';
+    // Trigger reflow
+    void modal.offsetWidth;
+    modal.style.opacity = '1';
+    document.getElementById('detail-modal-box').style.transform = 'translateY(0)';
 }
 
 // Dynamic Header Height for Vertical Scrollbar
