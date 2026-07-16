@@ -161,18 +161,22 @@ class CustomMultiSelect {
                 const spaceBelow = window.innerHeight - btnRect.bottom;
                 const spaceAbove = btnRect.top;
                 
+                // Limit maximum height to avoid giant walls of checkboxes
+                const maxAllowedHeight = 350; 
+                const idealHeight = Math.min(panelRect.height, maxAllowedHeight);
+                
                 // Pop upwards if there isn't enough space below AND there is more space above
-                const popUpwards = (spaceBelow < panelRect.height && spaceAbove > spaceBelow);
+                const popUpwards = (spaceBelow < idealHeight && spaceAbove > spaceBelow);
                 
                 if (popUpwards) {
                     // Pop upwards
-                    const finalHeight = Math.min(panelRect.height, spaceAbove - 10);
+                    const finalHeight = Math.min(idealHeight, spaceAbove - 10);
                     this.panel.style.maxHeight = finalHeight + 'px';
                     this.panel.style.top = (btnRect.top - finalHeight - 4) + 'px';
                     this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
                 } else {
                     // Pop downwards
-                    const finalHeight = Math.min(panelRect.height, spaceBelow - 10);
+                    const finalHeight = Math.min(idealHeight, spaceBelow - 10);
                     this.panel.style.maxHeight = finalHeight + 'px';
                     this.panel.style.top = (btnRect.bottom + 4) + 'px';
                     this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
