@@ -145,35 +145,38 @@ class CustomMultiSelect {
                 
                 this.panel.style.minWidth = btnRect.width + 'px';
                 this.panel.style.width = 'max-content';
-                this.panel.style.maxHeight = '50vh';
-                this.panel.style.overflowY = 'auto';
-                
+                // Reset constraints before measuring
+                this.panel.style.maxHeight = 'none';
                 const panelRect = this.panel.getBoundingClientRect();
 
                 // Horizontal Positioning
                 let left = btnRect.left;
-                // If it overflows the right edge of the screen, align right
                 if (btnRect.left + panelRect.width > window.innerWidth) {
                     left = btnRect.right - panelRect.width;
                 }
-                // Clamp to screen edges
                 if (left < 10) left = 10;
                 this.panel.style.left = left + 'px';
 
                 // Vertical Positioning
-                let top = btnRect.bottom + 4;
-                this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
+                const spaceBelow = window.innerHeight - btnRect.bottom;
+                const spaceAbove = btnRect.top;
                 
                 // Pop upwards if there isn't enough space below AND there is more space above
-                if (btnRect.bottom + panelRect.height > window.innerHeight) {
-                    if (btnRect.top > window.innerHeight - btnRect.bottom) {
-                        top = btnRect.top - panelRect.height - 4;
-                        this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
-                    }
+                const popUpwards = (spaceBelow < panelRect.height && spaceAbove > spaceBelow);
+                
+                if (popUpwards) {
+                    // Pop upwards
+                    const finalHeight = Math.min(panelRect.height, spaceAbove - 10);
+                    this.panel.style.maxHeight = finalHeight + 'px';
+                    this.panel.style.top = (btnRect.top - finalHeight - 4) + 'px';
+                    this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
+                } else {
+                    // Pop downwards
+                    const finalHeight = Math.min(panelRect.height, spaceBelow - 10);
+                    this.panel.style.maxHeight = finalHeight + 'px';
+                    this.panel.style.top = (btnRect.bottom + 4) + 'px';
+                    this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
                 }
-                // Clamp to screen top edge
-                if (top < 10) top = 10;
-                this.panel.style.top = top + 'px';
             }
         });
 
