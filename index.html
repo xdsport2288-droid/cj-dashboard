@@ -337,17 +337,13 @@
         </main>
     </div>
 
-    <!-- Unified Floating Control Panel - Scroll-aware -->
-    <div style="position: fixed; bottom: 2rem; left: 0; width: 100%; pointer-events: none; display: flex; justify-content: center; z-index: 1000;">
+    <!-- Unified Floating Control Panel - Smooth Dynamic Follow -->
+    <div id="dynamic-floating-panel" style="position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; display: flex; justify-content: center; z-index: 1000; transform: translateY(0px);">
         <div style="width: 100%; max-width: 1850px; position: relative;">
             <div class="floating-control-panel">
                 <!-- 화면 맨 위로 (항상 표시) -->
                 <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="화면 맨 위로">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
-                </button>
-                <!-- 화면 맨 아래로 -->
-                <button id="btn-scroll-bottom" class="scroll-btn ctrl-page" title="화면 맨 아래로">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                 </button>
                 <!-- 상세 내역으로 (테이블 아이콘) -->
                 <button id="btn-scroll-middle" class="scroll-btn ctrl-page" title="상세 내역으로">
@@ -371,7 +367,7 @@
             dataScript.src = 'data.js?t=' + Date.now();
             dataScript.onload = function() {
                 const appScript = document.createElement('script');
-                appScript.src = 'app2.js?v=87&t=' + Date.now();
+                appScript.src = 'app2.js?v=88&t=' + Date.now();
                 document.body.appendChild(appScript);
             };
             document.body.appendChild(dataScript);
