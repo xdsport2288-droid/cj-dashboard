@@ -1883,22 +1883,21 @@ function showRowModal(row, sales, profit, purchase) {
     for (let key in row) {
         // Skip internal or display only ones with values
         let val = row[key];
-        if (val === null || val === undefined || val === '') val = '-';
-        detailsHtml += \`
+        detailsHtml += `
             <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.8rem 0;">
-                <div style="flex: 1; color: var(--text-secondary); font-size: 0.9rem;">\${key}</div>
-                <div style="flex: 2; color: var(--text-primary); font-weight: 500; text-align: right; word-break: break-all;">\${val}</div>
+                <div style="flex: 1; color: var(--text-secondary); font-size: 0.9rem;">${key}</div>
+                <div style="flex: 2; color: var(--text-primary); font-weight: 500; text-align: right; word-break: break-all;">${val}</div>
             </div>
-        \`;
+        `;
     }
 
-    modal.innerHTML = \`
-        <div style="background: \${modalBgColor}; width: 90%; max-width: 650px; height: 85vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); transform: translateY(20px); transition: transform 0.3s ease;" id="detail-modal-box">
+    modal.innerHTML = `
+        <div style="background: ${modalBgColor}; width: 90%; max-width: 650px; height: 85vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); transform: translateY(20px); transition: transform 0.3s ease;" id="detail-modal-box">
             
             <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
-                    <span class="badge badge-\${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">\${row['주문 상태'] || '대기'}</span>
+                    <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
                 </div>
                 <button onclick="document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
             </div>
@@ -1909,24 +1908,24 @@ function showRowModal(row, sales, profit, purchase) {
                 <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
                     <div>
                         <div style="font-size: 0.85rem; color: #60a5fa; margin-bottom: 0.5rem; font-weight: 500;">💰 매출액</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${sales.toLocaleString()}원</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${sales.toLocaleString()}원</div>
                     </div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
                         <div style="font-size: 0.85rem; color: #10b981; margin-bottom: 0.5rem; font-weight: 500;">✨ 순운임 (이익)</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${profit.toLocaleString()}원</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${profit.toLocaleString()}원</div>
                     </div>
                     <div>
                         <div style="font-size: 0.85rem; color: #f59e0b; margin-bottom: 0.5rem; font-weight: 500;">💳 매입액</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">\${purchase.toLocaleString()}원</div>
+                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}원</div>
                     </div>
                 </div>
 
                 <div style="font-size: 1rem; color: var(--text-primary);">
-                    \${detailsHtml}
+                    ${detailsHtml}
                 </div>
             </div>
         </div>
-    \`;
+    `;
 
     modal.style.display = 'flex';
     // Trigger reflow
