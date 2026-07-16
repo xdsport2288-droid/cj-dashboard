@@ -135,7 +135,7 @@ class CustomMultiSelect {
                 this.wrapper.classList.add('is-open');
 
                 // Reset positions to default before measuring
-                this.panel.style.position = 'fixed';
+                this.panel.style.position = 'absolute';
                 this.panel.style.top = '0';
                 this.panel.style.left = '0';
                 this.panel.style.right = 'auto';
@@ -155,7 +155,9 @@ class CustomMultiSelect {
                     left = btnRect.right - panelRect.width;
                 }
                 if (left < 10) left = 10;
-                this.panel.style.left = left + 'px';
+                
+                // Add window.scrollX because the panel is appended to body which is a containing block
+                this.panel.style.left = (left + window.scrollX) + 'px';
 
                 // Vertical Positioning
                 const spaceBelow = window.innerHeight - btnRect.bottom;
@@ -172,13 +174,15 @@ class CustomMultiSelect {
                     // Pop upwards
                     const finalHeight = Math.min(idealHeight, spaceAbove - 10);
                     this.panel.style.maxHeight = finalHeight + 'px';
-                    this.panel.style.top = (btnRect.top - finalHeight - 4) + 'px';
+                    // Add window.scrollY because body acts as a containing block
+                    this.panel.style.top = (btnRect.top + window.scrollY - finalHeight - 4) + 'px';
                     this.panel.style.boxShadow = '0 -4px 15px rgba(0, 0, 0, 0.4)';
                 } else {
                     // Pop downwards
                     const finalHeight = Math.min(idealHeight, spaceBelow - 10);
                     this.panel.style.maxHeight = finalHeight + 'px';
-                    this.panel.style.top = (btnRect.bottom + 4) + 'px';
+                    // Add window.scrollY because body acts as a containing block
+                    this.panel.style.top = (btnRect.bottom + window.scrollY + 4) + 'px';
                     this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
                 }
             }
