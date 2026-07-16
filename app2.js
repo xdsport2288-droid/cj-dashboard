@@ -1772,6 +1772,7 @@ document.addEventListener('mouseup', () => {
 
 // Floating Scroll Buttons Logic
 const btnScrollTop = document.getElementById('btn-scroll-top');
+const btnScrollBottom = document.getElementById('btn-scroll-bottom');
 const btnScrollMiddle = document.getElementById('btn-scroll-middle');
 const btnFloatReset = document.getElementById('btn-float-reset');
 
@@ -1779,7 +1780,11 @@ if (btnScrollTop) {
     btnScrollTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-    btnScrollTop.style.display = 'none'; // hidden initially
+}
+if (btnScrollBottom) {
+    btnScrollBottom.addEventListener('click', () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    });
 }
 if (btnScrollMiddle) {
     btnScrollMiddle.addEventListener('click', () => {
@@ -1798,13 +1803,7 @@ if (btnFloatReset) {
     });
 }
 
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 300) {
-        if (btnScrollTop) btnScrollTop.style.display = 'flex';
-    } else {
-        if (btnScrollTop) btnScrollTop.style.display = 'none';
-    }
-});
+// Removed scroll listener for btnScrollTop so it's always visible
 
 // Dynamic Header Height for Vertical Scrollbar
 const dynamicTableWrapper = document.getElementById('table-wrapper');
