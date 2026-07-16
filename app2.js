@@ -1772,18 +1772,12 @@ document.addEventListener('mouseup', () => {
 
 // Floating Scroll Buttons Logic
 const btnScrollTop = document.getElementById('btn-scroll-top');
-const btnScrollBottom = document.getElementById('btn-scroll-bottom');
 const btnScrollMiddle = document.getElementById('btn-scroll-middle');
 const btnFloatReset = document.getElementById('btn-float-reset');
 
 if (btnScrollTop) {
     btnScrollTop.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
-if (btnScrollBottom) {
-    btnScrollBottom.addEventListener('click', () => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     });
 }
 if (btnScrollMiddle) {
@@ -1803,7 +1797,24 @@ if (btnFloatReset) {
     });
 }
 
-// Removed scroll listener for btnScrollTop so it's always visible
+// Dynamic Floating Follow Effect
+const dynamicPanel = document.getElementById('dynamic-floating-panel');
+if (dynamicPanel) {
+    let currentY = window.scrollY;
+    
+    function animatePanel() {
+        // target is scrollY + window innerHeight - offset (so it stays near bottom of screen)
+        // using 100px from the bottom
+        let targetY = window.scrollY + window.innerHeight - 150;
+        // smooth lerp
+        currentY += (targetY - currentY) * 0.08;
+        
+        dynamicPanel.style.transform = `translateY(${currentY}px)`;
+        requestAnimationFrame(animatePanel);
+    }
+    
+    requestAnimationFrame(animatePanel);
+}
 
 // Dynamic Header Height for Vertical Scrollbar
 const dynamicTableWrapper = document.getElementById('table-wrapper');
