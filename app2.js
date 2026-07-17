@@ -3,7 +3,7 @@
 // === REAL DOM OVERLAY for backdrop dimming (not CSS pseudo-element) ===
 const __overlay = document.createElement('div');
 __overlay.id = 'dropdown-backdrop-overlay';
-__overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999900;pointer-events:auto;';
+__overlay.className = 'dropdown-backdrop-overlay';
 document.body.appendChild(__overlay);
 __overlay.addEventListener('click', function() {
     document.querySelectorAll('.custom-multiselect-panel').forEach(function(p) { p.style.display = 'none'; });
@@ -96,7 +96,7 @@ class CustomMultiSelect {
         this.selectAllWrapper.appendChild(selectAllCb);
         
         const selectAllText = document.createElement('span');
-        selectAllText.innerHTML = ' 전체 선택/해제 <span style="color: #60a5fa; font-size: 0.8em;">(완벽해결)</span>';
+        selectAllText.innerHTML = ' 전체 선택/해제';
         this.selectAllWrapper.appendChild(selectAllText);
         
         this.gridContainer.appendChild(this.selectAllWrapper);
