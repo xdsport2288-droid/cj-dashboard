@@ -62,32 +62,26 @@ class CustomMultiSelect {
         // Inner grid container for layout
         this.gridContainer = document.createElement('div');
         this.gridContainer.className = 'custom-multiselect-grid';
-        
-        // Jump (scroll) buttons
-        const jumpContainer = document.createElement('div');
-        jumpContainer.style.cssText = 'position: sticky; top: -5px; right: -5px; float: right; width: 0px; height: 0px; z-index: 100; display: flex; flex-direction: column; align-items: flex-end;';
 
         const btnUp = document.createElement('button');
         btnUp.title = '맨 위로';
         btnUp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-        btnUp.style.cssText = 'width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.4); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;';
-        btnUp.onmouseover = () => { btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.5)'; btnUp.style.color = '#fff'; };
-        btnUp.onmouseout = () => { btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; btnUp.style.color = '#60a5fa'; };
+        btnUp.style.cssText = 'position: sticky; top: -5px; right: -5px; float: right; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100; margin-left: 10px;';
+        btnUp.onmouseover = () => { btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.6)'; btnUp.style.color = '#fff'; };
+        btnUp.onmouseout = () => { btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; btnUp.style.color = '#60a5fa'; };
         btnUp.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.panel.scrollTo({top: 0, behavior: 'smooth'}); };
 
         const btnDown = document.createElement('button');
         btnDown.title = '맨 아래로';
         btnDown.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-        btnDown.style.cssText = 'width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.4); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;';
-        btnDown.onmouseover = () => { btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.5)'; btnDown.style.color = '#fff'; };
-        btnDown.onmouseout = () => { btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; btnDown.style.color = '#60a5fa'; };
+        btnDown.style.cssText = 'position: sticky; bottom: -5px; right: -5px; float: right; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100; margin-left: 10px; clear: right;';
+        btnDown.onmouseover = () => { btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.6)'; btnDown.style.color = '#fff'; };
+        btnDown.onmouseout = () => { btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; btnDown.style.color = '#60a5fa'; };
         btnDown.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.panel.scrollTo({top: this.panel.scrollHeight, behavior: 'smooth'}); };
 
-        jumpContainer.appendChild(btnUp);
-        jumpContainer.appendChild(btnDown);
-
-        this.panel.appendChild(jumpContainer);
+        this.panel.appendChild(btnUp);
         this.panel.appendChild(this.gridContainer);
+        this.panel.appendChild(btnDown);
         
         document.body.appendChild(this.panel);
 
