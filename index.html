@@ -12,7 +12,7 @@
     <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <link rel="stylesheet" href="style.css?v=49">
+    <link rel="stylesheet" href="style.css?v=52">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -20,14 +20,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" id="flatpickr-dark-theme">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker Force Clear & Cache Busting -->
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log('Service Worker registered', reg))
-            .catch(err => console.error('Service Worker registration failed', err));
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
         });
+      }
+      if (window.caches) {
+        caches.keys().then(function(names) {
+            for (let name of names) caches.delete(name);
+        });
+      }
+      // Force reload once to clear everything
+      if (!sessionStorage.getItem('force_reloaded_v2')) {
+          sessionStorage.setItem('force_reloaded_v2', 'true');
+          window.location.reload(true);
       }
     </script>
 </head>
@@ -367,7 +377,7 @@
             dataScript.src = 'data.js?t=' + Date.now();
             dataScript.onload = function() {
                 const appScript = document.createElement('script');
-                appScript.src = 'app2.js?v=94&t=' + Date.now();
+                appScript.src = 'app2.js?v=95&t=' + Date.now();
                 document.body.appendChild(appScript);
             };
             document.body.appendChild(dataScript);

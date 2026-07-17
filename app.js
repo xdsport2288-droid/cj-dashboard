@@ -36,6 +36,8 @@ class CustomMultiSelect {
         this.panel = document.createElement('div');
         this.panel.className = 'custom-multiselect-panel';
         this.panel.style.display = 'none';
+        this.panel.style.overflowY = 'auto';
+        this.panel.style.overflowX = 'hidden';
         document.body.appendChild(this.panel);
 
         // Add global scroll listener ONCE to close popups on scroll

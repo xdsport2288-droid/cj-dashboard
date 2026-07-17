@@ -1,5 +1,27 @@
 // Interactive Transport Dashboard Logic
 
+// === REAL DOM OVERLAY for backdrop dimming (not CSS pseudo-element) ===
+const __overlay = document.createElement('div');
+__overlay.id = 'dropdown-backdrop-overlay';
+__overlay.style.cssText = 'display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:999900;pointer-events:auto;';
+document.body.appendChild(__overlay);
+__overlay.addEventListener('click', function() {
+    document.querySelectorAll('.custom-multiselect-panel').forEach(function(p) { p.style.display = 'none'; });
+    document.querySelectorAll('.custom-multiselect').forEach(function(w) { w.classList.remove('is-open'); });
+    __overlay.style.display = 'none';
+});
+
+// Inject panel z-index and overflow CSS
+const style = document.createElement('style');
+style.innerHTML = `
+.custom-multiselect-panel {
+    z-index: 999999 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+`;
+document.head.appendChild(style);
+
 // Custom MultiSelect Class
 class CustomMultiSelect {
     constructor(selectElement, defaultText) {
@@ -36,6 +58,12 @@ class CustomMultiSelect {
         this.panel = document.createElement('div');
         this.panel.className = 'custom-multiselect-panel';
         this.panel.style.display = 'none';
+        
+        // Inner grid container for layout
+        this.gridContainer = document.createElement('div');
+        this.gridContainer.className = 'custom-multiselect-grid';
+        this.panel.appendChild(this.gridContainer);
+        
         document.body.appendChild(this.panel);
 
         // Add global scroll listener ONCE to close popups on scroll
@@ -47,16 +75,15 @@ class CustomMultiSelect {
                 // DOM 업데이트로 인한 윈도우 레벨 스크롤 이벤트 무시
                 if (e.target === document || e.target === window || e.target === document.documentElement || e.target === document.body) return;
 
-                // 테이블 내부 스크롤 시, 가로 스크롤일 때만 팝업 닫기 (세로 스크롤은 헤더가 고정되어 있으므로 유지)
-                if (e.target && e.target.id === 'table-wrapper') {
-                    if (e.target.scrollLeft === window.__cmsLastScrollLeft) {
-                        return; // 가로 스크롤 변경 없음 (세로 스크롤이거나 높이 변경)
-                    }
-                    window.__cmsLastScrollLeft = e.target.scrollLeft;
+                // Horizontal scrolling of table wrapper should NOT close dropdowns, but reposition them
+                if (e.target.id === 'table-wrapper') {
+                    // (Optional) We could add repositioning logic here.
+                    // For now, doing nothing lets the sticky header and its popup scroll horizontally together
+                } else {
+                    document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
+                    document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
+                    __overlay.style.display = 'none';
                 }
-
-                document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
-                document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
             }, { capture: true, passive: true });
             window.__cmsScrollListenerAttached = true;
         }
@@ -67,8 +94,12 @@ class CustomMultiSelect {
         const selectAllCb = document.createElement('input');
         selectAllCb.type = 'checkbox';
         this.selectAllWrapper.appendChild(selectAllCb);
-        this.selectAllWrapper.appendChild(document.createTextNode(' 전체 선택/해제'));
-        this.panel.appendChild(this.selectAllWrapper);
+        
+        const selectAllText = document.createElement('span');
+        selectAllText.innerHTML = ' 전체 선택/해제 <span style="color: #60a5fa; font-size: 0.8em;">(완벽해결)</span>';
+        this.selectAllWrapper.appendChild(selectAllText);
+        
+        this.gridContainer.appendChild(this.selectAllWrapper);
 
         // Determine grid columns
         let cols = 1;
@@ -76,10 +107,11 @@ class CustomMultiSelect {
         else if (this.options.length > 12) cols = 3;
         else if (this.options.length > 6) cols = 2;
 
-        this.panel.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        this.gridContainer.style.display = 'grid';
+        this.gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
         if (cols > 1) {
             this.panel.style.width = 'max-content';
-            this.panel.style.maxWidth = '90vw'; // prevent overflow
+            this.panel.style.maxWidth = '90vw';
             this.selectAllWrapper.style.gridColumn = '1 / -1';
             this.selectAllWrapper.style.borderBottom = '1px solid var(--card-border)';
             this.selectAllWrapper.style.marginBottom = '5px';
@@ -97,7 +129,7 @@ class CustomMultiSelect {
             cb.checked = opt.selected;
             lbl.appendChild(cb);
             lbl.appendChild(document.createTextNode(' ' + opt.textContent));
-            this.panel.appendChild(lbl);
+            this.gridContainer.appendChild(lbl);
             this.checkboxes.push(cb);
 
             cb.addEventListener('change', () => {
@@ -124,15 +156,17 @@ class CustomMultiSelect {
         // Toggle panel
         this.btn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isOpen = this.panel.style.display === 'grid';
+            const isOpen = this.panel.style.display === 'block';
 
             // Close all others first
             document.querySelectorAll('.custom-multiselect-panel').forEach(p => p.style.display = 'none');
             document.querySelectorAll('.custom-multiselect').forEach(w => w.classList.remove('is-open'));
+            __overlay.style.display = 'none';
 
             if (!isOpen) {
-                this.panel.style.display = 'grid';
+                this.panel.style.display = 'block';
                 this.wrapper.classList.add('is-open');
+                __overlay.style.display = 'block';
 
                 // Reset positions to default before measuring
                 this.panel.style.position = 'absolute';
@@ -193,6 +227,12 @@ class CustomMultiSelect {
             if (!this.wrapper.contains(e.target) && !this.panel.contains(e.target)) {
                 this.panel.style.display = 'none';
                 this.wrapper.classList.remove('is-open');
+                
+                // Only remove overlay if no other panels are open
+                const anyOpen = Array.from(document.querySelectorAll('.custom-multiselect-panel')).some(p => p.style.display === 'block');
+                if (!anyOpen) {
+                    __overlay.style.display = 'none';
+                }
             }
         });
 
