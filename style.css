@@ -901,11 +901,18 @@ tbody tr:hover {
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     z-index: 9999;
+}
+
+.custom-multiselect-scroll {
     padding: 10px;
     gap: 4px 16px;
     overscroll-behavior: contain;
     overflow-y: auto;
     overflow-x: hidden;
+    max-height: inherit;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 8px;
 }
 
 /* Th-filter variant specifically */
