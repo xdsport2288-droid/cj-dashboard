@@ -56,18 +56,18 @@ body {
 }
 
 /* Custom Scrollbar for multi-select panel */
-.custom-multiselect-panel::-webkit-scrollbar {
+.custom-multiselect-scroll::-webkit-scrollbar {
     width: 26px; /* Matches table scrollbar */
 }
-.custom-multiselect-panel::-webkit-scrollbar-track {
+.custom-multiselect-scroll::-webkit-scrollbar-track {
     background: transparent;
 }
-.custom-multiselect-panel::-webkit-scrollbar-thumb {
+.custom-multiselect-scroll::-webkit-scrollbar-thumb {
     background-color: var(--accent);
     border-radius: 13px;
     border: 5px solid rgba(15, 23, 42, 0.8);
 }
-.custom-multiselect-panel::-webkit-scrollbar-thumb:hover {
+.custom-multiselect-scroll::-webkit-scrollbar-thumb:hover {
     background-color: #60a5fa;
 }
 
@@ -904,8 +904,7 @@ tbody tr:hover {
 }
 
 .custom-multiselect-scroll {
-    padding: 10px;
-    gap: 4px 16px;
+    padding: 0;
     overscroll-behavior: contain;
     overflow-y: auto;
     overflow-x: hidden;

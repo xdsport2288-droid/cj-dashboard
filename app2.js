@@ -64,6 +64,8 @@ class CustomMultiSelect {
         // Inner grid container for layout
         this.gridContainer = document.createElement('div');
         this.gridContainer.className = 'custom-multiselect-grid';
+        this.gridContainer.style.padding = '10px';
+        this.gridContainer.style.gap = '4px 16px';
 
         const btnUp = document.createElement('button');
         btnUp.title = '맨 위로';
@@ -1976,9 +1978,9 @@ function showRowModal(row, sales, profit, purchase) {
             </div>
 
             <div style="position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
-                <div class="modal-content-scroll" style="padding: 1.5rem; overflow-y: auto; flex: 1; box-sizing: border-box;" id="modal-scroll-area">
-                    
-                    <!-- 상단 금액 요약 카드 (매출액, 순운임, 매입액 순서) -->
+                <div class="modal-content-scroll" style="overflow-y: auto; flex: 1; box-sizing: border-box;" id="modal-scroll-area">
+                    <div style="padding: 1.5rem;">
+                        <!-- 상단 금액 요약 카드 (매출액, 순운임, 매입액 순서) -->
                 <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
                     <div>
                         <div style="font-size: 0.85rem; color: #60a5fa; margin-bottom: 0.5rem; font-weight: 500;">💰 매출액</div>
@@ -1991,12 +1993,13 @@ function showRowModal(row, sales, profit, purchase) {
                     <div>
                         <div style="font-size: 0.85rem; color: #f59e0b; margin-bottom: 0.5rem; font-weight: 500;">💳 매입액</div>
                         <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}원</div>
-                    </div>
-                </div>
 
-                <div style="font-size: 1rem; color: var(--text-primary);">
-                    ${detailsHtml}
-                    <!-- /상세내역 테이블 끝 -->
+
+                        <div style="font-size: 1rem; color: var(--text-primary);">
+                            ${detailsHtml}
+                            <!-- /상세내역 테이블 끝 -->
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- absolute jump buttons -->
