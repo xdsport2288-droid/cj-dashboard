@@ -1083,12 +1083,7 @@ function filterData() {
         }
     }
     
-    // BULLETPROOF DEFAULT: If still empty (e.g., initial load before flatpickr is ready), force current month 1st to today.
-    if (!startDateVal) {
-        const t = new Date();
-        startDateVal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-01`;
-        endDateVal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-    }
+    // Removed BULLETPROOF DEFAULT. If the date picker is empty, it means 'All Time' (전체 기간).
 
     const searchVal = document.getElementById('search-input').value.toLowerCase();
 
