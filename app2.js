@@ -322,11 +322,13 @@ class CustomMultiSelect {
     }
 
     updateSelectAllState(selectAllCb) {
+        if (!this.checkboxes) return;
         const selectedCount = this.checkboxes.filter(cb => cb.checked).length;
-        selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
+        if (selectAllCb) selectAllCb.checked = (selectedCount === this.checkboxes.length && selectedCount > 0);
     }
 
     setValue(val) {
+        if (!this.checkboxes) return;
         this.checkboxes.forEach((cb, i) => {
             cb.checked = (val !== '' && this.options[i].value === val);
             this.options[i].selected = cb.checked;
@@ -342,7 +344,7 @@ class CustomMultiSelect {
     }
 
     syncFrom(otherCms) {
-        if (!otherCms) return;
+        if (!otherCms || !this.checkboxes || !otherCms.checkboxes) return;
         this.checkboxes.forEach((cb, i) => {
             cb.checked = otherCms.checkboxes[i].checked;
             this.options[i].selected = cb.checked;
@@ -353,7 +355,7 @@ class CustomMultiSelect {
     }
 
     updateVisibility(validValuesSet) {
-        if (!validValuesSet) return;
+        if (!validValuesSet || !this.checkboxes) return;
         let visibleCount = 0;
         this.checkboxes.forEach(cb => {
             const lbl = cb.parentElement;
