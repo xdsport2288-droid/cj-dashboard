@@ -1294,7 +1294,29 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    window.location.reload(true);
+    // Clear all CustomMultiSelect instances dynamically
+    const allCms = [
+        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
+        window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
+        window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
+    ];
+    
+    allCms.forEach(cms => {
+        if (cms) cms.setValue('');
+    });
+    
+    // Clear search input
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.value = '';
+
+    // Clear date picker (it will revert to '전체기간')
+    if (typeof datePicker !== 'undefined' && datePicker) {
+        datePicker.clear();
+    }
+
+    // Refresh UI with cleared filters
+    filterData();
 }
 
 // Export CSV
