@@ -169,8 +169,10 @@ class CustomMultiSelect {
         selectAllCb.addEventListener('change', () => {
             const isChecked = selectAllCb.checked;
             this.checkboxes.forEach((cb, i) => {
-                cb.checked = isChecked;
-                this.options[i].selected = isChecked;
+                if (cb.parentElement.style.display !== 'none') {
+                    cb.checked = isChecked;
+                    this.options[i].selected = isChecked;
+                }
             });
             this.updateButton();
             if (this.syncTarget) this.syncTarget.syncFrom(this);
@@ -348,6 +350,27 @@ class CustomMultiSelect {
         this.updateButton();
         const selectAllCb = this.selectAllWrapper.querySelector('input');
         if (selectAllCb) this.updateSelectAllState(selectAllCb);
+    }
+
+    updateVisibility(validValuesSet) {
+        if (!validValuesSet) return;
+        let visibleCount = 0;
+        this.checkboxes.forEach(cb => {
+            const lbl = cb.parentElement;
+            // Always show if it's currently checked or if it's in the valid set
+            if (cb.checked || validValuesSet.has(cb.value)) {
+                lbl.style.display = '';
+                visibleCount++;
+            } else {
+                lbl.style.display = 'none';
+            }
+        });
+        
+        // Hide "Select All" if there's only 0 or 1 options visible, maybe?
+        // Or keep it simple: just show/hide the individual options.
+        // We will leave "Select All" visible, but it only checks visible boxes?
+        // Wait, selectAll logic checks ALL this.checkboxes. That might be a bug if hidden.
+        // Let's modify selectAll logic later if needed, but for now just display:none
     }
 }
 
@@ -1076,46 +1099,28 @@ function filterData() {
         return vals.includes(String(rowValue || '').trim());
     };
 
+    // Collect valid sets for dynamic dropdowns
+    const validSets = {
+        status: new Set(), ordernum: new Set(), shipper: new Set(), carrier: new Set(),
+        loading: new Set(), dest: new Set(), waypoint: new Set(), tone: new Set(),
+        cartype: new Set(), driver: new Set(), carnum: new Set(), remark: new Set(),
+        fare: new Set(), startdate: new Set(), enddate: new Set()
+    };
+
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
-        if (!checkMulti(shipperVals, row['화주명'])) return false;
         let c = String(row['간선사'] || '').trim();
-        if (!checkMulti(carrierVals, c === '' ? '(미지정)' : c)) return false;
-        if (!checkMulti(loadingVals, row['상차지명'])) return false;
-        if (!checkMulti(destVals, row['하차지명'])) return false;
-        if (!checkMulti(toneVals, row['요청 톤급'])) return false;
-        if (!checkMulti(statusVals, row['주문 상태'])) return false;
-
+        const cVal = c === '' ? '(미지정)' : c;
+        const sales = row['총 매출 금액'] || row['매출 금액'];
+        const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
+        
+        let rowDate = null;
         if (row['상차 요청 일시']) {
-            const rowDate = row['상차 요청 일시'].split(' ')[0];
-            if (startDateVal && rowDate < startDateVal) return false;
-            if (endDateVal && rowDate > endDateVal) return false;
-        } else if (startDateVal || endDateVal) {
-            return false;
+            rowDate = row['상차 요청 일시'].split(' ')[0];
         }
 
-        if (!checkMulti(thStatusVals, row['주문 상태'])) return false;
-        if (!checkMulti(thOrdernumVals, row['접수번호'])) return false;
-        if (!checkMulti(thShipperVals, row['화주명'])) return false;
-        if (!checkMulti(thCarrierVals, c === '' ? '(미지정)' : c)) return false;
-        if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
-        if (!checkMulti(thDestVals, row['하차지명'])) return false;
-        if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
-        if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
-        if (!checkMulti(thCartypeVals, row['요청 차량'])) return false;
-        if (!checkMulti(thDriverVals, row['운전자명'])) return false;
-        if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
-        if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
-
-        if (thFareVals.length > 0) {
-            const sales = row['총 매출 금액'] || row['매출 금액'];
-            if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
-        }
-
-        if (!checkMulti(thStartDateVals, row['상차 요청 일시'])) return false;
-        if (!checkMulti(thEndDateVals, row['하차 요청 일시'])) return false;
-
-        if (searchVal) {
+        const passSearch = (() => {
+            if (!searchVal) return true;
             const driver = String(row['운전자명'] || '').toLowerCase();
             const carNum = String(row['차량번호'] || '').toLowerCase();
             const address = String(row['하차지 상세 주소'] || '').toLowerCase();
@@ -1126,22 +1131,96 @@ function filterData() {
             const dest = String(row['하차지명'] || '').toLowerCase();
             const remark = String(row['비고'] || '').toLowerCase();
             const ordernum = String(row['접수번호'] || '').toLowerCase();
+            return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
+                   carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
+                   loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
+                   ordernum.includes(searchVal);
+        })();
 
-            if (!driver.includes(searchVal) && 
-                !carNum.includes(searchVal) && 
-                !address.includes(searchVal) &&
-                !carType.includes(searchVal) &&
-                !tone.includes(searchVal) &&
-                !shipper.includes(searchVal) &&
-                !loading.includes(searchVal) &&
-                !dest.includes(searchVal) &&
-                !remark.includes(searchVal) &&
-                !ordernum.includes(searchVal)) {
+        const passDateRange = (() => {
+            if (rowDate) {
+                if (startDateVal && rowDate < startDateVal) return false;
+                if (endDateVal && rowDate > endDateVal) return false;
+                return true;
+            } else if (startDateVal || endDateVal) {
                 return false;
             }
-        }
-        return true;
+            return true;
+        })();
+
+        const f = {
+            shipper: checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']),
+            carrier: checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal),
+            loading: checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']),
+            dest: checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']),
+            tone: checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']),
+            status: checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']),
+            ordernum: checkMulti(thOrdernumVals, row['접수번호']),
+            waypoint: checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : ''),
+            cartype: checkMulti(thCartypeVals, row['요청 차량']),
+            driver: checkMulti(thDriverVals, row['운전자명']),
+            carnum: checkMulti(thCarnumVals, row['차량번호']),
+            remark: checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : ''),
+            fare: thFareVals.length === 0 || thFareVals.includes(salesVal),
+            startdate: checkMulti(thStartDateVals, row['상차 요청 일시']),
+            enddate: checkMulti(thEndDateVals, row['하차 요청 일시']),
+            search: passSearch,
+            dateRange: passDateRange
+        };
+
+        const passAll = f.shipper && f.carrier && f.loading && f.dest && f.tone && f.status && 
+                        f.ordernum && f.waypoint && f.cartype && f.driver && f.carnum && f.remark && 
+                        f.fare && f.startdate && f.enddate && f.search && f.dateRange;
+
+        const checkExcept = (key) => {
+            for (let k in f) {
+                if (k !== key && !f[k]) return false;
+            }
+            return true;
+        };
+
+        if (checkExcept('status')) validSets.status.add(String(row['주문 상태']).trim());
+        if (checkExcept('ordernum')) validSets.ordernum.add(String(row['접수번호']).trim());
+        if (checkExcept('shipper')) validSets.shipper.add(String(row['화주명']).trim());
+        if (checkExcept('carrier')) validSets.carrier.add(cVal);
+        if (checkExcept('loading')) validSets.loading.add(String(row['상차지명']).trim());
+        if (checkExcept('dest')) validSets.dest.add(String(row['하차지명']).trim());
+        if (checkExcept('waypoint')) validSets.waypoint.add(String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim());
+        if (checkExcept('tone')) validSets.tone.add(String(row['요청 톤급']).trim());
+        if (checkExcept('cartype')) validSets.cartype.add(String(row['요청 차량']).trim());
+        if (checkExcept('driver')) validSets.driver.add(String(row['운전자명']).trim());
+        if (checkExcept('carnum')) validSets.carnum.add(String(row['차량번호']).trim());
+        if (checkExcept('remark')) validSets.remark.add(String(row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '').trim());
+        if (checkExcept('fare')) validSets.fare.add(salesVal);
+        if (checkExcept('startdate')) validSets.startdate.add(String(row['상차 요청 일시']).trim());
+        if (checkExcept('enddate')) validSets.enddate.add(String(row['하차 요청 일시']).trim());
+
+        return passAll;
     });
+
+    // Update Dropdown Visibilities
+    if (window.cmsShipper) window.cmsShipper.updateVisibility(validSets.shipper);
+    if (window.cmsCarrier) window.cmsCarrier.updateVisibility(validSets.carrier);
+    if (window.cmsLoading) window.cmsLoading.updateVisibility(validSets.loading);
+    if (window.cmsDest) window.cmsDest.updateVisibility(validSets.dest);
+    if (window.cmsTone) window.cmsTone.updateVisibility(validSets.tone);
+    if (window.cmsStatus) window.cmsStatus.updateVisibility(validSets.status);
+
+    if (window.cmsThStatus) window.cmsThStatus.updateVisibility(validSets.status);
+    if (window.cmsThOrdernum) window.cmsThOrdernum.updateVisibility(validSets.ordernum);
+    if (window.cmsThShipper) window.cmsThShipper.updateVisibility(validSets.shipper);
+    if (window.cmsThCarrier) window.cmsThCarrier.updateVisibility(validSets.carrier);
+    if (window.cmsThLoading) window.cmsThLoading.updateVisibility(validSets.loading);
+    if (window.cmsThDest) window.cmsThDest.updateVisibility(validSets.dest);
+    if (window.cmsThStartdate) window.cmsThStartdate.updateVisibility(validSets.startdate);
+    if (window.cmsThEnddate) window.cmsThEnddate.updateVisibility(validSets.enddate);
+    if (window.cmsThWaypoint) window.cmsThWaypoint.updateVisibility(validSets.waypoint);
+    if (window.cmsThTone) window.cmsThTone.updateVisibility(validSets.tone);
+    if (window.cmsThCartype) window.cmsThCartype.updateVisibility(validSets.cartype);
+    if (window.cmsThDriver) window.cmsThDriver.updateVisibility(validSets.driver);
+    if (window.cmsThCarnum) window.cmsThCarnum.updateVisibility(validSets.carnum);
+    if (window.cmsThRemark) window.cmsThRemark.updateVisibility(validSets.remark);
+    if (window.cmsThFare) window.cmsThFare.updateVisibility(validSets.fare);
 
     // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
