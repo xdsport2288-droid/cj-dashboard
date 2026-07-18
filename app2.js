@@ -67,26 +67,8 @@ class CustomMultiSelect {
         this.gridContainer.style.padding = '10px';
         this.gridContainer.style.gap = '4px 16px';
 
-        const btnUp = document.createElement('button');
-        btnUp.title = '맨 위로';
-        btnUp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-        btnUp.style.cssText = 'position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
-        btnUp.onmouseover = () => { btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; btnUp.style.color = '#fff'; };
-        btnUp.onmouseout = () => { btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; btnUp.style.color = '#60a5fa'; };
-        btnUp.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: 0, behavior: 'smooth'}); };
-
-        const btnDown = document.createElement('button');
-        btnDown.title = '맨 아래로';
-        btnDown.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-        btnDown.style.cssText = 'position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
-        btnDown.onmouseover = () => { btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; btnDown.style.color = '#fff'; };
-        btnDown.onmouseout = () => { btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; btnDown.style.color = '#60a5fa'; };
-        btnDown.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: this.scrollContent.scrollHeight, behavior: 'smooth'}); };
-
         this.scrollContent.appendChild(this.gridContainer);
         this.panel.appendChild(this.scrollContent);
-        this.panel.appendChild(btnUp);
-        this.panel.appendChild(btnDown);
         
         document.body.appendChild(this.panel);
 
