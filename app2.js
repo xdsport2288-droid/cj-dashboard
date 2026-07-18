@@ -2006,6 +2006,7 @@ function showRowModal(row, sales, profit, purchase) {
                 <div style="color: var(--text-primary); font-weight: 500; font-size: 1rem; word-break: break-all;">${val}</div>
             </div>
         `;
+    }
     modal.innerHTML = `
         <div id="detail-modal-box" class="modal-body-wrapper">
             
