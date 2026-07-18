@@ -1939,26 +1939,26 @@ function showRowModal(row, sales, profit, purchase) {
             .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
                 background-color: #60a5fa;
             }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement {
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:start:decrement {
                 height: 26px;
                 width: 26px;
                 background-color: rgba(0, 0, 0, 0.2);
-                background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E");
+                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E");
                 background-repeat: no-repeat;
                 background-position: center;
                 display: block;
             }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:increment {
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:end:increment {
                 height: 26px;
                 width: 26px;
                 background-color: rgba(0, 0, 0, 0.2);
-                background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
                 background-repeat: no-repeat;
                 background-position: center;
                 display: block;
             }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:start:decrement:hover,
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:end:increment:hover {
                 background-color: rgba(59, 130, 246, 0.3);
             }
         `;
