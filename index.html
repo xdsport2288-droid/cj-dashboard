@@ -52,7 +52,7 @@
                     <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
                         배차 및 정산 통계 대시보드
                         <span id="last-updated-time" style="margin-left: 15px; color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;"></span>
-                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">코드 배포: 07/18 19:20 (기존 스크롤바 디자인 복원 및 애니메이션 최적화)</span>
+                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">코드 배포: 07/18 19:25 (스크롤바 상하 화살표 꺾쇠 복구 완료)</span>
                     </p>
                 </div>
             </div>
@@ -378,7 +378,7 @@
             dataScript.src = 'data.js?t=' + Date.now();
             dataScript.onload = function() {
                 const appScript = document.createElement('script');
-                appScript.src = 'app2.js?v=99&t=' + Date.now();
+                appScript.src = 'app2.js?v=100&t=' + Date.now();
                 document.body.appendChild(appScript);
             };
             document.body.appendChild(dataScript);
