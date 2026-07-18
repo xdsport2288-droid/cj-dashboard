@@ -1923,8 +1923,7 @@ function showRowModal(row, sales, profit, purchase) {
         modal.style.left = '0';
         modal.style.width = '100%';
         modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-        modal.style.backdropFilter = 'blur(4px)';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // 부드러움을 위해 0.4로 낮춤, blur 제거
         modal.style.zIndex = '10000';
         modal.style.display = 'block'; // Change from flex to block for absolute positioning
         modal.style.opacity = '0';
@@ -1961,49 +1960,18 @@ function showRowModal(row, sales, profit, purchase) {
                 overflow-y: auto;
             }
             .bottom-scroll-wrapper::-webkit-scrollbar {
-                width: 8px; /* 기본 스크롤바 너비 */
+                width: 16px;
             }
             .bottom-scroll-wrapper::-webkit-scrollbar-track {
-                background: rgba(0, 0, 0, 0.1);
-                border-radius: 8px;
-            }
-            .bottom-scroll-wrapper::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 8px;
-            }
-            .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.3);
-            }
+                background: rgba(0, 0, 0, 0.2);
             }
             .bottom-scroll-wrapper::-webkit-scrollbar-thumb {
                 background-color: var(--accent, #3b82f6);
-                border-radius: 13px;
+                border-radius: 16px;
                 border: 5px solid #1e293b; 
             }
             .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
                 background-color: #60a5fa;
-            }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:start:decrement {
-                height: 26px;
-                width: 26px;
-                background-color: rgba(0, 0, 0, 0.2);
-                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: center;
-                display: block;
-            }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:end:increment {
-                height: 26px;
-                width: 26px;
-                background-color: rgba(0, 0, 0, 0.2);
-                background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: center;
-                display: block;
-            }
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:start:decrement:hover,
-            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:end:increment:hover {
-                background-color: rgba(59, 130, 246, 0.3);
             }
         `;
         document.head.appendChild(style);
