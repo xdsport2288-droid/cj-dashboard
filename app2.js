@@ -1938,7 +1938,8 @@ function showRowModal(row, sales, profit, purchase) {
             .modal-body-wrapper {
                 display: flex;
                 flex-direction: column;
-                height: calc(100vh - 40px);
+                height: auto;
+                max-height: calc(100vh - 40px);
                 margin: 20px;
                 overflow: hidden; 
                 background: ${modalBgColor};
@@ -2054,7 +2055,7 @@ function showRowModal(row, sales, profit, purchase) {
             </div>
 
             <!-- [2] 하단 스크롤 영역: 오직 상세 텍스트 정보만 (스크롤바가 여기서부터 시작) -->
-            <div style="position: relative; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column;">
+            <div style="position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
                 <button id="modal-btn-up" title="맨 위로" style="position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
                 
                 <button id="modal-btn-down" title="맨 아래로" style="position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
