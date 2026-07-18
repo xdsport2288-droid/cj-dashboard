@@ -771,7 +771,8 @@ function updateTable() {
     let totalCount = activeData.length;
 
     if (totalCount === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.</td></tr>`;
+        let dbg = `SV:[${startDateVal}],EV:[${endDateVal}],S:[${searchVal}],CV:[${carrierVals.join(',')}]`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.<br><span style="color:red;font-size:12px;">[DEBUG] ${dbg} | L:${window.TRANSPORT_DATA.length}</span></td></tr>`;
         if (summaryBox) {
             summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
         }
