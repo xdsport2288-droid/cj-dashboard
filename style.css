@@ -1200,12 +1200,25 @@ body:has(.custom-multiselect.is-open)::after {
         gap: 0.5rem;
     }
     .main-content {
-        padding: 0.75rem 1rem;
+        padding: 0.5rem;
     }
     .kpi-grid {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.25rem;
+    }
+    .kpi-card {
+        padding: 0.6rem;
+        min-height: 70px;
     }
     .filters-panel {
         grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.25rem;
+        padding: 0.5rem;
+    }
+    .table-card {
+        padding: 0.5rem;
+    }
+    .floating-control-panel {
+        right: 48px;
     }
 }
