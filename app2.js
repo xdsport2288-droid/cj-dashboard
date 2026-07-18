@@ -1926,9 +1926,9 @@ function showRowModal(row, sales, profit, purchase) {
         modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
         modal.style.backdropFilter = 'blur(4px)';
         modal.style.zIndex = '10000';
-        modal.style.display = 'flex';
         modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center'; // 중앙 정렬 (팝업)
+        modal.style.justifyContent = 'flex-end'; // 우측 정렬
+        modal.style.paddingRight = '20px'; // 우측 여백
         modal.style.opacity = '0';
         modal.style.transition = 'opacity 0.3s ease';
 
@@ -1938,15 +1938,16 @@ function showRowModal(row, sales, profit, purchase) {
             .modal-body-wrapper {
                 display: flex;
                 flex-direction: column;
-                height: 85vh;
+                height: calc(100vh - 40px);
+                margin: 20px;
                 overflow: hidden; 
                 background: ${modalBgColor};
                 width: 100%;
-                max-width: 500px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-                border-radius: 12px;
+                max-width: 450px;
+                box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
+                border-radius: 16px;
                 border: 1px solid rgba(255,255,255,0.1);
-                transform: scale(0.95);
+                transform: translateX(120%);
                 transition: transform 0.3s ease, opacity 0.3s ease;
                 opacity: 0;
             }
@@ -2031,7 +2032,7 @@ function showRowModal(row, sales, profit, purchase) {
                         <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
                         <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
                     </div>
-                    <button onclick="document.getElementById('detail-modal-box').style.transform='scale(0.95)'; document.getElementById('detail-modal-box').style.opacity='0'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
+                    <button onclick="document.getElementById('detail-modal-box').style.transform='translateX(120%)'; document.getElementById('detail-modal-box').style.opacity='0'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
                 </div>
                 
                 <div style="padding: 1.5rem 1.5rem 0 1.5rem;">
@@ -2075,7 +2076,7 @@ function showRowModal(row, sales, profit, purchase) {
     void modal.offsetWidth;
     modal.style.opacity = '1';
     document.getElementById('detail-modal-box').style.opacity = '1';
-    document.getElementById('detail-modal-box').style.transform = 'scale(1)';
+    document.getElementById('detail-modal-box').style.transform = 'translateX(0)';
 
     const scrollArea = document.getElementById('modal-scroll-area');
     document.getElementById('modal-btn-up').onclick = (e) => { e.preventDefault(); scrollArea.scrollTo({top: 0, behavior: 'smooth'}); };
