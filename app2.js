@@ -1601,8 +1601,15 @@ setInterval(async () => {
             // Re-apply filters with new data
             filterData();
 
-            // Show a subtle notification (toast) to user (Sticky until closed)
+            // Remove existing toast if present
+            const existingToast = document.getElementById('live-update-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Show a subtle notification (toast) to user
             const toast = document.createElement('div');
+            toast.id = 'live-update-toast';
             toast.style.position = 'fixed';
             toast.style.bottom = '20px';
             toast.style.right = '20px';
@@ -1632,13 +1639,22 @@ setInterval(async () => {
             closeBtn.style.cursor = 'pointer';
             closeBtn.style.fontWeight = 'bold';
 
-            closeBtn.onclick = function() {
+            const closeToast = () => {
                 toast.style.animation = 'fadeout 0.3s';
                 setTimeout(() => toast.remove(), 290);
             };
+
+            closeBtn.onclick = closeToast;
             
             toast.appendChild(closeBtn);
             document.body.appendChild(toast);
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (document.getElementById('live-update-toast')) {
+                    closeToast();
+                }
+            }, 5000);
         }
     } catch (e) {
         // silently fail on dev env or network errors
