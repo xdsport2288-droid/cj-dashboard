@@ -1927,8 +1927,8 @@ function showRowModal(row, sales, profit, purchase) {
         modal.style.backdropFilter = 'blur(4px)';
         modal.style.zIndex = '10000';
         modal.style.display = 'flex';
-        modal.style.alignItems = 'stretch';
-        modal.style.justifyContent = 'flex-end'; // 우측 정렬 (사이드 패널)
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center'; // 중앙 정렬 (팝업)
         modal.style.opacity = '0';
         modal.style.transition = 'opacity 0.3s ease';
 
@@ -1938,15 +1938,17 @@ function showRowModal(row, sales, profit, purchase) {
             .modal-body-wrapper {
                 display: flex;
                 flex-direction: column;
-                height: 100vh;
+                height: 85vh;
                 overflow: hidden; 
                 background: ${modalBgColor};
                 width: 100%;
-                max-width: 450px;
-                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-                border-left: 1px solid rgba(255,255,255,0.1);
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
+                max-width: 500px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+                border-radius: 12px;
+                border: 1px solid rgba(255,255,255,0.1);
+                transform: scale(0.95);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                opacity: 0;
             }
             .top-summary-wrapper {
                 flex-shrink: 0;
@@ -2029,7 +2031,7 @@ function showRowModal(row, sales, profit, purchase) {
                         <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
                         <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
                     </div>
-                    <button onclick="document.getElementById('detail-modal-box').style.transform='translateX(100%)'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
+                    <button onclick="document.getElementById('detail-modal-box').style.transform='scale(0.95)'; document.getElementById('detail-modal-box').style.opacity='0'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
                 </div>
                 
                 <div style="padding: 1.5rem 1.5rem 0 1.5rem;">
@@ -2051,10 +2053,16 @@ function showRowModal(row, sales, profit, purchase) {
             </div>
 
             <!-- [2] 하단 스크롤 영역: 오직 상세 텍스트 정보만 (스크롤바가 여기서부터 시작) -->
-            <div class="bottom-scroll-wrapper" id="modal-scroll-area">
-                <div class="detail-info-list" style="padding: 0 1.5rem 1.5rem 1.5rem;">
-                    <div style="font-size: 1rem; color: var(--text-primary);">
-                        ${detailsHtml}
+            <div style="position: relative; flex-grow: 1; overflow: hidden; display: flex; flex-direction: column;">
+                <button id="modal-btn-up" title="맨 위로" style="position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+                
+                <button id="modal-btn-down" title="맨 아래로" style="position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+
+                <div class="bottom-scroll-wrapper" id="modal-scroll-area">
+                    <div class="detail-info-list" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <div style="font-size: 1rem; color: var(--text-primary);">
+                            ${detailsHtml}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2066,7 +2074,12 @@ function showRowModal(row, sales, profit, purchase) {
     // Trigger reflow
     void modal.offsetWidth;
     modal.style.opacity = '1';
-    document.getElementById('detail-modal-box').style.transform = 'translateX(0)';
+    document.getElementById('detail-modal-box').style.opacity = '1';
+    document.getElementById('detail-modal-box').style.transform = 'scale(1)';
+
+    const scrollArea = document.getElementById('modal-scroll-area');
+    document.getElementById('modal-btn-up').onclick = (e) => { e.preventDefault(); scrollArea.scrollTo({top: 0, behavior: 'smooth'}); };
+    document.getElementById('modal-btn-down').onclick = (e) => { e.preventDefault(); scrollArea.scrollTo({top: scrollArea.scrollHeight, behavior: 'smooth'}); };
 }
 
 // Dynamic Header Height for Vertical Scrollbar
