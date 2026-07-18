@@ -161,9 +161,6 @@ header {
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--card-border);
     padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
     display: flex;
     justify-content: space-between;
     align-items: center;
