@@ -1452,8 +1452,6 @@ function initDashboard() {
         });
     }
 
-    filterData();
-
     // Show initial update time if available
     const timeSpan = document.getElementById('last-updated-time');
     if (timeSpan && window.LAST_UPDATED) {
@@ -1511,12 +1509,13 @@ function initDashboard() {
         mode: "range",
         locale: "ko",
         dateFormat: "Y-m-d",
-        defaultDate: [firstDay, today],
         onChange: function (selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
         onReady: addCustomButtons
     });
+
+    filterData();
 
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);

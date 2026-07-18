@@ -1166,9 +1166,7 @@ body:has(.custom-multiselect.is-open)::after {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: transparent;
     z-index: 999900;
     pointer-events: auto;
     transition: all 0.2s ease;
