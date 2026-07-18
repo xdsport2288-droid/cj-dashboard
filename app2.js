@@ -1913,6 +1913,7 @@ if (dynamicPanel) {
 
 // Row Click Modal Logic
 function showRowModal(row, sales, profit, purchase) {
+    const modalBgColor = '#1e293b'; // slate-800
     let modal = document.getElementById('detail-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -2005,8 +2006,6 @@ function showRowModal(row, sales, profit, purchase) {
             }
         });
     }
-
-    const modalBgColor = '#1e293b'; // slate-800
 
     // Construct content
     let detailsHtml = '';
