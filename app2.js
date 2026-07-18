@@ -771,7 +771,8 @@ function updateTable() {
     let totalCount = activeData.length;
 
     if (totalCount === 0) {
-        let dbg = `SV:[${startDateVal}],EV:[${endDateVal}],S:[${searchVal}],CV:[${carrierVals.join(',')}]`;
+        let dbg = "";
+        try { dbg = `SV:[${window.debugStart||''}], EV:[${window.debugEnd||''}], CV:[${(window.debugCarrier||[]).join(',')}]`; } catch(e){}
         tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.<br><span style="color:red;font-size:12px;">[DEBUG] ${dbg} | L:${window.TRANSPORT_DATA.length}</span></td></tr>`;
         if (summaryBox) {
             summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
@@ -1102,6 +1103,10 @@ function filterData() {
         cartype: new Set(), driver: new Set(), carnum: new Set(), remark: new Set(),
         fare: new Set(), startdate: new Set(), enddate: new Set()
     };
+
+    window.debugStart = startDateVal;
+    window.debugEnd = endDateVal;
+    window.debugCarrier = carrierVals;
 
     // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
