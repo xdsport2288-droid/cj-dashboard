@@ -2014,6 +2014,12 @@ function showRowModal(row, sales, profit, purchase) {
     for (let key in row) {
         // Skip internal or display only ones with values
         let val = row[key];
+        
+        // 데이터가 비어있거나 공백만 있는 경우 렌더링하지 않음
+        if (val === undefined || val === null || val.toString().trim() === '') {
+            continue;
+        }
+
         detailsHtml += `
             <div style="display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.8rem 0;">
                 <div style="color: var(--text-secondary); font-size: 0.85rem;">${key}</div>
