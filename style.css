@@ -452,9 +452,7 @@ header {
 
 /* Charts Grid */
 .charts-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 0.75rem;
+    display: none !important;
 }
 
 @media (max-width: 1024px) {
