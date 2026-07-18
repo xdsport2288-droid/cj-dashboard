@@ -18,6 +18,7 @@
     --radius-md: 12px;
     --radius-sm: 8px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-panel-glass: rgba(30, 41, 59, 0.85);
 }
 
 [data-theme="light"] {
@@ -28,6 +29,7 @@
     --text-secondary: #64748b;
     --accent: #2563eb;
     --accent-glow: rgba(37, 99, 235, 0.1);
+    --bg-panel-glass: rgba(255, 255, 255, 0.85);
     --success: #059669;
     --success-glow: rgba(5, 150, 105, 0.1);
     --card-border: rgba(0, 0, 0, 0.08);
@@ -899,7 +901,9 @@ tbody tr:hover {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-panel-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--card-border);
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
@@ -944,7 +948,7 @@ th .custom-multiselect-panel {
     padding-bottom: 8px;
     position: sticky;
     top: -10px;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-panel-glass);
     z-index: 10;
     margin-top: -10px;
     padding-top: 10px;
