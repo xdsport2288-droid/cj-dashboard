@@ -67,8 +67,26 @@ class CustomMultiSelect {
         this.gridContainer.style.padding = '10px';
         this.gridContainer.style.gap = '4px 16px';
 
+        this.btnUp = document.createElement('button');
+        this.btnUp.title = '맨 위로';
+        this.btnUp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
+        this.btnUp.style.cssText = 'position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: none; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
+        this.btnUp.onmouseover = () => { this.btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; this.btnUp.style.color = '#fff'; };
+        this.btnUp.onmouseout = () => { this.btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; this.btnUp.style.color = '#60a5fa'; };
+        this.btnUp.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: 0, behavior: 'smooth'}); };
+
+        this.btnDown = document.createElement('button');
+        this.btnDown.title = '맨 아래로';
+        this.btnDown.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+        this.btnDown.style.cssText = 'position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: none; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
+        this.btnDown.onmouseover = () => { this.btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; this.btnDown.style.color = '#fff'; };
+        this.btnDown.onmouseout = () => { this.btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; this.btnDown.style.color = '#60a5fa'; };
+        this.btnDown.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: this.scrollContent.scrollHeight, behavior: 'smooth'}); };
+
         this.scrollContent.appendChild(this.gridContainer);
         this.panel.appendChild(this.scrollContent);
+        this.panel.appendChild(this.btnUp);
+        this.panel.appendChild(this.btnDown);
         
         document.body.appendChild(this.panel);
 
@@ -225,6 +243,19 @@ class CustomMultiSelect {
                     this.panel.style.top = (btnRect.bottom + window.scrollY + 4) + 'px';
                     this.panel.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
                 }
+                
+                // Check for overflow to conditionally show smooth scrolling DOM buttons
+                requestAnimationFrame(() => {
+                    if (this.scrollContent.scrollHeight > this.scrollContent.clientHeight) {
+                        this.panel.classList.add('has-overflow');
+                        this.btnUp.style.display = 'flex';
+                        this.btnDown.style.display = 'flex';
+                    } else {
+                        this.panel.classList.remove('has-overflow');
+                        this.btnUp.style.display = 'none';
+                        this.btnDown.style.display = 'none';
+                    }
+                });
             }
         });
 
