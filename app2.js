@@ -1918,7 +1918,7 @@ function showRowModal(row, sales, profit, purchase) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'detail-modal';
-        modal.style.position = 'fixed';
+        modal.style.position = 'absolute';
         modal.style.top = '0';
         modal.style.left = '0';
         modal.style.width = '100%';
@@ -1935,8 +1935,8 @@ function showRowModal(row, sales, profit, purchase) {
         style.textContent = `
             .modal-body-wrapper {
                 position: absolute;
-                top: 76px; /* 헤더 높이만큼 띄움 */
-                max-height: calc(100vh - 100px); /* 화면을 넘지 않도록 최대 높이 제한 */
+                top: 20px;
+                bottom: 20px;
                 right: 20px;
                 display: flex;
                 flex-direction: column;
@@ -2007,8 +2007,13 @@ function showRowModal(row, sales, profit, purchase) {
             }
         `;
         document.head.appendChild(style);
-
-        document.body.appendChild(modal);
+        const tableCard = document.querySelector('.table-card');
+        if (tableCard) {
+            tableCard.style.position = 'relative';
+            tableCard.appendChild(modal);
+        } else {
+            document.body.appendChild(modal);
+        }
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
