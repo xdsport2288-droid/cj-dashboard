@@ -1147,21 +1147,6 @@ th:has(.custom-multiselect.is-open) {
     z-index: 9000 !important;
 }
 
-/* Dim and blur the screen behind open dropdowns to make them stand out clearly */
-body:has(.custom-multiselect.is-open)::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 8000;
-    pointer-events: none;
-}
-
 
 .dropdown-backdrop-overlay {
     display: none;
