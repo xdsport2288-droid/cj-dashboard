@@ -70,17 +70,17 @@ class CustomMultiSelect {
         const btnUp = document.createElement('button');
         btnUp.title = '맨 위로';
         btnUp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
-        btnUp.style.cssText = 'position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
-        btnUp.onmouseover = () => { btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.6)'; btnUp.style.color = '#fff'; };
-        btnUp.onmouseout = () => { btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; btnUp.style.color = '#60a5fa'; };
+        btnUp.style.cssText = 'position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
+        btnUp.onmouseover = () => { btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; btnUp.style.color = '#fff'; };
+        btnUp.onmouseout = () => { btnUp.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; btnUp.style.color = '#60a5fa'; };
         btnUp.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: 0, behavior: 'smooth'}); };
 
         const btnDown = document.createElement('button');
         btnDown.title = '맨 아래로';
         btnDown.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-        btnDown.style.cssText = 'position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
-        btnDown.onmouseover = () => { btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.6)'; btnDown.style.color = '#fff'; };
-        btnDown.onmouseout = () => { btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; btnDown.style.color = '#60a5fa'; };
+        btnDown.style.cssText = 'position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
+        btnDown.onmouseover = () => { btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; btnDown.style.color = '#fff'; };
+        btnDown.onmouseout = () => { btnDown.style.backgroundColor = 'rgba(0, 0, 0, 0.2)'; btnDown.style.color = '#60a5fa'; };
         btnDown.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: this.scrollContent.scrollHeight, behavior: 'smooth'}); };
 
         this.scrollContent.appendChild(this.gridContainer);
@@ -1909,34 +1909,75 @@ function showRowModal(row, sales, profit, purchase) {
         modal.style.left = '0';
         modal.style.width = '100%';
         modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-        modal.style.backdropFilter = 'blur(5px)';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        modal.style.backdropFilter = 'blur(4px)';
         modal.style.zIndex = '10000';
         modal.style.display = 'flex';
-        modal.style.alignItems = 'center';
-        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'stretch';
+        modal.style.justifyContent = 'flex-end'; // 우측 정렬 (사이드 패널)
         modal.style.opacity = '0';
         modal.style.transition = 'opacity 0.3s ease';
 
-        // Add CSS for modal scrollbar
+        // Add CSS for modal scrollbar and layout
         const style = document.createElement('style');
         style.textContent = `
-            .modal-content-scroll::-webkit-scrollbar {
+            .modal-body-wrapper {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden; 
+                background: ${modalBgColor};
+                width: 100%;
+                max-width: 450px;
+                box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+                border-left: 1px solid rgba(255,255,255,0.1);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            .top-summary-wrapper {
+                flex-shrink: 0;
+                padding-bottom: 15px;
+                background-color: ${modalBgColor};
+            }
+            .bottom-scroll-wrapper {
+                flex-grow: 1;
+                overflow-y: auto;
+            }
+            .bottom-scroll-wrapper::-webkit-scrollbar {
                 width: 26px;
-                height: 12px;
             }
-            .modal-content-scroll::-webkit-scrollbar-track:vertical {
+            .bottom-scroll-wrapper::-webkit-scrollbar-track:vertical {
                 background: rgba(0, 0, 0, 0.2);
-                border-radius: 13px;
-                margin: 4px;
             }
-            .modal-content-scroll::-webkit-scrollbar-thumb {
-                background-color: var(--accent);
+            .bottom-scroll-wrapper::-webkit-scrollbar-thumb {
+                background-color: var(--accent, #3b82f6);
                 border-radius: 13px;
-                border: 5px solid #1e293b; /* Match modal bg color */
+                border: 5px solid #1e293b; 
             }
-            .modal-content-scroll::-webkit-scrollbar-thumb:hover {
+            .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
                 background-color: #60a5fa;
+            }
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement {
+                height: 26px;
+                width: 26px;
+                background-color: rgba(0, 0, 0, 0.2);
+                background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: center;
+                display: block;
+            }
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:increment {
+                height: 26px;
+                width: 26px;
+                background-color: rgba(0, 0, 0, 0.2);
+                background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: center;
+                display: block;
+            }
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:decrement:hover,
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+                background-color: rgba(59, 130, 246, 0.3);
             }
         `;
         document.head.appendChild(style);
@@ -1945,6 +1986,7 @@ function showRowModal(row, sales, profit, purchase) {
 
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
+                document.getElementById('detail-modal-box').style.transform = 'translateX(100%)';
                 modal.style.opacity = '0';
                 setTimeout(() => modal.style.display = 'none', 300);
             }
@@ -1959,57 +2001,51 @@ function showRowModal(row, sales, profit, purchase) {
         // Skip internal or display only ones with values
         let val = row[key];
         detailsHtml += `
-            <div style="display: flex; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.8rem 0;">
-                <div style="flex: 1; color: var(--text-secondary); font-size: 0.9rem;">${key}</div>
-                <div style="flex: 2; color: var(--text-primary); font-weight: 500; text-align: right; word-break: break-all;">${val}</div>
+            <div style="display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 0.8rem 0;">
+                <div style="color: var(--text-secondary); font-size: 0.85rem;">${key}</div>
+                <div style="color: var(--text-primary); font-weight: 500; font-size: 1rem; word-break: break-all;">${val}</div>
             </div>
         `;
-    }
-
     modal.innerHTML = `
-        <div style="background: ${modalBgColor}; width: 90%; max-width: 650px; height: 85vh; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); transform: translateY(20px); transition: transform 0.3s ease;" id="detail-modal-box">
+        <div id="detail-modal-box" class="modal-body-wrapper">
             
-            <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
-                    <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
+            <!-- [1] 상단 고정 영역: 타이틀 및 금액 카드 (스크롤바와 무관한 영역) -->
+            <div class="top-summary-wrapper">
+                <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
+                        <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
+                    </div>
+                    <button onclick="document.getElementById('detail-modal-box').style.transform='translateX(100%)'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
                 </div>
-                <button onclick="document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
-            </div>
-
-            <div style="position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;">
-                <div class="modal-content-scroll" style="overflow-y: auto; flex: 1; box-sizing: border-box;" id="modal-scroll-area">
-                    <div style="padding: 1.5rem;">
-                        <!-- 상단 금액 요약 카드 (매출액, 순운임, 매입액 순서) -->
-                <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
-                    <div>
-                        <div style="font-size: 0.85rem; color: #60a5fa; margin-bottom: 0.5rem; font-weight: 500;">💰 매출액</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${sales.toLocaleString()}원</div>
-                    </div>
-                    <div style="border-left: 1px solid rgba(255,255,255,0.1); border-right: 1px solid rgba(255,255,255,0.1);">
-                        <div style="font-size: 0.85rem; color: #10b981; margin-bottom: 0.5rem; font-weight: 500;">✨ 순운임 (이익)</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${profit.toLocaleString()}원</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.85rem; color: #f59e0b; margin-bottom: 0.5rem; font-weight: 500;">💳 매입액</div>
-                        <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}원</div>
-
-
-                        <div style="font-size: 1rem; color: var(--text-primary);">
-                            ${detailsHtml}
-                            <!-- /상세내역 테이블 끝 -->
+                
+                <div style="padding: 1.5rem 1.5rem 0 1.5rem;">
+                    <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.2rem; display: flex; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1);">
+                            <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 500; margin-bottom: 8px;">💰 매출액</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${sales.toLocaleString()}원</div>
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1);">
+                            <div style="font-size: 0.85rem; color: #10b981; font-weight: 500; margin-bottom: 8px;">✨ 순운임 (이익)</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${profit.toLocaleString()}원</div>
+                        </div>
+                        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div style="font-size: 0.85rem; color: #f59e0b; font-weight: 500; margin-bottom: 8px;">💳 매입액</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}원</div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- absolute jump buttons -->
-                <button onclick="document.getElementById('modal-scroll-area').scrollTo({top: 0, behavior: 'smooth'});" title="맨 위로" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.6)';this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.5)';this.style.color='#60a5fa';" style="position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
-                </button>
-                <button onclick="document.getElementById('modal-scroll-area').scrollTo({top: document.getElementById('modal-scroll-area').scrollHeight, behavior: 'smooth'});" title="맨 아래로" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.6)';this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.5)';this.style.color='#60a5fa';" style="position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.5); border: none; border-radius: 4px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </button>
             </div>
+
+            <!-- [2] 하단 스크롤 영역: 오직 상세 텍스트 정보만 (스크롤바가 여기서부터 시작) -->
+            <div class="bottom-scroll-wrapper" id="modal-scroll-area">
+                <div class="detail-info-list" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                    <div style="font-size: 1rem; color: var(--text-primary);">
+                        ${detailsHtml}
+                    </div>
+                </div>
+            </div>
+
         </div>
     `;
 
@@ -2017,7 +2053,7 @@ function showRowModal(row, sales, profit, purchase) {
     // Trigger reflow
     void modal.offsetWidth;
     modal.style.opacity = '1';
-    document.getElementById('detail-modal-box').style.transform = 'translateY(0)';
+    document.getElementById('detail-modal-box').style.transform = 'translateX(0)';
 }
 
 // Dynamic Header Height for Vertical Scrollbar

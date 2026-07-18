@@ -61,6 +61,8 @@ body {
 }
 .custom-multiselect-scroll::-webkit-scrollbar-track {
     background: transparent;
+    margin-top: 28px;
+    margin-bottom: 28px;
 }
 .custom-multiselect-scroll::-webkit-scrollbar-thumb {
     background-color: var(--accent);
