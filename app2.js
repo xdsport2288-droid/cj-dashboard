@@ -1973,8 +1973,11 @@ function showRowModal(row, sales, profit, purchase) {
             .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
                 background-color: #60a5fa;
             }
-            .bottom-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-                background-color: #60a5fa;
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:start:decrement,
+            .bottom-scroll-wrapper::-webkit-scrollbar-button:vertical:end:increment {
+                height: 26px;
+                background-color: transparent;
+                display: block;
             }
         `;
         document.head.appendChild(style);
@@ -2062,11 +2065,18 @@ function showRowModal(row, sales, profit, purchase) {
     `;
 
     modal.style.display = 'block';
-    // Trigger reflow
-    void modal.offsetWidth;
-    modal.style.opacity = '1';
-    document.getElementById('detail-modal-box').style.opacity = '1';
-    document.getElementById('detail-modal-box').style.transform = 'translateX(0)';
+    
+    // Use double requestAnimationFrame to guarantee the browser applies initial CSS before transitioning
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            const detailBox = document.getElementById('detail-modal-box');
+            if (detailBox) {
+                detailBox.style.opacity = '1';
+                detailBox.style.transform = 'translateX(0)';
+            }
+        });
+    });
 
     const scrollArea = document.getElementById('modal-scroll-area');
     document.getElementById('modal-btn-up').onclick = (e) => { e.preventDefault(); scrollArea.scrollTo({top: 0, behavior: 'auto'}); };
