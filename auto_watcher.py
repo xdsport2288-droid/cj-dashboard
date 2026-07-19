@@ -1,4 +1,4 @@
-﻿import sys
+import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import time
 import os
@@ -46,11 +46,11 @@ while True:
         print("1. JSON 변환 스크립트 실행 중...")
         show_notification("변경 감지됨", "엑셀 데이터 변환 및 서버 배포를 시작합니다...")
         NO_WINDOW = 0x08000000
-        subprocess.run(["python", "convert_excel_to_json.py"], shell=True, env={**os.environ, "PYTHONIOENCODING": "utf-8"}, creationflags=NO_WINDOW)
+        subprocess.run(["python", "convert_excel_to_json.py"], env={**os.environ, "PYTHONIOENCODING": "utf-8"}, creationflags=NO_WINDOW)
         print("2. 깃허브 서버로 자동 업로드(Push) 중...")
-        subprocess.run(["git", "add", "dashboard_data.json"], shell=True, creationflags=NO_WINDOW)
-        subprocess.run(["git", "commit", "-m", "Auto-sync: Update dashboard data"], shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
-        push_result = subprocess.run(["git", "push"], shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
+        subprocess.run(["git", "add", "dashboard_data.json"], creationflags=NO_WINDOW)
+        subprocess.run(["git", "commit", "-m", "Auto-sync: Update dashboard data"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
+        push_result = subprocess.run(["git", "push"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         if push_result.returncode == 0:
             print("3. 서버 업로드 완료! (대시보드가 곧 자동으로 갱신됩니다)\n")
             show_notification("배포 성공!", "서버에 데이터가 성공적으로 업로드되었습니다. 5초 뒤 대시보드에 반영됩니다.")
