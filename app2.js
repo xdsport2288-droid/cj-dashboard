@@ -1323,6 +1323,10 @@ function resetFilters() {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         datePicker.setDate([firstDay, today]);
+        
+        // Label 원상복구
+        const label = document.getElementById('date-range-label');
+        if (label) label.innerHTML = '📅 운송 기간';
     }
 
     // Refresh UI with cleared filters
@@ -1556,9 +1560,9 @@ function initDashboard() {
         todayBtn.style.color = "#48bb78";
         todayBtn.addEventListener("click", function () {
             const today = new Date();
-            instance.setDate([today, today]);
+            instance.setDate([today, today], true); // true to trigger onChange
             instance.close();
-            filterData();
+            // filterData() is called by onChange
         });
 
         const clearBtn = document.createElement("button");
@@ -1570,14 +1574,33 @@ function initDashboard() {
         clearBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
         clearBtn.style.color = "var(--text-primary)";
         clearBtn.addEventListener("click", function () {
-            instance.setDate([fileStartDate, today]);
+            instance.setDate([fileStartDate, today], true); // true to trigger onChange
             instance.close();
-            filterData();
+            // filterData() is called by onChange
         });
 
         btnContainer.appendChild(todayBtn);
         btnContainer.appendChild(clearBtn);
         instance.calendarContainer.appendChild(btnContainer);
+    };
+
+    const updateDateLabel = function(selectedDates) {
+        const label = document.getElementById('date-range-label');
+        if (!label) return;
+        if (selectedDates && selectedDates.length === 2) {
+            const startStr = flatpickr.formatDate(selectedDates[0], "Y-m-d");
+            const endStr = flatpickr.formatDate(selectedDates[1], "Y-m-d");
+            const fileStartStr = flatpickr.formatDate(fileStartDate, "Y-m-d");
+            const todayStr = flatpickr.formatDate(today, "Y-m-d");
+            
+            if (startStr === fileStartStr && endStr === todayStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
+            } else {
+                label.innerHTML = '📅 운송 기간';
+            }
+        } else {
+            label.innerHTML = '📅 운송 기간';
+        }
     };
 
     datePicker = flatpickr("#filter-date-range", {
@@ -1586,9 +1609,16 @@ function initDashboard() {
         dateFormat: "Y-m-d",
         defaultDate: [fileStartDate, today],
         onChange: function (selectedDates, dateStr, instance) {
+            updateDateLabel(selectedDates);
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
-        onReady: addCustomButtons
+        onOpen: function (selectedDates, dateStr, instance) {
+            instance.jumpToDate(new Date());
+        },
+        onReady: function (selectedDates, dateStr, instance) {
+            addCustomButtons(selectedDates, dateStr, instance);
+            updateDateLabel(selectedDates);
+        }
     });
 
     filterData();
