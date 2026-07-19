@@ -1294,10 +1294,10 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    // Clear all CustomMultiSelect instances dynamically
+    // Clear all CustomMultiSelect instances dynamically EXCEPT Carrier
     const allCms = [
-        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
+        window.cmsShipper, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThLoading, 
         window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
         window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
     ];
@@ -1305,6 +1305,14 @@ function resetFilters() {
     allCms.forEach(cms => {
         if (cms) cms.setValue('');
     });
+
+    // 간선사는 초기화 시 기본값(JM컴퍼니)으로 되돌리기
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue("JM컴퍼니");
+    }
+    if (window.cmsThCarrier) {
+        window.cmsThCarrier.setValue("JM컴퍼니");
+    }
     
     // Clear search input
     const searchInput = document.getElementById('search-input');
@@ -1317,6 +1325,35 @@ function resetFilters() {
 
     // Refresh UI with cleared filters
     filterData();
+
+    // Show visual feedback toast for filter reset
+    const existingToast = document.getElementById('filter-reset-toast');
+    if (existingToast) existingToast.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'filter-reset-toast';
+    toast.style.position = 'fixed';
+    toast.style.top = '20px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // emerald
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '8px';
+    toast.style.zIndex = '99999';
+    toast.style.fontWeight = 'bold';
+    toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+    toast.style.animation = 'fadein 0.3s';
+    toast.innerHTML = '🧹 <b>필터 초기화 완료</b> (간선사는 기본값으로 유지됩니다)';
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (document.getElementById('filter-reset-toast')) {
+            toast.style.animation = 'fadeout 0.3s';
+            setTimeout(() => toast.remove(), 290);
+        }
+    }, 2500);
 }
 
 // Export CSV
@@ -1442,6 +1479,12 @@ function initDashboard() {
     if (window.cmsCarrier) {
         window.cmsCarrier.setValue("JM컴퍼니");
     }
+    if (window.cmsThCarrier) {
+        window.cmsThCarrier.setValue("JM컴퍼니");
+    }
+    
+    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화
+    filterData();
 
     // 상단 가로 스크롤바 동기화 초기화
     const topScroll = document.getElementById('top-scrollbar');
