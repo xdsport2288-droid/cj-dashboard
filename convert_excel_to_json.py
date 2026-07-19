@@ -12,9 +12,17 @@ import shutil
 print("엑셀 데이터 변환 시작...")
 
 # 가장 최근에 수정된 xlsx 파일 찾기
-xlsx_files = glob.glob("*.xlsx")
+desktop_folder = os.path.join(os.environ["USERPROFILE"], "Desktop", "CJ_대시보드_데이터")
+xlsx_files = glob.glob(os.path.join(desktop_folder, "*.xlsx"))
 if not xlsx_files:
-    print("❌ xlsx 파일을 찾을 수 없습니다!")
+    print("❌ 데스크톱 폴더(CJ_대시보드_데이터)에서 xlsx 파일을 찾을 수 없습니다!")
+    sys.exit(1)
+
+# 가장 최근에 수정된 xlsx 파일 찾기
+# 임시 파일(~$) 제외
+xlsx_files = [f for f in xlsx_files if "~$" not in os.path.basename(f)]
+if not xlsx_files:
+    print("❌ 처리할 수 있는 엑셀 파일이 없습니다.")
     sys.exit(1)
 
 file_path = max(xlsx_files, key=os.path.getmtime)
