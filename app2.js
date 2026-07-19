@@ -1475,15 +1475,7 @@ function initDashboard() {
     initEditMode();
     initFilters();
     
-    // 간선사 디폴트 값 "JM컴퍼니" 설정
-    if (window.cmsCarrier) {
-        window.cmsCarrier.setValue("JM컴퍼니");
-    }
-    if (window.cmsThCarrier) {
-        window.cmsThCarrier.setValue("JM컴퍼니");
-    }
-    
-    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화
+    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화 (기본 필터 없는 전체 데이터 상태)
     filterData();
 
     // 상단 가로 스크롤바 동기화 초기화
