@@ -99,7 +99,7 @@ try:
             "운송사": "",
             "소속": "",
             "추가운임": row.get("추가비", 0)
-        }
+        })
         mapped_records.append(mapped_row)
     
     output = {
@@ -111,12 +111,12 @@ try:
         json.dump(output, f, ensure_ascii=False, indent=2)
         
     with open('data.js', 'w', encoding='utf-8') as f:
-        f.write(f"window.LAST_UPDATED = '{output['last_updated']}';\n")
+        f.write(f"window.LAST_UPDATED = '{output['last_updated']}';\n\n")
         f.write("window.TRANSPORT_DATA = ")
-        json.dump(mapped_records, f, ensure_ascii=False, indent=2)
+        json.dump(output['data'], f, ensure_ascii=False, indent=2)
         f.write(";\n")
         
-    print(f"✅ 변환 완료! 총 {len(records)}건의 데이터가 저장되었습니다.")
+    print(f"✅ 변환 완료! 총 {len(mapped_records)}건의 데이터가 저장되었습니다.")
 except Exception as e:
     print(f"❌ 변환 중 오류 발생: {e}")
     sys.exit(1)
