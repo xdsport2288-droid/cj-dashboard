@@ -2,9 +2,12 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import pandas as pd
 import json
-from datetime import datetime
 import os
+import sys
 import glob
+from datetime import datetime
+import tempfile
+import shutil
 
 print("엑셀 데이터 변환 시작...")
 
@@ -18,7 +21,20 @@ file_path = max(xlsx_files, key=os.path.getmtime)
 print(f"👉 감지된 파일: {file_path}")
 
 try:
-    df = pd.read_excel(file_path)
+    # 엑셀 파일이 열려있을 때 발생하는 PermissionError를 방지하기 위해 임시 파일로 복사 후 읽기
+    temp_dir = tempfile.gettempdir()
+    temp_file = os.path.join(temp_dir, "temp_winnion.xlsx")
+    shutil.copy2(file_path, temp_file)
+    
+    try:
+        # 데이터 읽기 (문자열 타입 지정)
+        df = pd.read_excel(temp_file, dtype=str)
+    finally:
+        # 임시 파일 삭제
+        if os.path.exists(temp_file):
+            os.remove(temp_file)
+            
+    # NaN 값 빈 문자열로 처리
     df = df.fillna("")
     
     # datetime 객체가 있으면 문자열로 변환
