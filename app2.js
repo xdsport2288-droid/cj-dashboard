@@ -1318,20 +1318,10 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 데이터 전체 기간(최소일~현재일)으로 초기화
+    // 날짜 선택기를 당월 1일 ~ 현재일로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
         const today = new Date();
-        let minDateStr = "9999-99-99";
-        if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
-            window.TRANSPORT_DATA.forEach(row => {
-                const dateStr = row['상차 요청 일시'];
-                if (dateStr) {
-                    const justDate = dateStr.split(' ')[0];
-                    if (justDate < minDateStr) minDateStr = justDate;
-                }
-            });
-        }
-        const firstDay = minDateStr !== "9999-99-99" ? new Date(minDateStr) : new Date(today.getFullYear(), today.getMonth(), 1);
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         datePicker.setDate([firstDay, today]);
         
         // Label 원상복구
@@ -1575,6 +1565,21 @@ function initDashboard() {
             // filterData() is called by onChange
         });
 
+        const monthBtn = document.createElement("button");
+        monthBtn.textContent = "당월";
+        monthBtn.className = "btn btn-secondary";
+        monthBtn.style.flex = "1";
+        monthBtn.style.padding = "6px";
+        monthBtn.style.cursor = "pointer";
+        monthBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        monthBtn.style.color = "#48bb78";
+        monthBtn.addEventListener("click", function () {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            instance.setDate([firstDay, today], true); // true to trigger onChange
+            instance.close();
+        });
+
         const clearBtn = document.createElement("button");
         clearBtn.textContent = "전체선택 (전체날짜)";
         clearBtn.className = "btn btn-secondary";
@@ -1590,6 +1595,7 @@ function initDashboard() {
         });
 
         btnContainer.appendChild(todayBtn);
+        btnContainer.appendChild(monthBtn);
         btnContainer.appendChild(clearBtn);
         instance.calendarContainer.appendChild(btnContainer);
     };
