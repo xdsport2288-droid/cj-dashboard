@@ -1691,6 +1691,16 @@ setInterval(async () => {
         // Use a Set to remember seen versions. This prevents popup spam 
         // if the GitHub CDN flip-flops between old and new versions during deployment.
         if (!knownDataStrings.has(newStr)) {
+            // Compare timestamps to prevent older server data from overwriting newer local data
+            const currentLastUpdated = window.LAST_UPDATED || "";
+            const serverLastUpdated = newData.last_updated || "";
+            
+            if (serverLastUpdated && currentLastUpdated && serverLastUpdated < currentLastUpdated) {
+                console.log("Server data is older than local data. Ignoring server data.");
+                knownDataStrings.add(newStr);
+                return;
+            }
+
             console.log("New data detected! Updating dashboard live...");
             knownDataStrings.add(newStr);
             window.TRANSPORT_DATA = actualData;
