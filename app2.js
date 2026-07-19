@@ -1318,9 +1318,11 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // Clear date picker (it will revert to '전체기간')
+    // 날짜 선택기를 당월 1일 ~ 현재일로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
-        datePicker.clear();
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        datePicker.setDate([firstDay, today]);
     }
 
     // Refresh UI with cleared filters
@@ -1344,7 +1346,7 @@ function resetFilters() {
     toast.style.fontWeight = 'bold';
     toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
     toast.style.animation = 'fadein 0.3s';
-    toast.innerHTML = '🧹 <b>필터 초기화 완료</b> (간선사는 기본값으로 유지됩니다)';
+    toast.innerHTML = '🧹 <b>필터 초기화 완료</b> (간선사 및 운송기간은 기본값으로 유지됩니다)';
     
     document.body.appendChild(toast);
     
@@ -1566,6 +1568,7 @@ function initDashboard() {
         mode: "range",
         locale: "ko",
         dateFormat: "Y-m-d",
+        defaultDate: [firstDay, today],
         onChange: function (selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
