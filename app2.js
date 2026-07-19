@@ -2332,6 +2332,16 @@ if (btnTableScrollDown && dynamicTableWrapper) {
 }
 
 // App execution
+try {
+    const cachedData = localStorage.getItem('CACHED_TRANSPORT_DATA');
+    if (cachedData) {
+        window.TRANSPORT_DATA = JSON.parse(cachedData);
+        window.LAST_UPDATED = localStorage.getItem('CACHED_LAST_UPDATED');
+    }
+} catch (e) {
+    console.warn('Failed to load cached data:', e);
+}
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
 } else {
@@ -2464,6 +2474,13 @@ async function processExcelFile(file) {
                                       String(now.getHours()).padStart(2,'0') + ':' + 
                                       String(now.getMinutes()).padStart(2,'0') + ':' + 
                                       String(now.getSeconds()).padStart(2,'0');
+                                      
+                try {
+                    localStorage.setItem('CACHED_TRANSPORT_DATA', JSON.stringify(mappedData));
+                    localStorage.setItem('CACHED_LAST_UPDATED', window.LAST_UPDATED);
+                } catch (err) {
+                    console.warn('Could not save to localStorage:', err);
+                }
                 
                 const timeSpan = document.getElementById('last-updated-time');
                 if (timeSpan && window.LAST_UPDATED) {
