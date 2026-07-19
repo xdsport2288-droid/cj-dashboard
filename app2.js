@@ -2032,7 +2032,6 @@ if (dynamicPanel) {
 
 // Row Click Modal Logic
 function showRowModal(row, sales, profit, purchase) {
-    const modalBgColor = '#1e293b'; // slate-800
     let modal = document.getElementById('detail-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -2058,11 +2057,13 @@ function showRowModal(row, sales, profit, purchase) {
                 right: 20px;
                 display: flex;
                 flex-direction: column;
-                background: ${modalBgColor};
+                background: var(--bg-panel-glass);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
                 width: 100%;
                 max-width: 450px;
                 box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
-                border: 1px solid rgba(255,255,255,0.1);
+                border: 1px solid var(--card-border);
                 border-radius: 16px; /* 둥근 팝업 디자인 복구 */
                 transform: translateX(120%);
                 transition: transform 0.3s ease, opacity 0.3s ease;
@@ -2071,7 +2072,7 @@ function showRowModal(row, sales, profit, purchase) {
             .top-summary-wrapper {
                 flex-shrink: 0;
                 padding-bottom: 15px;
-                background-color: ${modalBgColor};
+                /* background-color removed to show glass effect */
             }
             .bottom-scroll-wrapper {
                 flex-grow: 1;
