@@ -1517,6 +1517,25 @@ function initDashboard() {
         timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
+    // Initialize Flatpickr date range picker
+    const today = new Date();
+    let fileStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // fallback
+    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
+        let minDateStr = "9999-99-99";
+        window.TRANSPORT_DATA.forEach(row => {
+            const dateStr = row['상차 요청 일시'];
+            if (dateStr) {
+                const justDate = dateStr.split(' ')[0];
+                if (justDate < minDateStr) {
+                    minDateStr = justDate;
+                }
+            }
+        });
+        if (minDateStr !== "9999-99-99") {
+            fileStartDate = new Date(minDateStr);
+        }
+    }
+
     // Function to add custom buttons to flatpickr
     const addCustomButtons = function (selectedDates, dateStr, instance) {
         const btnContainer = document.createElement("div");
@@ -1543,7 +1562,7 @@ function initDashboard() {
         });
 
         const clearBtn = document.createElement("button");
-        clearBtn.textContent = "전체선택 (초기화)";
+        clearBtn.textContent = "전체선택 (전체날짜)";
         clearBtn.className = "btn btn-secondary";
         clearBtn.style.flex = "2";
         clearBtn.style.padding = "6px";
@@ -1551,8 +1570,9 @@ function initDashboard() {
         clearBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
         clearBtn.style.color = "var(--text-primary)";
         clearBtn.addEventListener("click", function () {
-            instance.clear();
+            instance.setDate([fileStartDate, today]);
             instance.close();
+            filterData();
         });
 
         btnContainer.appendChild(todayBtn);
@@ -1560,15 +1580,11 @@ function initDashboard() {
         instance.calendarContainer.appendChild(btnContainer);
     };
 
-    // Initialize Flatpickr date range picker
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
         locale: "ko",
         dateFormat: "Y-m-d",
-        defaultDate: [firstDay, today],
+        defaultDate: [fileStartDate, today],
         onChange: function (selectedDates, dateStr, instance) {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
