@@ -62,8 +62,27 @@ try:
             "하차지명": row.get("도착지명", ""),
             "하차지 주소": row.get("도착지주소", ""),
             "하차지 상세 주소": "",
-            "요청 차량": row.get("차량정보", ""),
-            "요청 톤급": str(row.get("차량정보", "")).split(' ')[0] if pd.notna(row.get("차량정보", "")) and str(row.get("차량정보", "")).strip() != "" else "",
+        }
+        
+        raw_vehicle_info = str(row.get("차량정보", "")) if pd.notna(row.get("차량정보", "")) else ""
+        raw_vehicle_info = raw_vehicle_info.strip()
+        
+        req_ton = ""
+        req_car = raw_vehicle_info
+        
+        if " " in raw_vehicle_info:
+            parts = raw_vehicle_info.split(" ", 1)
+            req_ton = parts[0]
+            req_car = parts[1]
+        elif "톤" in raw_vehicle_info:
+            req_ton = raw_vehicle_info
+            req_car = "기타"
+            
+        mapped_row["요청 차량"] = req_car
+        mapped_row["요청 톤급"] = req_ton
+        
+        # update mapped_row directly since we instantiated it partially above
+        mapped_row.update({
             "상차 요청 일시": row.get("출발일시", ""),
             "하차 요청 일시": row.get("도착일시", ""),
             "차량번호": "",
