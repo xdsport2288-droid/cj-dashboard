@@ -1585,6 +1585,7 @@ function initDashboard() {
     };
 
     const updateDateLabel = function(selectedDates) {
+        // ... (unchanged part)
         const label = document.getElementById('date-range-label');
         if (!label) return;
         if (selectedDates && selectedDates.length === 2) {
@@ -1602,6 +1603,10 @@ function initDashboard() {
             label.innerHTML = 'ðŸ“… ìš´ì†¡ ê¸°ê°„';
         }
     };
+
+    if (typeof datePicker !== 'undefined' && datePicker && datePicker.destroy) {
+        datePicker.destroy();
+    }
 
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
@@ -2337,3 +2342,144 @@ if (document.readyState === 'loading') {
 } else {
     initDashboard();
 }
+// ====== FILE SYNC LOGIC (File System Access API) ======
+let syncFileHandle = null;
+let syncInterval = null;
+let lastModifiedTime = 0;
+
+async function setupFileSync() {
+    const btnSync = document.getElementById('btn-sync-file');
+    const syncStatus = document.getElementById('sync-status');
+    if (!btnSync) return;
+
+    btnSync.addEventListener('click', async () => {
+        try {
+            [syncFileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Excel/CSV ÆÄÀÏ',
+                    accept: {
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+                        'application/vnd.ms-excel': ['.xls'],
+                        'text/csv': ['.csv']
+                    }
+                }],
+                multiple: false
+            });
+            
+            syncStatus.innerHTML = '<span style="color: #3b82f6;">¿¬°áµÊ - ÀÚµ¿ °»½Å ´ë±âÁß...</span>';
+            btnSync.style.display = 'none';
+            
+            if (syncInterval) clearInterval(syncInterval);
+            await checkFileAndSync();
+            syncInterval = setInterval(checkFileAndSync, 2000);
+            
+        } catch (err) {
+            console.error('File sync cancelled or failed:', err);
+        }
+    });
+}
+
+async function checkFileAndSync() {
+    if (!syncFileHandle) return;
+    try {
+        const file = await syncFileHandle.getFile();
+        if (file.lastModified > lastModifiedTime) {
+            lastModifiedTime = file.lastModified;
+            
+            const syncStatus = document.getElementById('sync-status');
+            syncStatus.innerHTML = '<span style="color: #f59e0b;">?? µ¥ÀÌÅÍ °»½Å Áß...</span>';
+            
+            await processExcelFile(file);
+            
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2,'0') + ':' + 
+                            now.getMinutes().toString().padStart(2,'0') + ':' + 
+                            now.getSeconds().toString().padStart(2,'0');
+            syncStatus.innerHTML = '<span style="color: #10b981;">? ' + timeStr + ' ÀÚµ¿ °»½ÅµÊ</span>';
+        }
+    } catch (e) {
+        console.error('Error monitoring file:', e);
+        document.getElementById('sync-status').innerHTML = '<span style="color: #ef4444;">? ÆÄÀÏ Á¢±Ù ¿¡·¯</span>';
+    }
+}
+
+async function processExcelFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+                
+                const mappedData = json.map(row => {
+                    const carInfoStr = String(row['Â÷·®Á¤º¸'] || '').trim();
+                    const carInfo = carInfoStr ? carInfoStr.split(' ') : [];
+                    const reqTon = carInfo.length > 0 ? carInfo[0] : "";
+                    const reqCar = carInfo.length > 1 ? carInfo[1] : "";
+                    
+                    const fare = (row['¿îÀÓ'] !== "" && !isNaN(row['¿îÀÓ'])) ? parseFloat(row['¿îÀÓ']) : 0.0;
+                    const extra = (row['Ãß°¡ºñ'] !== "" && !isNaN(row['Ãß°¡ºñ'])) ? parseFloat(row['Ãß°¡ºñ']) : 0.0;
+                    const waypoints = (row['°æÀ¯Áö°³¼ö'] !== "" && !isNaN(row['°æÀ¯Áö°³¼ö'])) ? parseFloat(row['°æÀ¯Áö°³¼ö']) : 0.0;
+                    const carCount = (row['Â÷·®´ë¼ö'] !== "" && !isNaN(row['Â÷·®´ë¼ö'])) ? parseFloat(row['Â÷·®´ë¼ö']) : 1.0;
+                    
+                    return {
+                        "ÁÖ¹® »óÅÂ": String(row['Á¢¼ö»óÅÂ'] || ""),
+                        "Á¢¼ö¹øÈ£": String(row['Á¢¼ö¹øÈ£'] || ""),
+                        "È­ÁÖ¸í": String(row['È­ÁÖ»ç'] || ""),
+                        "»óÂ÷Áö¸í": String(row['Ãâ¹ßÁö¸í'] || ""),
+                        "ÇÏÂ÷Áö¸í": String(row['µµÂøÁö¸í'] || ""),
+                        "ÇÏÂ÷Áö ÁÖ¼Ò": String(row['µµÂøÁöÁÖ¼Ò'] || ""),
+                        "ÇÏÂ÷Áö »ó¼¼ ÁÖ¼Ò": "",
+                        "¿äÃ» Â÷·®": reqCar,
+                        "¿äÃ» Åæ±Þ": reqTon,
+                        "»óÂ÷ ¿äÃ» ÀÏ½Ã": row['Ãâ¹ßÀÏ½Ã'] ? String(row['Ãâ¹ßÀÏ½Ã']) : "",
+                        "ÇÏÂ÷ ¿äÃ» ÀÏ½Ã": row['µµÂøÀÏ½Ã'] ? String(row['µµÂøÀÏ½Ã']) : "",
+                        "Â÷·®¹øÈ£": "",
+                        "¿îÀüÀÚ¸í": String(row['Á¢¼öÀÚ'] || ""),
+                        "¸ÅÃâ ±Ý¾×": "",
+                        "ÃÑ ¸ÅÃâ ±Ý¾×": fare + extra,
+                        "¸ÅÀÔ ±Ý¾×": "",
+                        "ÃÑ ¸ÅÀÔ ±Ý¾×": "",
+                        "ÁÖ¹® ÀÏ½Ã": row['Á¢¼öÀÏÀÚ'] ? String(row['Á¢¼öÀÏÀÚ']) : "",
+                        "°æÀ¯Áö": waypoints,
+                        "¼ö·®": carCount,
+                        "ºñ°í": String(row['ºñ°í'] || ""),
+                        "°£¼±»ç": String(row['°£¼±»ç'] || ""),
+                        "¿î¼Û»ç": "",
+                        "¼Ò¼Ó": "",
+                        "Ãß°¡¿îÀÓ": extra
+                    };
+                });
+                
+                window.TRANSPORT_DATA = mappedData;
+                
+                const now = new Date();
+                window.LAST_UPDATED = now.getFullYear() + '-' + 
+                                      String(now.getMonth()+1).padStart(2,'0') + '-' + 
+                                      String(now.getDate()).padStart(2,'0') + ' ' + 
+                                      String(now.getHours()).padStart(2,'0') + ':' + 
+                                      String(now.getMinutes()).padStart(2,'0') + ':' + 
+                                      String(now.getSeconds()).padStart(2,'0');
+                
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan && window.LAST_UPDATED) {
+                    timeSpan.textContent = "ÃÖ±Ù ¾÷µ¥ÀÌÆ®: " + window.LAST_UPDATED;
+                }
+                
+                initFilters();
+                filterData();
+                
+                resolve();
+            } catch (err) {
+                console.error('Error parsing excel:', err);
+                reject(err);
+            }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+}
+setupFileSync();
