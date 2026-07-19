@@ -2342,6 +2342,15 @@ if (btnTableScrollDown && dynamicTableWrapper) {
 }
 
 // App execution
+try {
+    const cachedData = localStorage.getItem('CACHED_TRANSPORT_DATA');
+    if (cachedData) {
+        window.TRANSPORT_DATA = JSON.parse(cachedData);
+        window.LAST_UPDATED = localStorage.getItem('CACHED_LAST_UPDATED');
+    }
+} catch (e) {
+    console.warn('Failed to load cached data:', e);
+}
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDashboard);
@@ -2349,5 +2358,157 @@ if (document.readyState === 'loading') {
     initDashboard();
 }
 
+// ====== FILE SYNC LOGIC (File System Access API) ======
+let syncFileHandle = null;
+let syncInterval = null;
+let lastModifiedTime = 0;
 
+async function setupFileSync() {
+    const btnSync = document.getElementById('btn-sync-file');
+    const syncStatus = document.getElementById('sync-status');
+    if (!btnSync) return;
+
+    btnSync.addEventListener('click', async () => {
+        try {
+            [syncFileHandle] = await window.showOpenFilePicker({
+                types: [{
+                    description: 'Excel/CSV 파일',
+                    accept: {
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'],
+                        'application/vnd.ms-excel': ['.xls'],
+                        'text/csv': ['.csv']
+                    }
+                }],
+                multiple: false
+            });
+            
+            syncStatus.innerHTML = '<span style="color: #3b82f6;">연결됨 - 자동 갱신 대기중...</span>';
+            btnSync.style.display = 'none';
+            
+            if (syncInterval) clearInterval(syncInterval);
+            await checkFileAndSync();
+            syncInterval = setInterval(checkFileAndSync, 2000);
+            
+        } catch (err) {
+            console.error('File sync cancelled or failed:', err);
+        }
+    });
+}
+
+async function checkFileAndSync() {
+    if (!syncFileHandle) return;
+    try {
+        const file = await syncFileHandle.getFile();
+        if (file.lastModified > lastModifiedTime) {
+            lastModifiedTime = file.lastModified;
+            
+            const syncStatus = document.getElementById('sync-status');
+            syncStatus.innerHTML = '<span style="color: #f59e0b;">🔄 데이터 갱신 중...</span>';
+            
+            await processExcelFile(file);
+            
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2,'0') + ':' + 
+                            now.getMinutes().toString().padStart(2,'0') + ':' + 
+                            now.getSeconds().toString().padStart(2,'0');
+            syncStatus.innerHTML = '<span style="color: #10b981;">✅ ' + timeStr + ' 자동 갱신됨</span>';
+        }
+    } catch (e) {
+        console.error('Error monitoring file:', e);
+        const syncStatus = document.getElementById('sync-status');
+        syncStatus.innerHTML = '<span style="color: #ef4444; cursor: pointer;" title="클릭하여 다시 연결">❌ 파일 접근 에러 (클릭하여 재연결)</span>';
+        syncStatus.onclick = () => {
+            const btnSync = document.getElementById('btn-sync-file');
+            if (btnSync) btnSync.click();
+        };
+    }
+}
+
+async function processExcelFile(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, {defval: ""});
+                
+                const mappedData = json.map(row => {
+                    const carInfoStr = String(row['차량정보'] || '').trim();
+                    const carInfo = carInfoStr ? carInfoStr.split(' ') : [];
+                    const reqTon = carInfo.length > 0 ? carInfo[0] : "";
+                    const reqCar = carInfo.length > 1 ? carInfo[1] : "";
+                    
+                    const fare = (row['운임'] !== "" && !isNaN(row['운임'])) ? parseFloat(row['운임']) : 0.0;
+                    const extra = (row['추가비'] !== "" && !isNaN(row['추가비'])) ? parseFloat(row['추가비']) : 0.0;
+                    const waypoints = (row['경유지개수'] !== "" && !isNaN(row['경유지개수'])) ? parseFloat(row['경유지개수']) : 0.0;
+                    const carCount = (row['차량대수'] !== "" && !isNaN(row['차량대수'])) ? parseFloat(row['차량대수']) : 1.0;
+                    
+                    return {
+                        "주문 상태": String(row['접수상태'] || ""),
+                        "접수번호": String(row['접수번호'] || ""),
+                        "화주명": String(row['화주사'] || ""),
+                        "상차지명": String(row['출발지명'] || ""),
+                        "하차지명": String(row['도착지명'] || ""),
+                        "하차지 주소": String(row['도착지주소'] || ""),
+                        "하차지 상세 주소": "",
+                        "요청 차량": reqCar,
+                        "요청 톤급": reqTon,
+                        "상차 요청 일시": row['출발일시'] ? String(row['출발일시']) : "",
+                        "하차 요청 일시": row['도착일시'] ? String(row['도착일시']) : "",
+                        "차량번호": "",
+                        "운전자명": String(row['접수자'] || ""),
+                        "매출 금액": "",
+                        "총 매출 금액": fare + extra,
+                        "매입 금액": "",
+                        "총 매입 금액": "",
+                        "주문 일시": row['접수일자'] ? String(row['접수일자']) : "",
+                        "경유지": waypoints,
+                        "수량": carCount,
+                        "비고": String(row['비고'] || ""),
+                        "간선사": String(row['간선사'] || ""),
+                        "운송사": "",
+                        "소속": "",
+                        "추가운임": extra
+                    };
+                });
+                
+                window.TRANSPORT_DATA = mappedData;
+                
+                const now = new Date();
+                window.LAST_UPDATED = now.getFullYear() + '-' + 
+                                      String(now.getMonth()+1).padStart(2,'0') + '-' + 
+                                      String(now.getDate()).padStart(2,'0') + ' ' + 
+                                      String(now.getHours()).padStart(2,'0') + ':' + 
+                                      String(now.getMinutes()).padStart(2,'0') + ':' + 
+                                      String(now.getSeconds()).padStart(2,'0');
+                                      
+                try {
+                    localStorage.setItem('CACHED_TRANSPORT_DATA', JSON.stringify(mappedData));
+                    localStorage.setItem('CACHED_LAST_UPDATED', window.LAST_UPDATED);
+                } catch (err) {
+                    console.warn('Could not save to localStorage:', err);
+                }
+                
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan && window.LAST_UPDATED) {
+                    timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+                }
+                
+                initFilters();
+                filterData();
+                
+                resolve();
+            } catch (err) {
+                console.error('Error parsing excel:', err);
+                reject(err);
+            }
+        };
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+    });
+}
+setupFileSync();
 
