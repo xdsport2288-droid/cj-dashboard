@@ -1318,10 +1318,20 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 당월 1일 ~ 현재일로 초기화
+    // 날짜 선택기를 데이터 전체 기간(최소일~현재일)으로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
         const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        let minDateStr = "9999-99-99";
+        if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
+            window.TRANSPORT_DATA.forEach(row => {
+                const dateStr = row['상차 요청 일시'];
+                if (dateStr) {
+                    const justDate = dateStr.split(' ')[0];
+                    if (justDate < minDateStr) minDateStr = justDate;
+                }
+            });
+        }
+        const firstDay = minDateStr !== "9999-99-99" ? new Date(minDateStr) : new Date(today.getFullYear(), today.getMonth(), 1);
         datePicker.setDate([firstDay, today]);
         
         // Label 원상복구
