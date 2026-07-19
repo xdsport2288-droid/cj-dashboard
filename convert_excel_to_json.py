@@ -28,9 +28,41 @@ try:
             
     records = df.to_dict(orient='records')
     
+    # 프론트엔드가 기대하는 JSON 키 구조로 매핑 (엑셀 컬럼명이 변경된 것에 대응)
+    mapped_records = []
+    for row in records:
+        mapped_row = {
+            "주문 상태": row.get("접수상태", ""),
+            "접수번호": row.get("접수번호", ""),
+            "화주명": row.get("화주사", ""),
+            "상차지명": row.get("출발지명", ""),
+            "하차지명": row.get("도착지명", ""),
+            "하차지 주소": row.get("도착지주소", ""),
+            "하차지 상세 주소": "",
+            "요청 차량": row.get("차량정보", ""),
+            "요청 톤급": "",
+            "상차 요청 일시": row.get("출발일시", ""),
+            "하차 요청 일시": row.get("도착일시", ""),
+            "차량번호": "",
+            "운전자명": row.get("접수자", ""),
+            "매출 금액": "",
+            "총 매출 금액": row.get("운임", ""),
+            "매입 금액": "",
+            "총 매입 금액": "",
+            "주문 일시": row.get("접수일자", ""),
+            "경유지": row.get("경유지개수", 0),
+            "수량": row.get("차량대수", 1),
+            "비고": row.get("비고", ""),
+            "간선사": row.get("간선사", ""),
+            "운송사": "",
+            "소속": "",
+            "추가운임": row.get("추가비", 0)
+        }
+        mapped_records.append(mapped_row)
+    
     output = {
         "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        "data": records
+        "data": mapped_records
     }
     
     with open('dashboard_data.json', 'w', encoding='utf-8') as f:
