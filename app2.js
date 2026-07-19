@@ -68,7 +68,7 @@ class CustomMultiSelect {
         this.gridContainer.style.gap = '4px 16px';
 
         this.btnUp = document.createElement('button');
-        this.btnUp.title = '留??꾨줈';
+        this.btnUp.title = '맨 위로';
         this.btnUp.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>';
         this.btnUp.style.cssText = 'position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: none; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
         this.btnUp.onmouseover = () => { this.btnUp.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; this.btnUp.style.color = '#fff'; };
@@ -76,7 +76,7 @@ class CustomMultiSelect {
         this.btnUp.onclick = (e) => { e.preventDefault(); e.stopPropagation(); this.scrollContent.scrollTo({top: 0, behavior: 'smooth'}); };
 
         this.btnDown = document.createElement('button');
-        this.btnDown.title = '留??꾨옒濡?;
+        this.btnDown.title = '맨 아래로';
         this.btnDown.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
         this.btnDown.style.cssText = 'position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: none; align-items: center; justify-content: center; transition: all 0.2s; z-index: 100;';
         this.btnDown.onmouseover = () => { this.btnDown.style.backgroundColor = 'rgba(59, 130, 246, 0.3)'; this.btnDown.style.color = '#fff'; };
@@ -96,7 +96,7 @@ class CustomMultiSelect {
             window.addEventListener('scroll', (e) => {
                 if (e.target && e.target.closest && e.target.closest('.custom-multiselect-panel')) return;
                 
-                // DOM ?낅뜲?댄듃濡??명븳 ?덈룄???덈꺼 ?ㅽ겕濡??대깽??臾댁떆
+                // DOM 업데이트로 인한 윈도우 레벨 스크롤 이벤트 무시
                 if (e.target === document || e.target === window || e.target === document.documentElement || e.target === document.body) return;
 
                 // Horizontal scrolling of table wrapper should NOT close dropdowns, but reposition them
@@ -120,7 +120,7 @@ class CustomMultiSelect {
         this.selectAllWrapper.appendChild(selectAllCb);
         
         const selectAllText = document.createElement('span');
-        selectAllText.innerHTML = ' ?꾩껜 ?좏깮/?댁젣';
+        selectAllText.innerHTML = ' 전체 선택/해제';
         this.selectAllWrapper.appendChild(selectAllText);
         
         this.gridContainer.appendChild(this.selectAllWrapper);
@@ -281,7 +281,7 @@ class CustomMultiSelect {
     updateButton() {
         const selectedCheckboxes = this.checkboxes.filter(cb => cb.checked);
         const selectedCount = selectedCheckboxes.length;
-        const headerName = this.defaultText.split(' ')[0]; // "?붿＜??(?꾩껜)" -> "?붿＜??
+        const headerName = this.defaultText.split(' ')[0]; // "화주사 (전체)" -> "화주사"
         const isThFilter = this.selectElement && this.selectElement.id && this.selectElement.id.startsWith('th-filter');
 
         if (selectedCount === 0 || selectedCount === this.checkboxes.length) {
@@ -292,10 +292,10 @@ class CustomMultiSelect {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             
             let extraClass = '';
-            if (selectedText.includes('諛곗감?꾨즺')) extraClass = 'success-text';
-            else if (selectedText.includes('?댁넚?꾨즺')) extraClass = 'warning-text';
-            else if (selectedText.includes('痍⑥냼')) extraClass = 'danger-text';
-            else if (selectedText.includes('?묒닔')) extraClass = 'info-text';
+            if (selectedText.includes('배차완료')) extraClass = 'success-text';
+            else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
+            else if (selectedText.includes('취소')) extraClass = 'danger-text';
+            else if (selectedText.includes('접수')) extraClass = 'info-text';
             else extraClass = 'primary-text';
 
             if (isThFilter) {
@@ -384,7 +384,7 @@ let datePicker = null;
 
 // Helper to format currency
 function formatKRW(val) {
-    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(val).replace('??, '??');
+    return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(val).replace('₩', '₩ ');
 }
 
 // Helper to clean numeric values
@@ -412,11 +412,11 @@ function initFilters() {
     const currentTone = toneSelect.value;
     const currentStatus = statusSelect.value;
 
-    shipperSelect.innerHTML = '<option value="">?꾩껜 嫄곕옒泥?/option>';
-    if (carrierSelect) carrierSelect.innerHTML = '<option value="">媛꾩꽑??(?꾩껜)</option>';
-    loadingSelect.innerHTML = '<option value="">?꾩껜 ?곸감吏</option>';
-    destSelect.innerHTML = '<option value="">?꾩껜 ?섏감吏</option>';
-    toneSelect.innerHTML = '<option value="">?꾩껜 ?ㅺ툒</option>';
+    shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
+    if (carrierSelect) carrierSelect.innerHTML = '<option value="">간선사 (전체)</option>';
+    loadingSelect.innerHTML = '<option value="">전체 상차지</option>';
+    destSelect.innerHTML = '<option value="">전체 하차지</option>';
+    toneSelect.innerHTML = '<option value="">전체 톤급</option>';
     shipperSelect.innerHTML = '';
     if (carrierSelect) carrierSelect.innerHTML = '';
     loadingSelect.innerHTML = '';
@@ -441,23 +441,23 @@ function initFilters() {
     const ordernums = new Set();
 
     window.TRANSPORT_DATA.forEach(row => {
-        if (row['?붿＜紐?]) shippers.add(String(row['?붿＜紐?]).trim());
-        if (row['?묒닔踰덊샇']) ordernums.add(String(row['?묒닔踰덊샇']).trim());
-        let c = String(row['媛꾩꽑??] || '').trim();
-        carriers.add(c === '' ? '(誘몄???' : c);
-        if (row['?곸감吏紐?]) loadings.add(String(row['?곸감吏紐?]).trim());
-        if (row['?섏감吏紐?]) dests.add(String(row['?섏감吏紐?]).trim());
-        if (row['?붿껌 ?ㅺ툒']) tones.add(String(row['?붿껌 ?ㅺ툒']).trim());
-        if (row['?붿껌 李⑤웾']) carTypes.add(String(row['?붿껌 李⑤웾']).trim());
-        if (row['二쇰Ц ?곹깭']) statuses.add(String(row['二쇰Ц ?곹깭']).trim());
-        if (row['?댁쟾?먮챸']) drivers.add(String(row['?댁쟾?먮챸']).trim());
-        if (row['李⑤웾踰덊샇']) carnums.add(String(row['李⑤웾踰덊샇']).trim());
-        if (row['寃쎌쑀吏'] !== undefined && row['寃쎌쑀吏'] !== null) waypoints.add(String(row['寃쎌쑀吏']).trim());
-        if (row['鍮꾧퀬'] !== undefined && row['鍮꾧퀬'] !== null) remarks.add(String(row['鍮꾧퀬']).trim());
-        const sales = row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸'];
+        if (row['화주명']) shippers.add(String(row['화주명']).trim());
+        if (row['접수번호']) ordernums.add(String(row['접수번호']).trim());
+        let c = String(row['간선사'] || '').trim();
+        carriers.add(c === '' ? '(미지정)' : c);
+        if (row['상차지명']) loadings.add(String(row['상차지명']).trim());
+        if (row['하차지명']) dests.add(String(row['하차지명']).trim());
+        if (row['요청 톤급']) tones.add(String(row['요청 톤급']).trim());
+        if (row['요청 차량']) carTypes.add(String(row['요청 차량']).trim());
+        if (row['주문 상태']) statuses.add(String(row['주문 상태']).trim());
+        if (row['운전자명']) drivers.add(String(row['운전자명']).trim());
+        if (row['차량번호']) carnums.add(String(row['차량번호']).trim());
+        if (row['경유지'] !== undefined && row['경유지'] !== null) waypoints.add(String(row['경유지']).trim());
+        if (row['비고'] !== undefined && row['비고'] !== null) remarks.add(String(row['비고']).trim());
+        const sales = row['총 매출 금액'] || row['매출 금액'];
         if (sales !== undefined && sales !== null && String(sales).trim() !== '') fares.add(String(sales).trim());
-        if (row['?곸감 ?붿껌 ?쇱떆']) startdates.add(String(row['?곸감 ?붿껌 ?쇱떆']).trim());
-        if (row['?섏감 ?붿껌 ?쇱떆']) enddates.add(String(row['?섏감 ?붿껌 ?쇱떆']).trim());
+        if (row['상차 요청 일시']) startdates.add(String(row['상차 요청 일시']).trim());
+        if (row['하차 요청 일시']) enddates.add(String(row['하차 요청 일시']).trim());
     });
 
     const thStatus = document.getElementById('th-filter-status');
@@ -517,30 +517,30 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     if (thEnddate) Array.from(enddates).sort().forEach(d => { const o = document.createElement('option'); o.value = d; o.textContent = d; thEnddate.appendChild(o); });
 
     // Initialize Custom MultiSelects
-    window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '?붿＜??(?꾩껜)');
-    if (carrierSelect) window.cmsCarrier = new CustomMultiSelect(document.getElementById('filter-carrier'), '媛꾩꽑??(?꾩껜)');
-    window.cmsLoading = new CustomMultiSelect(document.getElementById('filter-loading'), '異쒕컻吏紐?(?꾩껜)');
-    window.cmsDest = new CustomMultiSelect(document.getElementById('filter-dest'), '?꾩갑吏紐?(?꾩껜)');
-    window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '李⑤웾?ㅼ닔 (?꾩껜)');
-    window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '?묒닔?곹깭 (?꾩껜)');
+    window.cmsShipper = new CustomMultiSelect(document.getElementById('filter-shipper'), '화주사 (전체)');
+    if (carrierSelect) window.cmsCarrier = new CustomMultiSelect(document.getElementById('filter-carrier'), '간선사 (전체)');
+    window.cmsLoading = new CustomMultiSelect(document.getElementById('filter-loading'), '출발지명 (전체)');
+    window.cmsDest = new CustomMultiSelect(document.getElementById('filter-dest'), '도착지명 (전체)');
+    window.cmsTone = new CustomMultiSelect(document.getElementById('filter-tone'), '차량톤수 (전체)');
+    window.cmsStatus = new CustomMultiSelect(document.getElementById('filter-status'), '접수상태 (전체)');
 
-    window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '?묒닔?곹깭 (?꾩껜)');
-    window.cmsThOrdernum = new CustomMultiSelect(document.getElementById('th-filter-ordernum'), '?묒닔踰덊샇 (?꾩껜)');
-    window.cmsThShipper = new CustomMultiSelect(document.getElementById('th-filter-shipper'), '?붿＜??(?꾩껜)');
-    window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '媛꾩꽑??(?꾩껜)');
-    window.cmsThLoading = new CustomMultiSelect(document.getElementById('th-filter-loading'), '異쒕컻吏紐?(?꾩껜)');
-    window.cmsThDest = new CustomMultiSelect(document.getElementById('th-filter-dest'), '?꾩갑吏紐?(?꾩껜)');
-    window.cmsThStartdate = new CustomMultiSelect(document.getElementById('th-filter-startdate'), '異쒕컻?쇱떆 (?꾩껜)');
-    window.cmsThEnddate = new CustomMultiSelect(document.getElementById('th-filter-enddate'), '?꾩갑?쇱떆 (?꾩껜)');
-    window.cmsThWaypoint = new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '寃쎌쑀吏 (?꾩껜)');
-    window.cmsThTone = new CustomMultiSelect(document.getElementById('th-filter-tone'), '李⑤웾?ㅼ닔 (?꾩껜)');
-    window.cmsThCartype = new CustomMultiSelect(document.getElementById('th-filter-cartype'), '李⑤웾?좏삎 (?꾩껜)');
-    window.cmsThDriver = new CustomMultiSelect(document.getElementById('th-filter-driver'), '?묒닔??(?꾩껜)');
-    window.cmsThCarnum = new CustomMultiSelect(document.getElementById('th-filter-carnum'), '李⑤웾踰덊샇 (?꾩껜)');
-    window.cmsThRemark = new CustomMultiSelect(document.getElementById('th-filter-remark'), '鍮꾧퀬 (?꾩껜)');
-    window.cmsThFare = new CustomMultiSelect(document.getElementById('th-filter-fare'), '?댁엫 (?꾩껜)');
-    new CustomMultiSelect(document.getElementById('th-filter-remark'), '鍮꾧퀬 (?꾩껜)');
-    new CustomMultiSelect(document.getElementById('th-filter-fare'), '?댁엫 (?꾩껜)');
+    window.cmsThStatus = new CustomMultiSelect(document.getElementById('th-filter-status'), '접수상태 (전체)');
+    window.cmsThOrdernum = new CustomMultiSelect(document.getElementById('th-filter-ordernum'), '접수번호 (전체)');
+    window.cmsThShipper = new CustomMultiSelect(document.getElementById('th-filter-shipper'), '화주사 (전체)');
+    window.cmsThCarrier = new CustomMultiSelect(document.getElementById('th-filter-carrier'), '간선사 (전체)');
+    window.cmsThLoading = new CustomMultiSelect(document.getElementById('th-filter-loading'), '출발지명 (전체)');
+    window.cmsThDest = new CustomMultiSelect(document.getElementById('th-filter-dest'), '도착지명 (전체)');
+    window.cmsThStartdate = new CustomMultiSelect(document.getElementById('th-filter-startdate'), '출발일시 (전체)');
+    window.cmsThEnddate = new CustomMultiSelect(document.getElementById('th-filter-enddate'), '도착일시 (전체)');
+    window.cmsThWaypoint = new CustomMultiSelect(document.getElementById('th-filter-waypoint'), '경유지 (전체)');
+    window.cmsThTone = new CustomMultiSelect(document.getElementById('th-filter-tone'), '차량톤수 (전체)');
+    window.cmsThCartype = new CustomMultiSelect(document.getElementById('th-filter-cartype'), '차량유형 (전체)');
+    window.cmsThDriver = new CustomMultiSelect(document.getElementById('th-filter-driver'), '접수자 (전체)');
+    window.cmsThCarnum = new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
+    window.cmsThRemark = new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
+    window.cmsThFare = new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
+    new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
 
     const bindSync = (cms1, cms2) => {
         if (cms1 && cms2) {
@@ -558,7 +558,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     // Dynamically generate tabs
     const tableTabs = document.querySelector('.table-tabs');
     if (tableTabs) {
-        tableTabs.innerHTML = '<button class="tab-btn active" data-status="">?꾩껜</button>';
+        tableTabs.innerHTML = '<button class="tab-btn active" data-status="">전체</button>';
         Array.from(statuses).sort().forEach(s => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
@@ -595,12 +595,12 @@ function updateKPIs(statusUnfilteredData) {
     let ordersCount = activeData.length;
 
     activeData.forEach(row => {
-        const ?댁엫 = cleanNumeric(row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸']);
-        const sales = Math.floor(?댁엫 * 1.01 / 100) * 100; // ROUNDDOWN(?댁엫횞101%, -2)
-        const purchase = Math.floor(?댁엫 * 0.96); // ?댁엫횞96%
+        const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임 * 1.01 / 100) * 100; // ROUNDDOWN(운임×101%, -2)
+        const purchase = Math.floor(운임 * 0.96); // 운임×96%
         salesTotal += sales;
         purchaseTotal += purchase;
-        freightTotal += ?댁엫;
+        freightTotal += 운임;
     });
 
     let profitTotal = salesTotal - purchaseTotal;
@@ -610,20 +610,20 @@ function updateKPIs(statusUnfilteredData) {
     document.getElementById('kpi-purchase').textContent = formatKRW(purchaseTotal);
     document.getElementById('kpi-profit').textContent = formatKRW(profitTotal);
     document.getElementById('kpi-margin').textContent = margin.toFixed(1) + '%';
-    document.getElementById('kpi-orders').textContent = ordersCount.toLocaleString() + ' 嫄?;
+    document.getElementById('kpi-orders').textContent = ordersCount.toLocaleString() + ' 건';
     const freightEl = document.getElementById('kpi-freight');
     if (freightEl) freightEl.textContent = formatKRW(freightTotal);
 
-    // ?덉륫 遺꾩꽍 ?⑤꼸 ?낅뜲?댄듃
+    // 예측 분석 패널 업데이트
     updatePrediction(salesTotal);
 
-    // ====== ?꾩썡 ?鍮?(MoM) 怨꾩궛 ======
+    // ====== 전월 대비 (MoM) 계산 ======
     const today = new Date();
     const thisYear = today.getFullYear();
-    // ====== ?꾩썡 ?숆린媛??鍮?怨꾩궛 ======
-    // ?꾩옱 ?쒖꽦 ?곗씠?곗쓽 ?좎쭨 踰붿쐞瑜??뚯븙
+    // ====== 전월 동기간 대비 계산 ======
+    // 현재 활성 데이터의 날짜 범위를 파악
     const currentDates = activeData
-        .map(r => (r['?곸감 ?붿껌 ?쇱떆'] || '').split(' ')[0])
+        .map(r => (r['상차 요청 일시'] || '').split(' ')[0])
         .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
         .sort();
 
@@ -633,7 +633,7 @@ function updateKPIs(statusUnfilteredData) {
         const firstDate = new Date(currentDates[0]);
         const lastDate  = new Date(currentDates[currentDates.length - 1]);
 
-        // ?숆린媛? 泥ル궇~留덉?留됰궇 媛곴컖 ?꾩썡 媛숈? ??day) 濡??대룞
+        // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
         const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
         const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
 
@@ -641,14 +641,14 @@ function updateKPIs(statusUnfilteredData) {
         const prevFirstStr = fmt(prevFirst);
         const prevLastStr  = fmt(prevLast);
 
-        momLabel = `?꾩썡 ?숆린媛?(${prevFirstStr} ~ ${prevLastStr})`;
+        momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
         if (window.TRANSPORT_DATA) {
             window.TRANSPORT_DATA.forEach(row => {
-                const dateStr = (row['?곸감 ?붿껌 ?쇱떆'] || '').split(' ')[0];
+                const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
                     prevCount++;
-                    const f = cleanNumeric(row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸']);
+                    const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
                 }
             });
@@ -658,7 +658,7 @@ function updateKPIs(statusUnfilteredData) {
     const makeMomBadge = (current, prev, label) => {
         if (!prev) return '';
         const pct = ((current - prev) / prev * 100);
-        const sign = pct > 0 ? '?? : pct < 0 ? '?? : '??;
+        const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
         const tip = label ? ` title="${label}"` : '';
         return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%</span>`;
@@ -675,7 +675,7 @@ function updateKPIs(statusUnfilteredData) {
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
-        const status = row['二쇰Ц ?곹깭'] || '?곹깭 ?놁쓬';
+        const status = row['주문 상태'] || '상태 없음';
         statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
 
@@ -696,10 +696,10 @@ function updateKPIs(statusUnfilteredData) {
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('諛곗감?꾨즺')) colorClass = 'success';
-        else if (status.includes('?댁넚?꾨즺')) colorClass = 'warning';
-        else if (status.includes('痍⑥냼')) colorClass = 'danger';
-        else if (status.includes('?묒닔')) colorClass = 'info';
+        if (status.includes('배차완료')) colorClass = 'success';
+        else if (status.includes('운송완료')) colorClass = 'warning';
+        else if (status.includes('취소')) colorClass = 'danger';
+        else if (status.includes('접수')) colorClass = 'info';
         
         window.statusColorMap = window.statusColorMap || {};
         window.statusColorMap[status] = colorClass;
@@ -717,19 +717,19 @@ function updatePrediction(salesTotal) {
     const year = today.getFullYear();
     const month = today.getMonth(); // 0-indexed
 
-    // ?뱀썡 1??~ 留먯씪
+    // 당월 1일 ~ 말일
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const totalDaysInMonth = lastDay.getDate();
 
-    // 寃쎄낵 ?쇱닔: ?뱀썡 1?쇰????ㅻ뒛源뚯? (?ㅻ뒛 ?ы븿)
+    // 경과 일수: 당월 1일부터 오늘까지 (오늘 포함)
     const elapsedDays = today.getDate();
     const remainingDays = totalDaysInMonth - elapsedDays;
 
     const totalCount = activeData.length;
 
     if (elapsedDays < 1 || totalCount === 0) {
-        document.getElementById('pred-elapsed').textContent = '??;
+        document.getElementById('pred-elapsed').textContent = '—';
         return;
     }
 
@@ -739,26 +739,26 @@ function updatePrediction(salesTotal) {
     const dailyAvgSales = salesTotal / elapsedDays;
     const predictedSales = Math.round(dailyAvgSales * totalDaysInMonth);
 
-    // ?덉긽 ?쒖씠?? ?덉긽 留ㅼ텧??(留ㅼ텧-留ㅼ엯) 鍮꾩쑉 ?곸슜 (??5%)
-    // 留ㅼ텧=?댁엫횞101%, 留ㅼ엯=?댁엫횞96% ???쒖씠?듬쪧??5/101)??.95%
-    const predictedFreight = predictedSales / 1.01; // ??궛
+    // 예상 순이익: 예상 매출의 (매출-매입) 비율 적용 (약 5%)
+    // 매출=운임×101%, 매입=운임×96% → 순이익률≈(5/101)≈4.95%
+    const predictedFreight = predictedSales / 1.01; // 역산
     const predictedPurchase = Math.floor(predictedFreight * 0.96);
     const predictedProfit = predictedSales - predictedPurchase;
 
-    const monthName = `${year}??${month + 1}??;
+    const monthName = `${year}년 ${month + 1}월`;
 
     // Update DOM
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    setEl('prediction-period-label', `${monthName} 湲곗? (${elapsedDays}??寃쎄낵 / ${remainingDays}???붿뿬)`);
-    setEl('pred-elapsed', `${elapsedDays}??/ ${totalDaysInMonth}??);
-    setEl('pred-days-info', `?붿뿬 ${remainingDays}??);
+    setEl('prediction-period-label', `${monthName} 기준 (${elapsedDays}일 경과 / ${remainingDays}일 잔여)`);
+    setEl('pred-elapsed', `${elapsedDays}일 / ${totalDaysInMonth}일`);
+    setEl('pred-days-info', `잔여 ${remainingDays}일`);
     setEl('pred-daily-count', dailyAvgCount.toFixed(1));
-    setEl('pred-monthly-count', predictedCount.toLocaleString() + ' 嫄?);
-    setEl('pred-count-sub', `?꾩옱 ${totalCount}嫄?+ ?덉긽 ${predictedCount - totalCount}嫄?);
+    setEl('pred-monthly-count', predictedCount.toLocaleString() + ' 건');
+    setEl('pred-count-sub', `현재 ${totalCount}건 + 예상 ${predictedCount - totalCount}건`);
     setEl('pred-daily-sales', Math.round(dailyAvgSales).toLocaleString());
     setEl('pred-monthly-sales', formatKRW(predictedSales));
-    setEl('pred-sales-sub', `?꾩옱 ?鍮?${((predictedSales / salesTotal - 1) * 100).toFixed(1)}% 異붽? ?덉긽`);
+    setEl('pred-sales-sub', `현재 대비 ${((predictedSales / salesTotal - 1) * 100).toFixed(1)}% 추가 예상`);
     setEl('pred-monthly-profit', formatKRW(predictedProfit));
 }
 
@@ -775,9 +775,9 @@ function updateTable() {
     if (totalCount === 0) {
         let dbg = "";
         try { dbg = `SV:[${window.debugStart||''}], EV:[${window.debugEnd||''}], CV:[${(window.debugCarrier||[]).join(',')}]`; } catch(e){}
-        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">寃??諛??꾪꽣 議곌굔??留욌뒗 ?곗씠?곌? ?놁뒿?덈떎.<br><span style="color:red;font-size:12px;">[DEBUG] ${dbg} | L:${window.TRANSPORT_DATA.length}</span></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="13" style="text-align: center; color: var(--text-secondary); padding: 2rem;">검색 및 필터 조건에 맞는 데이터가 없습니다.<br><span style="color:red;font-size:12px;">[DEBUG] ${dbg} | L:${window.TRANSPORT_DATA.length}</span></td></tr>`;
         if (summaryBox) {
-            summaryBox.innerHTML = `<span class="summary-item">?꾩옱 議곌굔??留욌뒗 ?곗씠?곌? ?놁뒿?덈떎.</span>`;
+            summaryBox.innerHTML = `<span class="summary-item">현재 조건에 맞는 데이터가 없습니다.</span>`;
         }
         return;
     }
@@ -787,13 +787,13 @@ function updateTable() {
         tr.className = 'animate-fade';
 
         // Order status badge styling matching KPI tags
-        const statusVal = row['二쇰Ц ?곹깭'] || '?湲?;
+        const statusVal = row['주문 상태'] || '대기';
         const mappedColor = (window.statusColorMap && window.statusColorMap[statusVal]) ? window.statusColorMap[statusVal] : 'warning';
         const badgeClass = `badge-${mappedColor}`;
 
-        const ?댁엫 = cleanNumeric(row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸']);
-        const sales = Math.floor(?댁엫 * 1.01 / 100) * 100; // ROUNDDOWN(?댁엫횞101%, -2)
-        const purchase = Math.floor(?댁엫 * 0.96); // ?댁엫횞96%
+        const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임 * 1.01 / 100) * 100; // ROUNDDOWN(운임×101%, -2)
+        const purchase = Math.floor(운임 * 0.96); // 운임×96%
         const profit = sales - purchase;
 
         totalSales += sales;
@@ -807,30 +807,30 @@ function updateTable() {
         });
 
         tr.innerHTML = `
-            <td><span class="badge ${badgeClass}">${row['二쇰Ц ?곹깭'] || '?湲?}</span></td>
-            <td style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['?묒닔踰덊샇'] || ''}">${row['?묒닔踰덊샇'] || '-'}</td>
-            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['?붿＜紐?] || ''}">${row['?붿＜紐?] || '-'}</td>
-            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['媛꾩꽑??] || ''}">${row['媛꾩꽑??] || '-'}</td>
-            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['?곸감吏紐?] || ''}">${row['?곸감吏紐?] || '-'}</td>
-            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['?섏감吏紐?] || ''}">${row['?섏감吏紐?] || '-'}</td>
-            <td>${row['?곸감 ?붿껌 ?쇱떆'] || '-'}</td>
-            <td>${row['?섏감 ?붿껌 ?쇱떆'] || '-'}</td>
-            <td style="text-align: center;">${row['寃쎌쑀吏'] || '0'}</td>
-            <td>${row['?붿껌 ?ㅺ툒'] || '-'}</td>
-            <td>${row['?붿껌 李⑤웾'] || '-'}</td>
-            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['鍮꾧퀬'] || ''}">${row['鍮꾧퀬'] || '-'}</td>
-            <td>${row['?댁쟾?먮챸'] || '-'}</td>
-            <td style="font-weight: 600; text-align: right; color: var(--accent);">${sales.toLocaleString()}??/td>
+            <td><span class="badge ${badgeClass}">${row['주문 상태'] || '대기'}</span></td>
+            <td style="max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['접수번호'] || ''}">${row['접수번호'] || '-'}</td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['화주명'] || ''}">${row['화주명'] || '-'}</td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['간선사'] || ''}">${row['간선사'] || '-'}</td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['상차지명'] || ''}">${row['상차지명'] || '-'}</td>
+            <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['하차지명'] || ''}">${row['하차지명'] || '-'}</td>
+            <td>${row['상차 요청 일시'] || '-'}</td>
+            <td>${row['하차 요청 일시'] || '-'}</td>
+            <td style="text-align: center;">${row['경유지'] || '0'}</td>
+            <td>${row['요청 톤급'] || '-'}</td>
+            <td>${row['요청 차량'] || '-'}</td>
+            <td style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${row['비고'] || ''}">${row['비고'] || '-'}</td>
+            <td>${row['운전자명'] || '-'}</td>
+            <td style="font-weight: 600; text-align: right; color: var(--accent);">${sales.toLocaleString()}원</td>
         `;
         tbody.appendChild(tr);
     });
 
     if (summaryBox) {
         summaryBox.innerHTML = `
-            <span class="summary-item"><strong>珥?嫄댁닔:</strong> ${totalCount.toLocaleString()}嫄?/span>
-            <span class="summary-item" style="color: #60a5fa;"><strong>珥??댁엫:</strong> ${totalSales.toLocaleString()}??/span>
-            <span class="summary-item" style="color: #f59e0b;"><strong>珥?留ㅼ엯:</strong> ${totalPurchase.toLocaleString()}??/span>
-            <span class="summary-item" style="color: #10b981;"><strong>?쒖씠??</strong> ${(totalSales - totalPurchase).toLocaleString()}??/span>
+            <span class="summary-item"><strong>총 건수:</strong> ${totalCount.toLocaleString()}건</span>
+            <span class="summary-item" style="color: #60a5fa;"><strong>총 운임:</strong> ${totalSales.toLocaleString()}원</span>
+            <span class="summary-item" style="color: #f59e0b;"><strong>총 매입:</strong> ${totalPurchase.toLocaleString()}원</span>
+            <span class="summary-item" style="color: #10b981;"><strong>순이익:</strong> ${(totalSales - totalPurchase).toLocaleString()}원</span>
         `;
     }
 
@@ -844,13 +844,13 @@ function updateCharts() {
     // Process Trend Data (by Date)
     const trendMap = {};
     activeData.forEach(row => {
-        const dateStr = (row['?곸감 ?붿껌 ?쇱떆'] || '誘몄젙').split(' ')[0];
+        const dateStr = (row['상차 요청 일시'] || '미정').split(' ')[0];
         if (!trendMap[dateStr]) {
             trendMap[dateStr] = { sales: 0, purchase: 0 };
         }
-        const ?댁엫_t = cleanNumeric(row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸']);
-        trendMap[dateStr].sales += Math.floor(?댁엫_t * 1.01 / 100) * 100;
-        trendMap[dateStr].purchase += Math.floor(?댁엫_t * 0.96);
+        const 운임_t = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        trendMap[dateStr].sales += Math.floor(운임_t * 1.01 / 100) * 100;
+        trendMap[dateStr].purchase += Math.floor(운임_t * 0.96);
     });
 
     const sortedDates = Object.keys(trendMap).sort();
@@ -867,14 +867,14 @@ function updateCharts() {
     // Process Truck Tone distribution
     const toneMap = {};
     activeData.forEach(row => {
-        const tone = row['?붿껌 ?ㅺ툒'] || '湲고?';
+        const tone = row['요청 톤급'] || '기타';
         toneMap[tone] = (toneMap[tone] || 0) + 1;
     });
 
     // Process Destination counts
     const destMap = {};
     activeData.forEach(row => {
-        const dest = row['?섏감吏紐?] || '誘몄젙';
+        const dest = row['하차지명'] || '미정';
         destMap[dest] = (destMap[dest] || 0) + 1;
     });
     const sortedDests = Object.entries(destMap).sort((a, b) => b[1] - a[1]).slice(0, 7);
@@ -889,21 +889,21 @@ function updateCharts() {
             labels: sortedDates,
             datasets: [
                 {
-                    label: '?대떖 留ㅼ텧',
+                    label: '이달 매출',
                     data: trendSales,
                     backgroundColor: 'rgba(59,130,246,0.85)',
                     borderRadius: 6,
                     borderSkipped: false
                 },
                 {
-                    label: '留ㅼ엯',
+                    label: '매입',
                     data: trendPurchase,
                     backgroundColor: 'rgba(245,158,11,0.75)',
                     borderRadius: 6,
                     borderSkipped: false
                 },
                 {
-                    label: '?쒖씠??,
+                    label: '순이익',
                     data: trendProfit,
                     type: 'line',
                     borderColor: '#10b981',
@@ -934,12 +934,12 @@ function updateCharts() {
     if (toneChart) toneChart.destroy();
     const ctxTone = document.getElementById('toneChart').getContext('2d');
 
-    // ?ㅺ툒蹂??먯쑀??%) 諛????嫄댁닔) 怨꾩궛???꾪븳 珥?嫄댁닔 ?꾩텧 - 留롮? ?쒖꽌?濡??뺣젹
+    // 톤급별 점유율(%) 및 대수(건수) 계산을 위한 총 건수 도출 - 많은 순서대로 정렬
     const sortedToneEntries = Object.entries(toneMap).sort((a, b) => b[1] - a[1]);
     const totalTones = sortedToneEntries.reduce((sum, [, count]) => sum + count, 0);
     const toneLabels = sortedToneEntries.map(([tone, val]) => {
         const pct = totalTones > 0 ? ((val / totalTones) * 100).toFixed(1) : 0;
-        return `${tone} (${val}? / ${pct}%)`;
+        return `${tone} (${val}대 / ${pct}%)`;
     });
 
     toneChart = new Chart(ctxTone, {
@@ -968,7 +968,7 @@ function updateCharts() {
                             const val = context.raw;
                             const pct = totalTones > 0 ? ((val / totalTones) * 100).toFixed(1) : 0;
                             const originalLabel = context.label.split(' ')[0];
-                            return ` ${originalLabel}: ${val}嫄?(${pct}%)`;
+                            return ` ${originalLabel}: ${val}건 (${pct}%)`;
                         }
                     }
                 }
@@ -984,7 +984,7 @@ function updateCharts() {
         data: {
             labels: sortedDests.map(x => x[0]),
             datasets: [{
-                label: '?댁넚 嫄댁닔',
+                label: '운송 건수',
                 data: sortedDests.map(x => x[1]),
                 backgroundColor: 'rgba(6, 182, 212, 0.7)',
                 borderColor: '#06b6d4',
@@ -1056,12 +1056,12 @@ function filterData() {
     const brandNameSpan = document.getElementById('brand-name');
     if (shipperVals.length === 1) {
         let displayName = shipperVals[0];
-        displayName = displayName.replace(/二쇱떇?뚯궗/g, '').replace(/_?섏텧?ъ옣/g, '').replace(/_/g, ' ').trim();
+        displayName = displayName.replace(/주식회사/g, '').replace(/_수출포장/g, '').replace(/_/g, ' ').trim();
         brandNameSpan.textContent = displayName;
     } else if (shipperVals.length > 1) {
-        brandNameSpan.textContent = `?ㅼ쨷 嫄곕옒泥?(${shipperVals.length}怨?`;
+        brandNameSpan.textContent = `다중 거래처 (${shipperVals.length}곳)`;
     } else {
-        brandNameSpan.textContent = "?붿슫諛??댁쿇吏??;
+        brandNameSpan.textContent = "더운반)이천지점";
     }
 
     let startDateVal = '';
@@ -1087,7 +1087,7 @@ function filterData() {
         }
     }
     
-    // Removed BULLETPROOF DEFAULT. If the date picker is empty, it means 'All Time' (?꾩껜 湲곌컙).
+    // Removed BULLETPROOF DEFAULT. If the date picker is empty, it means 'All Time' (전체 기간).
 
     const searchVal = document.getElementById('search-input').value.toLowerCase();
 
@@ -1110,30 +1110,30 @@ function filterData() {
     window.debugEnd = endDateVal;
     window.debugCarrier = carrierVals;
 
-    // 1. 二쇰Ц ?곹깭 ?꾪꽣瑜??ы븿??理쒖쥌 ?곗씠???꾪꽣留?
+    // 1. 주문 상태 필터를 포함한 최종 데이터 필터링
     activeData = window.TRANSPORT_DATA.filter(row => {
-        let c = String(row['媛꾩꽑??] || '').trim();
-        const cVal = c === '' ? '(誘몄???' : c;
-        const sales = row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸'];
+        let c = String(row['간선사'] || '').trim();
+        const cVal = c === '' ? '(미지정)' : c;
+        const sales = row['총 매출 금액'] || row['매출 금액'];
         const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
         
         let rowDate = null;
-        if (row['?곸감 ?붿껌 ?쇱떆']) {
-            rowDate = row['?곸감 ?붿껌 ?쇱떆'].split(' ')[0];
+        if (row['상차 요청 일시']) {
+            rowDate = row['상차 요청 일시'].split(' ')[0];
         }
 
         const passSearch = (() => {
             if (!searchVal) return true;
-            const driver = String(row['?댁쟾?먮챸'] || '').toLowerCase();
-            const carNum = String(row['李⑤웾踰덊샇'] || '').toLowerCase();
-            const address = String(row['?섏감吏 ?곸꽭 二쇱냼'] || '').toLowerCase();
-            const carType = String(row['?붿껌 李⑤웾'] || '').toLowerCase();
-            const tone = String(row['?붿껌 ?ㅺ툒'] || '').toLowerCase();
-            const shipper = String(row['?붿＜紐?] || '').toLowerCase();
-            const loading = String(row['?곸감吏紐?] || '').toLowerCase();
-            const dest = String(row['?섏감吏紐?] || '').toLowerCase();
-            const remark = String(row['鍮꾧퀬'] || '').toLowerCase();
-            const ordernum = String(row['?묒닔踰덊샇'] || '').toLowerCase();
+            const driver = String(row['운전자명'] || '').toLowerCase();
+            const carNum = String(row['차량번호'] || '').toLowerCase();
+            const address = String(row['하차지 상세 주소'] || '').toLowerCase();
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+            const ordernum = String(row['접수번호'] || '').toLowerCase();
             return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
                    carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
                    loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
@@ -1152,21 +1152,21 @@ function filterData() {
         })();
 
         const f = {
-            shipper: checkMulti(shipperVals, row['?붿＜紐?]) && checkMulti(thShipperVals, row['?붿＜紐?]),
+            shipper: checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']),
             carrier: checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal),
-            loading: checkMulti(loadingVals, row['?곸감吏紐?]) && checkMulti(thLoadingVals, row['?곸감吏紐?]),
-            dest: checkMulti(destVals, row['?섏감吏紐?]) && checkMulti(thDestVals, row['?섏감吏紐?]),
-            tone: checkMulti(toneVals, row['?붿껌 ?ㅺ툒']) && checkMulti(thToneVals, row['?붿껌 ?ㅺ툒']),
-            status: checkMulti(statusVals, row['二쇰Ц ?곹깭']) && checkMulti(thStatusVals, row['二쇰Ц ?곹깭']),
-            ordernum: checkMulti(thOrdernumVals, row['?묒닔踰덊샇']),
-            waypoint: checkMulti(thWaypointVals, row['寃쎌쑀吏'] !== undefined && row['寃쎌쑀吏'] !== null ? row['寃쎌쑀吏'] : ''),
-            cartype: checkMulti(thCartypeVals, row['?붿껌 李⑤웾']),
-            driver: checkMulti(thDriverVals, row['?댁쟾?먮챸']),
-            carnum: checkMulti(thCarnumVals, row['李⑤웾踰덊샇']),
-            remark: checkMulti(thRemarkVals, row['鍮꾧퀬'] !== undefined && row['鍮꾧퀬'] !== null ? row['鍮꾧퀬'] : ''),
+            loading: checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']),
+            dest: checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']),
+            tone: checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']),
+            status: checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']),
+            ordernum: checkMulti(thOrdernumVals, row['접수번호']),
+            waypoint: checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : ''),
+            cartype: checkMulti(thCartypeVals, row['요청 차량']),
+            driver: checkMulti(thDriverVals, row['운전자명']),
+            carnum: checkMulti(thCarnumVals, row['차량번호']),
+            remark: checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : ''),
             fare: thFareVals.length === 0 || thFareVals.includes(salesVal),
-            startdate: checkMulti(thStartDateVals, row['?곸감 ?붿껌 ?쇱떆']),
-            enddate: checkMulti(thEndDateVals, row['?섏감 ?붿껌 ?쇱떆']),
+            startdate: checkMulti(thStartDateVals, row['상차 요청 일시']),
+            enddate: checkMulti(thEndDateVals, row['하차 요청 일시']),
             search: passSearch,
             dateRange: passDateRange
         };
@@ -1182,21 +1182,21 @@ function filterData() {
             return true;
         };
 
-        if (checkExcept('status')) validSets.status.add(String(row['二쇰Ц ?곹깭']).trim());
-        if (checkExcept('ordernum')) validSets.ordernum.add(String(row['?묒닔踰덊샇']).trim());
-        if (checkExcept('shipper')) validSets.shipper.add(String(row['?붿＜紐?]).trim());
+        if (checkExcept('status')) validSets.status.add(String(row['주문 상태']).trim());
+        if (checkExcept('ordernum')) validSets.ordernum.add(String(row['접수번호']).trim());
+        if (checkExcept('shipper')) validSets.shipper.add(String(row['화주명']).trim());
         if (checkExcept('carrier')) validSets.carrier.add(cVal);
-        if (checkExcept('loading')) validSets.loading.add(String(row['?곸감吏紐?]).trim());
-        if (checkExcept('dest')) validSets.dest.add(String(row['?섏감吏紐?]).trim());
-        if (checkExcept('waypoint')) validSets.waypoint.add(String(row['寃쎌쑀吏'] !== undefined && row['寃쎌쑀吏'] !== null ? row['寃쎌쑀吏'] : '').trim());
-        if (checkExcept('tone')) validSets.tone.add(String(row['?붿껌 ?ㅺ툒']).trim());
-        if (checkExcept('cartype')) validSets.cartype.add(String(row['?붿껌 李⑤웾']).trim());
-        if (checkExcept('driver')) validSets.driver.add(String(row['?댁쟾?먮챸']).trim());
-        if (checkExcept('carnum')) validSets.carnum.add(String(row['李⑤웾踰덊샇']).trim());
-        if (checkExcept('remark')) validSets.remark.add(String(row['鍮꾧퀬'] !== undefined && row['鍮꾧퀬'] !== null ? row['鍮꾧퀬'] : '').trim());
+        if (checkExcept('loading')) validSets.loading.add(String(row['상차지명']).trim());
+        if (checkExcept('dest')) validSets.dest.add(String(row['하차지명']).trim());
+        if (checkExcept('waypoint')) validSets.waypoint.add(String(row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '').trim());
+        if (checkExcept('tone')) validSets.tone.add(String(row['요청 톤급']).trim());
+        if (checkExcept('cartype')) validSets.cartype.add(String(row['요청 차량']).trim());
+        if (checkExcept('driver')) validSets.driver.add(String(row['운전자명']).trim());
+        if (checkExcept('carnum')) validSets.carnum.add(String(row['차량번호']).trim());
+        if (checkExcept('remark')) validSets.remark.add(String(row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '').trim());
         if (checkExcept('fare')) validSets.fare.add(salesVal);
-        if (checkExcept('startdate')) validSets.startdate.add(String(row['?곸감 ?붿껌 ?쇱떆']).trim());
-        if (checkExcept('enddate')) validSets.enddate.add(String(row['?섏감 ?붿껌 ?쇱떆']).trim());
+        if (checkExcept('startdate')) validSets.startdate.add(String(row['상차 요청 일시']).trim());
+        if (checkExcept('enddate')) validSets.enddate.add(String(row['하차 요청 일시']).trim());
 
         return passAll;
     });
@@ -1225,52 +1225,52 @@ function filterData() {
     if (window.cmsThRemark) window.cmsThRemark.updateVisibility(validSets.remark);
     if (window.cmsThFare) window.cmsThFare.updateVisibility(validSets.fare);
 
-    // 2. 二쇰Ц ?곹깭 ?꾪꽣留??쒖쇅???곗씠???꾪꽣留?(KPI ?곹깭蹂?鍮꾩쑉 ?좎???
+    // 2. 주문 상태 필터만 제외한 데이터 필터링 (KPI 상태별 비율 유지용)
     const statusUnfilteredData = window.TRANSPORT_DATA.filter(row => {
-        if (!checkMulti(shipperVals, row['?붿＜紐?])) return false;
-        let c = String(row['媛꾩꽑??] || '').trim();
-        if (!checkMulti(carrierVals, c === '' ? '(誘몄???' : c)) return false;
-        if (!checkMulti(loadingVals, row['?곸감吏紐?])) return false;
-        if (!checkMulti(destVals, row['?섏감吏紐?])) return false;
-        if (!checkMulti(toneVals, row['?붿껌 ?ㅺ툒'])) return false;
+        if (!checkMulti(shipperVals, row['화주명'])) return false;
+        let c = String(row['간선사'] || '').trim();
+        if (!checkMulti(carrierVals, c === '' ? '(미지정)' : c)) return false;
+        if (!checkMulti(loadingVals, row['상차지명'])) return false;
+        if (!checkMulti(destVals, row['하차지명'])) return false;
+        if (!checkMulti(toneVals, row['요청 톤급'])) return false;
 
-        if (row['?곸감 ?붿껌 ?쇱떆']) {
-            const rowDate = row['?곸감 ?붿껌 ?쇱떆'].split(' ')[0];
+        if (row['상차 요청 일시']) {
+            const rowDate = row['상차 요청 일시'].split(' ')[0];
             if (startDateVal && rowDate < startDateVal) return false;
             if (endDateVal && rowDate > endDateVal) return false;
         } else if (startDateVal || endDateVal) {
             return false;
         }
 
-        if (!checkMulti(thShipperVals, row['?붿＜紐?])) return false;
-        if (!checkMulti(thCarrierVals, c === '' ? '(誘몄???' : c)) return false;
-        if (!checkMulti(thLoadingVals, row['?곸감吏紐?])) return false;
-        if (!checkMulti(thDestVals, row['?섏감吏紐?])) return false;
-        if (!checkMulti(thWaypointVals, row['寃쎌쑀吏'] !== undefined && row['寃쎌쑀吏'] !== null ? row['寃쎌쑀吏'] : '')) return false;
-        if (!checkMulti(thToneVals, row['?붿껌 ?ㅺ툒'])) return false;
-        if (!checkMulti(thCartypeVals, row['?붿껌 李⑤웾'])) return false;
-        if (!checkMulti(thDriverVals, row['?댁쟾?먮챸'])) return false;
-        if (!checkMulti(thCarnumVals, row['李⑤웾踰덊샇'])) return false;
-        if (!checkMulti(thRemarkVals, row['鍮꾧퀬'] !== undefined && row['鍮꾧퀬'] !== null ? row['鍮꾧퀬'] : '')) return false;
+        if (!checkMulti(thShipperVals, row['화주명'])) return false;
+        if (!checkMulti(thCarrierVals, c === '' ? '(미지정)' : c)) return false;
+        if (!checkMulti(thLoadingVals, row['상차지명'])) return false;
+        if (!checkMulti(thDestVals, row['하차지명'])) return false;
+        if (!checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '')) return false;
+        if (!checkMulti(thToneVals, row['요청 톤급'])) return false;
+        if (!checkMulti(thCartypeVals, row['요청 차량'])) return false;
+        if (!checkMulti(thDriverVals, row['운전자명'])) return false;
+        if (!checkMulti(thCarnumVals, row['차량번호'])) return false;
+        if (!checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '')) return false;
 
         if (thFareVals.length > 0) {
-            const sales = row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸'];
+            const sales = row['총 매출 금액'] || row['매출 금액'];
             if (!thFareVals.includes(String(sales !== undefined && sales !== null ? sales : '').trim())) return false;
         }
 
-        if (!checkMulti(thStartDateVals, row['?곸감 ?붿껌 ?쇱떆'])) return false;
-        if (!checkMulti(thEndDateVals, row['?섏감 ?붿껌 ?쇱떆'])) return false;
+        if (!checkMulti(thStartDateVals, row['상차 요청 일시'])) return false;
+        if (!checkMulti(thEndDateVals, row['하차 요청 일시'])) return false;
 
         if (searchVal) {
-            const driver = String(row['?댁쟾?먮챸'] || '').toLowerCase();
-            const carNum = String(row['李⑤웾踰덊샇'] || '').toLowerCase();
-            const address = String(row['?섏감吏 ?곸꽭 二쇱냼'] || '').toLowerCase();
-            const carType = String(row['?붿껌 李⑤웾'] || '').toLowerCase();
-            const tone = String(row['?붿껌 ?ㅺ툒'] || '').toLowerCase();
-            const shipper = String(row['?붿＜紐?] || '').toLowerCase();
-            const loading = String(row['?곸감吏紐?] || '').toLowerCase();
-            const dest = String(row['?섏감吏紐?] || '').toLowerCase();
-            const remark = String(row['鍮꾧퀬'] || '').toLowerCase();
+            const driver = String(row['운전자명'] || '').toLowerCase();
+            const carNum = String(row['차량번호'] || '').toLowerCase();
+            const address = String(row['하차지 상세 주소'] || '').toLowerCase();
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
 
             if (!driver.includes(searchVal) && 
                 !carNum.includes(searchVal) && 
@@ -1306,27 +1306,27 @@ function resetFilters() {
         if (cms) cms.setValue('');
     });
 
-    // 媛꾩꽑?щ뒗 珥덇린????湲곕낯媛?JM而댄띁???쇰줈 ?섎룎由ш린
+    // 간선사는 초기화 시 기본값(JM컴퍼니)으로 되돌리기
     if (window.cmsCarrier) {
-        window.cmsCarrier.setValue("JM而댄띁??);
+        window.cmsCarrier.setValue("JM컴퍼니");
     }
     if (window.cmsThCarrier) {
-        window.cmsThCarrier.setValue("JM而댄띁??);
+        window.cmsThCarrier.setValue("JM컴퍼니");
     }
     
     // Clear search input
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // ?좎쭨 ?좏깮湲곕? ?뱀썡 1??~ ?꾩옱?쇰줈 珥덇린??
+    // 날짜 선택기를 당월 1일 ~ 현재일로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
         datePicker.setDate([firstDay, today]);
         
-        // Label ?먯긽蹂듦뎄
+        // Label 원상복구
         const label = document.getElementById('date-range-label');
-        if (label) label.innerHTML = '?뱟 ?댁넚 湲곌컙';
+        if (label) label.innerHTML = '📅 운송 기간';
     }
 
     // Refresh UI with cleared filters
@@ -1350,7 +1350,7 @@ function resetFilters() {
     toast.style.fontWeight = 'bold';
     toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
     toast.style.animation = 'fadein 0.3s';
-    toast.innerHTML = '?㏏ <b>?꾪꽣 珥덇린???꾨즺</b> (媛꾩꽑??諛??댁넚湲곌컙? 湲곕낯媛믪쑝濡??좎??⑸땲??';
+    toast.innerHTML = '🧹 <b>필터 초기화 완료</b> (간선사 및 운송기간은 기본값으로 유지됩니다)';
     
     document.body.appendChild(toast);
     
@@ -1367,30 +1367,30 @@ function exportToCSV() {
     // Determine which data to export based on current filter status
     let dataToExport = activeData;
 
-    const headers = ['?묒닔?곹깭', '異쒕컻吏紐?, '?꾩갑吏紐?, '異쒕컻?쇱떆', '?꾩갑?쇱떆', '?꾩갑吏二쇱냼', '寃쎌쑀吏', '李⑤웾?ㅼ닔', '李⑤웾踰덊샇', '?묒닔??, '鍮꾧퀬', '?댁엫', '留ㅼ엯湲덉븸', '?쒖씠??, '?쒖씠?듬쪧'];
+    const headers = ['접수상태', '출발지명', '도착지명', '출발일시', '도착일시', '도착지주소', '경유지', '차량톤수', '차량번호', '접수자', '비고', '운임', '매입금액', '순이익', '순이익률'];
 
     let csvContent = '\uFEFF'; // UTF-8 BOM
     csvContent += headers.join(',') + '\n';
 
     activeData.forEach(row => {
-        const ?댁엫_csv = cleanNumeric(row['珥?留ㅼ텧 湲덉븸'] || row['留ㅼ텧 湲덉븸']);
-        const sales = Math.floor(?댁엫_csv * 1.01 / 100) * 100; // ROUNDDOWN(?댁엫횞101%, -2)
-        const purchase = Math.floor(?댁엫_csv * 0.96); // ?댁엫횞96%
+        const 운임_csv = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+        const sales = Math.floor(운임_csv * 1.01 / 100) * 100; // ROUNDDOWN(운임×101%, -2)
+        const purchase = Math.floor(운임_csv * 0.96); // 운임×96%
         const profit = sales - purchase;
         const margin = sales > 0 ? (profit / sales * 100).toFixed(1) + '%' : '0%';
 
         const line = [
-            row['二쇰Ц ?곹깭'] || '',
-            row['?곸감吏紐?] || '',
-            row['?섏감吏紐?] || '',
-            row['?곸감 ?붿껌 ?쇱떆'] || '',
-            row['?섏감 ?붿껌 ?쇱떆'] || '',
-            `"${(row['?섏감吏 ?곸꽭 二쇱냼'] || '').replace(/"/g, '""')}"`,
-            row['寃쎌쑀吏'] || '0',
-            row['?붿껌 ?ㅺ툒'] || '',
-            row['李⑤웾踰덊샇'] || '',
-            row['?댁쟾?먮챸'] || '',
-            `"${(row['鍮꾧퀬'] || '').replace(/"/g, '""')}"`,
+            row['주문 상태'] || '',
+            row['상차지명'] || '',
+            row['하차지명'] || '',
+            row['상차 요청 일시'] || '',
+            row['하차 요청 일시'] || '',
+            `"${(row['하차지 상세 주소'] || '').replace(/"/g, '""')}"`,
+            row['경유지'] || '0',
+            row['요청 톤급'] || '',
+            row['차량번호'] || '',
+            row['운전자명'] || '',
+            `"${(row['비고'] || '').replace(/"/g, '""')}"`,
             sales,
             purchase,
             profit,
@@ -1403,7 +1403,7 @@ function exportToCSV() {
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "?댁넚?곗씠??異붿텧寃곌낵.csv");
+    link.setAttribute("download", "운송데이터_추출결과.csv");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -1418,9 +1418,9 @@ function toggleTheme() {
 
     const themeIcon = document.getElementById('theme-icon');
     if (newTheme === 'light') {
-        themeIcon.textContent = '?截?;
+        themeIcon.textContent = '☀️';
     } else {
-        themeIcon.textContent = '?뙔';
+        themeIcon.textContent = '🌙';
     }
 
     const flatpickrTheme = document.getElementById('flatpickr-dark-theme');
@@ -1438,41 +1438,41 @@ function applyDynamicLabels() {
         return (window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) || defaultName;
     };
     
-    window.nameStatus = getConfigName('status_filter', '?묒닔?곹깭');
-    window.nameShipper = getConfigName('shipper_filter', '?붿＜??);
-    window.nameCarrier = getConfigName('carrier_filter', '媛꾩꽑??);
-    window.nameLoading = getConfigName('loading_filter', '異쒕컻吏紐?);
-    window.nameDest = getConfigName('dest_filter', '?꾩갑吏紐?);
-    window.nameTone = getConfigName('tone_filter', '李⑤웾?ㅼ닔');
-    window.nameDriver = getConfigName('driver_filter', '?묒닔??);
-    window.nameFare = getConfigName('fare_filter', '?댁엫');
-    window.nameStartDate = getConfigName('start_date_filter', '異쒕컻?쇱떆');
-    window.nameEndDate = getConfigName('end_date_filter', '?꾩갑?쇱떆');
+    window.nameStatus = getConfigName('status_filter', '접수상태');
+    window.nameShipper = getConfigName('shipper_filter', '화주사');
+    window.nameCarrier = getConfigName('carrier_filter', '간선사');
+    window.nameLoading = getConfigName('loading_filter', '출발지명');
+    window.nameDest = getConfigName('dest_filter', '도착지명');
+    window.nameTone = getConfigName('tone_filter', '차량톤수');
+    window.nameDriver = getConfigName('driver_filter', '접수자');
+    window.nameFare = getConfigName('fare_filter', '운임');
+    window.nameStartDate = getConfigName('start_date_filter', '출발일시');
+    window.nameEndDate = getConfigName('end_date_filter', '도착일시');
 
     // Update UI Labels dynamically
     const lblStatus = document.querySelector('label[for="filter-status"]');
-    if(lblStatus) lblStatus.innerHTML = `?봽 ${window.nameStatus}`;
+    if(lblStatus) lblStatus.innerHTML = `🔄 ${window.nameStatus}`;
     
     const lblShipper = document.querySelector('label[for="filter-shipper"]');
-    if(lblShipper) lblShipper.innerHTML = `?룫 ${window.nameShipper}`;
+    if(lblShipper) lblShipper.innerHTML = `🏢 ${window.nameShipper}`;
 
     const lblCarrier = document.querySelector('label[for="filter-carrier"]');
-    if(lblCarrier) lblCarrier.innerHTML = `?슊 ${window.nameCarrier}`;
+    if(lblCarrier) lblCarrier.innerHTML = `🚚 ${window.nameCarrier}`;
 
     const lblLoading = document.querySelector('label[for="filter-loading"]');
-    if(lblLoading) lblLoading.innerHTML = `?뱧 ${window.nameLoading}`;
+    if(lblLoading) lblLoading.innerHTML = `📍 ${window.nameLoading}`;
     
     const lblDest = document.querySelector('label[for="filter-dest"]');
-    if(lblDest) lblDest.innerHTML = `?뱧 ${window.nameDest}`;
+    if(lblDest) lblDest.innerHTML = `📍 ${window.nameDest}`;
     
     const lblTone = document.querySelector('label[for="filter-tone"]');
-    if(lblTone) lblTone.innerHTML = `?뽳툘 ${window.nameTone}`;
+    if(lblTone) lblTone.innerHTML = `⚖️ ${window.nameTone}`;
 
     const thStart = document.getElementById('th-filter-startdate');
-    if(thStart) thStart.placeholder = `${window.nameStartDate} (?좏깮)`;
+    if(thStart) thStart.placeholder = `${window.nameStartDate} (선택)`;
 
     const thEnd = document.getElementById('th-filter-enddate');
-    if(thEnd) thEnd.placeholder = `${window.nameEndDate} (?좏깮)`;
+    if(thEnd) thEnd.placeholder = `${window.nameEndDate} (선택)`;
 }
 
 // On Load
@@ -1481,10 +1481,10 @@ function initDashboard() {
     initEditMode();
     initFilters();
     
-    // 媛뺤젣濡??꾪꽣 ??踰????곸슜?섏뿬 珥덇린?붾㈃ ?곗씠?곗? UI ?숆린??(湲곕낯 ?꾪꽣 ?녿뒗 ?꾩껜 ?곗씠???곹깭)
+    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화 (기본 필터 없는 전체 데이터 상태)
     filterData();
 
-    // ?곷떒 媛濡??ㅽ겕濡ㅻ컮 ?숆린??珥덇린??
+    // 상단 가로 스크롤바 동기화 초기화
     const topScroll = document.getElementById('top-scrollbar');
     const fakeContent = document.getElementById('top-scrollbar-fake-content');
     const tableWrapper = document.getElementById('table-wrapper');
@@ -1518,7 +1518,7 @@ function initDashboard() {
     // Show initial update time if available
     const timeSpan = document.getElementById('last-updated-time');
     if (timeSpan && window.LAST_UPDATED) {
-        timeSpan.textContent = "理쒓렐 ?낅뜲?댄듃: " + window.LAST_UPDATED;
+        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
     // Initialize Flatpickr date range picker
@@ -1527,7 +1527,7 @@ function initDashboard() {
     if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
         let minDateStr = "9999-99-99";
         window.TRANSPORT_DATA.forEach(row => {
-            const dateStr = row['?곸감 ?붿껌 ?쇱떆'];
+            const dateStr = row['상차 요청 일시'];
             if (dateStr) {
                 const justDate = dateStr.split(' ')[0];
                 if (justDate < minDateStr) {
@@ -1551,7 +1551,7 @@ function initDashboard() {
         btnContainer.style.borderRadius = "0 0 5px 5px";
 
         const todayBtn = document.createElement("button");
-        todayBtn.textContent = "?ㅻ뒛";
+        todayBtn.textContent = "오늘";
         todayBtn.className = "btn btn-secondary";
         todayBtn.style.flex = "1";
         todayBtn.style.padding = "6px";
@@ -1566,7 +1566,7 @@ function initDashboard() {
         });
 
         const clearBtn = document.createElement("button");
-        clearBtn.textContent = "?꾩껜?좏깮 (?꾩껜?좎쭨)";
+        clearBtn.textContent = "전체선택 (전체날짜)";
         clearBtn.className = "btn btn-secondary";
         clearBtn.style.flex = "2";
         clearBtn.style.padding = "6px";
@@ -1585,7 +1585,6 @@ function initDashboard() {
     };
 
     const updateDateLabel = function(selectedDates) {
-        // ... (unchanged part)
         const label = document.getElementById('date-range-label');
         if (!label) return;
         if (selectedDates && selectedDates.length === 2) {
@@ -1595,18 +1594,14 @@ function initDashboard() {
             const todayStr = flatpickr.formatDate(today, "Y-m-d");
             
             if (startStr === fileStartStr && endStr === todayStr) {
-                label.innerHTML = '?뱟 ?댁넚 湲곌컙 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(?꾩껜)</span>';
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
             } else {
-                label.innerHTML = '?뱟 ?댁넚 湲곌컙';
+                label.innerHTML = '📅 운송 기간';
             }
         } else {
-            label.innerHTML = '?뱟 ?댁넚 湲곌컙';
+            label.innerHTML = '📅 운송 기간';
         }
     };
-
-    if (typeof datePicker !== 'undefined' && datePicker && datePicker.destroy) {
-        datePicker.destroy();
-    }
 
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
@@ -1703,7 +1698,7 @@ setInterval(async () => {
             if (newData.last_updated) {
                 window.LAST_UPDATED = newData.last_updated;
                 const timeSpan = document.getElementById('last-updated-time');
-                if (timeSpan) timeSpan.textContent = "理쒓렐 ?낅뜲?댄듃: " + window.LAST_UPDATED;
+                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
             }
 
             // Update dropdowns in case there are new shippers/dests
@@ -1737,11 +1732,11 @@ setInterval(async () => {
             toast.style.gap = '15px';
 
             const msgSpan = document.createElement('span');
-            msgSpan.textContent = "?곗씠?곌? ?ㅼ떆媛꾩쑝濡?理쒖떊?붾릺?덉뒿?덈떎!";
+            msgSpan.textContent = "데이터가 실시간으로 최신화되었습니다!";
             toast.appendChild(msgSpan);
 
             const closeBtn = document.createElement('button');
-            closeBtn.textContent = '?뺤씤 (?リ린)';
+            closeBtn.textContent = '확인 (닫기)';
             closeBtn.style.background = 'rgba(255,255,255,0.2)';
             closeBtn.style.border = 'none';
             closeBtn.style.color = '#fff';
@@ -1779,11 +1774,11 @@ let isEditMode = false;
 let dragSrcEl = null;
 
 const filterIdToConfigKey = {
-    'filter-status': '二쇰Ц ?곹깭',
-    'filter-shipper': '?붿＜紐?,
-    'filter-loading': '?곸감吏紐?,
-    'filter-dest': '?섏감吏紐?,
-    'filter-tone': '?붿껌 ?ㅺ툒'
+    'filter-status': '주문 상태',
+    'filter-shipper': '화주명',
+    'filter-loading': '상차지명',
+    'filter-dest': '하차지명',
+    'filter-tone': '요청 톤급'
 };
 
 function initEditMode() {
@@ -1838,7 +1833,7 @@ function initEditMode() {
         
         if(isEditMode) {
             document.body.classList.add('edit-mode');
-            btnEdit.textContent = '???몄쭛 ?꾨즺';
+            btnEdit.textContent = '✅ 편집 완료';
             btnEdit.classList.replace('btn-secondary', 'btn-primary');
             if (btnCancel) btnCancel.style.display = 'inline-block';
             
@@ -1875,7 +1870,7 @@ function initEditMode() {
             });
         } else {
             document.body.classList.remove('edit-mode');
-            btnEdit.textContent = '?숋툘 ?몄쭛 紐⑤뱶';
+            btnEdit.textContent = '⚙️ 편집 모드';
             btnEdit.classList.replace('btn-primary', 'btn-secondary');
             const currentBtnCancel = document.getElementById('btn-cancel-edit');
             if(currentBtnCancel) currentBtnCancel.style.display = 'none';
@@ -1891,7 +1886,7 @@ function initEditMode() {
                 return;
             }
 
-            // ?몄쭛 ?꾨즺 ???먮룞 ????ㅽ뻾
+            // 편집 완료 시 자동 저장 실행
             const newConfig = window.DASHBOARD_CONFIG ? JSON.parse(JSON.stringify(window.DASHBOARD_CONFIG)) : {};
             const itemsArray = Array.from(filterItems);
             itemsArray.sort((a, b) => {
@@ -1925,7 +1920,7 @@ function initEditMode() {
             })
             .then(response => {
                 if (response.ok) {
-                    alert("???ㅼ젙???깃났?곸쑝濡???λ릺???쒕쾭???먮룞 諛섏쁺 以묒엯?덈떎!\n(??10~20珥????덈줈怨좎묠 ??諛섏쁺?⑸땲??");
+                    alert("✅ 설정이 성공적으로 저장되어 서버에 자동 반영 중입니다!\n(약 10~20초 뒤 새로고침 시 반영됩니다)");
                 } else {
                     throw new Error("Local server error");
                 }
@@ -1938,7 +1933,7 @@ function initEditMode() {
                 document.body.appendChild(dlAnchorElem);
                 dlAnchorElem.click();
                 dlAnchorElem.remove();
-                alert("??濡쒖뺄 ?숆린???꾨줈洹몃옩(?뚯씠?????ㅽ뻾?섏뼱 ?덉? ?딄굅???곌껐?????놁뒿?덈떎.\n\n?섎룞 ??μ쓣 ?꾪빐 config.json ?뚯씪???ㅼ슫濡쒕뱶 ?섏뿀?듬땲??\n???뚯씪???꾩옱 ?대뜑????뼱?곌퀬 ?뚯씠???ㅽ겕由쏀듃瑜??ㅽ뻾??二쇱꽭??");
+                alert("❌ 로컬 동기화 프로그램(파이썬)이 실행되어 있지 않거나 연결할 수 없습니다.\n\n수동 저장을 위해 config.json 파일이 다운로드 되었습니다.\n이 파일을 현재 폴더에 덮어쓰고 파이썬 스크립트를 실행해 주세요.");
             });
         }
     });
@@ -2095,7 +2090,7 @@ if (btnFloatReset) {
     btnFloatReset.addEventListener('click', () => {
         if (typeof resetFilters === 'function') {
             resetFilters();
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // ?꾪꽣 珥덇린????理쒖긽?⑥쑝濡??대룞
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // 필터 초기화 후 최상단으로 이동
         }
     });
 }
@@ -2130,7 +2125,7 @@ function showRowModal(row, sales, profit, purchase) {
         modal.style.left = '0';
         modal.style.width = '100%';
         modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // 遺?쒕윭????꾪빐 0.4濡???땄, blur ?쒓굅
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.4)'; // 부드러움을 위해 0.4로 낮춤, blur 제거
         modal.style.zIndex = '10000';
         modal.style.display = 'block'; // Change from flex to block for absolute positioning
         modal.style.opacity = '0';
@@ -2153,7 +2148,7 @@ function showRowModal(row, sales, profit, purchase) {
                 max-width: 450px;
                 box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
                 border: 1px solid var(--card-border);
-                border-radius: 16px; /* ?κ렐 ?앹뾽 ?붿옄??蹂듦뎄 */
+                border-radius: 16px; /* 둥근 팝업 디자인 복구 */
                 transform: translateX(120%);
                 transition: transform 0.3s ease, opacity 0.3s ease;
                 opacity: 0;
@@ -2213,7 +2208,7 @@ function showRowModal(row, sales, profit, purchase) {
         // Skip internal or display only ones with values
         let val = row[key];
         
-        // ?곗씠?곌? 鍮꾩뼱?덇굅??怨듬갚留??덈뒗 寃쎌슦 ?뚮뜑留곹븯吏 ?딆쓬
+        // 데이터가 비어있거나 공백만 있는 경우 렌더링하지 않음
         if (val === undefined || val === null || val.toString().trim() === '') {
             continue;
         }
@@ -2228,12 +2223,12 @@ function showRowModal(row, sales, profit, purchase) {
     modal.innerHTML = `
         <div id="detail-modal-box" class="modal-body-wrapper">
             
-            <!-- [1] ?곷떒 怨좎젙 ?곸뿭: ??댄? 諛?湲덉븸 移대뱶 (?ㅽ겕濡ㅻ컮? 臾닿????곸뿭) -->
+            <!-- [1] 상단 고정 영역: 타이틀 및 금액 카드 (스크롤바와 무관한 영역) -->
             <div class="top-summary-wrapper">
                 <div style="padding: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">?곸꽭 ?댁넚 ?댁뿭</h2>
-                        <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['二쇰Ц ?곹깭']]) ? window.statusColorMap[row['二쇰Ц ?곹깭']] : 'warning'}" style="font-size:0.8rem;">${row['二쇰Ц ?곹깭'] || '?湲?}</span>
+                        <h2 style="margin: 0; font-size: 1.25rem; color: #fff;">상세 운송 내역</h2>
+                        <span class="badge badge-${(window.statusColorMap && window.statusColorMap[row['주문 상태']]) ? window.statusColorMap[row['주문 상태']] : 'warning'}" style="font-size:0.8rem;">${row['주문 상태'] || '대기'}</span>
                     </div>
                     <button onclick="document.getElementById('detail-modal-box').style.transform='translateX(120%)'; document.getElementById('detail-modal-box').style.opacity='0'; document.getElementById('detail-modal').style.opacity='0'; setTimeout(()=>document.getElementById('detail-modal').style.display='none',300);" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1.8rem; line-height: 1;">&times;</button>
                 </div>
@@ -2241,26 +2236,26 @@ function showRowModal(row, sales, profit, purchase) {
                 <div style="padding: 1.5rem 1.5rem 0 1.5rem;">
                     <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.2rem; display: flex; border: 1px solid rgba(255,255,255,0.05);">
                         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1);">
-                            <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 500; margin-bottom: 8px;">?뮥 留ㅼ텧??/div>
-                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${sales.toLocaleString()}??/div>
+                            <div style="font-size: 0.85rem; color: #60a5fa; font-weight: 500; margin-bottom: 8px;">💰 매출액</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${sales.toLocaleString()}원</div>
                         </div>
                         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 1px solid rgba(255,255,255,0.1);">
-                            <div style="font-size: 0.85rem; color: #10b981; font-weight: 500; margin-bottom: 8px;">???쒖슫??(?댁씡)</div>
-                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${profit.toLocaleString()}??/div>
+                            <div style="font-size: 0.85rem; color: #10b981; font-weight: 500; margin-bottom: 8px;">✨ 순운임 (이익)</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${profit.toLocaleString()}원</div>
                         </div>
                         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <div style="font-size: 0.85rem; color: #f59e0b; font-weight: 500; margin-bottom: 8px;">?뮩 留ㅼ엯??/div>
-                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}??/div>
+                            <div style="font-size: 0.85rem; color: #f59e0b; font-weight: 500; margin-bottom: 8px;">💳 매입액</div>
+                            <div style="font-size: 1.15rem; font-weight: bold; color: #fff;">${purchase.toLocaleString()}원</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- [2] ?섎떒 ?ㅽ겕濡??곸뿭: ?ㅼ쭅 ?곸꽭 ?띿뒪???뺣낫留?(?ㅽ겕濡ㅻ컮媛 ?ш린?쒕????쒖옉) -->
+            <!-- [2] 하단 스크롤 영역: 오직 상세 텍스트 정보만 (스크롤바가 여기서부터 시작) -->
             <div style="position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; flex-direction: column;">
-                <button id="modal-btn-up" title="留??꾨줈" style="position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
+                <button id="modal-btn-up" title="맨 위로" style="position: absolute; top: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-top-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg></button>
                 
-                <button id="modal-btn-down" title="留??꾨옒濡? style="position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
+                <button id="modal-btn-down" title="맨 아래로" style="position: absolute; bottom: 1px; right: 1px; width: 26px; height: 26px; background-color: rgba(0, 0, 0, 0.2); border: none; border-bottom-right-radius: 8px; color: #60a5fa; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.2s;" onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.color='#fff';" onmouseout="this.style.backgroundColor='rgba(0, 0, 0, 0.2)'; this.style.color='#60a5fa';"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></button>
 
                 <div class="bottom-scroll-wrapper" id="modal-scroll-area">
                     <div class="detail-info-list" style="padding: 0 1.5rem 1.5rem 1.5rem;">
@@ -2327,12 +2322,12 @@ const btnTableScrollDown = document.getElementById('btn-table-scroll-down');
 
 if (btnTableScrollUp && dynamicTableWrapper) {
     btnTableScrollUp.addEventListener('click', () => {
-        dynamicTableWrapper.scrollTo({ top: 0, behavior: 'smooth' }); // 留??꾨줈
+        dynamicTableWrapper.scrollTo({ top: 0, behavior: 'smooth' }); // 맨 위로
     });
 }
 if (btnTableScrollDown && dynamicTableWrapper) {
     btnTableScrollDown.addEventListener('click', () => {
-        dynamicTableWrapper.scrollTo({ top: dynamicTableWrapper.scrollHeight, behavior: 'smooth' }); // 留??꾨옒濡?
+        dynamicTableWrapper.scrollTo({ top: dynamicTableWrapper.scrollHeight, behavior: 'smooth' }); // 맨 아래로
     });
 }
 
@@ -2400,7 +2395,12 @@ async function checkFileAndSync() {
         }
     } catch (e) {
         console.error('Error monitoring file:', e);
-        document.getElementById('sync-status').innerHTML = '<span style="color: #ef4444;">❌ 파일 접근 에러</span>';
+        const syncStatus = document.getElementById('sync-status');
+        syncStatus.innerHTML = '<span style="color: #ef4444; cursor: pointer;" title="클릭하여 다시 연결">❌ 파일 접근 에러 (클릭하여 재연결)</span>';
+        syncStatus.onclick = () => {
+            const btnSync = document.getElementById('btn-sync-file');
+            if (btnSync) btnSync.click();
+        };
     }
 }
 
@@ -2484,3 +2484,4 @@ async function processExcelFile(file) {
     });
 }
 setupFileSync();
+
