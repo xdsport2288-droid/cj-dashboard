@@ -382,14 +382,19 @@
     <!-- Load Embedded Database and Application Code with Cache Busting -->
     <script>
         (function() {
-            const dataScript = document.createElement('script');
-            dataScript.src = 'data.js?t=' + Date.now();
-            dataScript.onload = function() {
-                const appScript = document.createElement('script');
-                appScript.src = 'app2.js?v=102&t=' + Date.now();
-                document.body.appendChild(appScript);
+            const configScript = document.createElement('script');
+            configScript.src = 'config.js?t=' + Date.now();
+            configScript.onload = function() {
+                const dataScript = document.createElement('script');
+                dataScript.src = 'data.js?t=' + Date.now();
+                dataScript.onload = function() {
+                    const appScript = document.createElement('script');
+                    appScript.src = 'app2.js?v=102&t=' + Date.now();
+                    document.body.appendChild(appScript);
+                };
+                document.body.appendChild(dataScript);
             };
-            document.body.appendChild(dataScript);
+            document.body.appendChild(configScript);
         })();
     </script>
 </body>

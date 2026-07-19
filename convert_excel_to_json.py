@@ -91,6 +91,12 @@ try:
     with open('dashboard_data.json', 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
         
+    with open('data.js', 'w', encoding='utf-8') as f:
+        f.write(f"window.LAST_UPDATED = '{output['last_updated']}';\n")
+        f.write("window.TRANSPORT_DATA = ")
+        json.dump(mapped_records, f, ensure_ascii=False, indent=2)
+        f.write(";\n")
+        
     print(f"✅ 변환 완료! 총 {len(records)}건의 데이터가 저장되었습니다.")
 except Exception as e:
     print(f"❌ 변환 중 오류 발생: {e}")

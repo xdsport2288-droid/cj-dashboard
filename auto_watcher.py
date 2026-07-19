@@ -12,7 +12,7 @@ def get_mtime(f):
 def show_notification(title, message):
     vbs_code = f"""
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Popup "{message}", 3, "{title}", 64
+WshShell.Popup "{message}", 3, "{title}", 4160
 """
     vbs_path = os.path.join(os.environ.get("TEMP", "."), "notify.vbs")
     with open(vbs_path, "w", encoding="utf-16") as f:
@@ -48,8 +48,8 @@ while True:
         NO_WINDOW = 0x08000000
         subprocess.run(["python", "convert_excel_to_json.py"], env={**os.environ, "PYTHONIOENCODING": "utf-8"}, creationflags=NO_WINDOW)
         print("2. 깃허브 서버로 자동 업로드(Push) 중...")
-        subprocess.run(["git", "add", "dashboard_data.json"], creationflags=NO_WINDOW)
-        subprocess.run(["git", "commit", "-m", "Auto-sync: Update dashboard data"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
+        subprocess.run(["git", "add", "dashboard_data.json", "data.js", "config.js"], creationflags=NO_WINDOW)
+        subprocess.run(["git", "commit", "-m", "Auto-update dashboard data"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         push_result = subprocess.run(["git", "push"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         if push_result.returncode == 0:
             print("3. 서버 업로드 완료! (대시보드가 곧 자동으로 갱신됩니다)\n")
