@@ -406,11 +406,16 @@ function initFilters() {
     const statusSelect = document.getElementById('filter-status');
 
     const currentShipper = shipperSelect.value;
-    const currentCarrier = carrierSelect ? carrierSelect.value : '';
+    let currentCarrier = carrierSelect ? carrierSelect.value : '';
     const currentLoading = loadingSelect.value;
     const currentDest = destSelect.value;
     const currentTone = toneSelect.value;
     const currentStatus = statusSelect.value;
+
+    if (typeof window._hasSetInitialCarrier === 'undefined') {
+        window._hasSetInitialCarrier = true;
+        currentCarrier = 'JM컴퍼니';
+    }
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
     if (carrierSelect) carrierSelect.innerHTML = '<option value="">간선사 (전체)</option>';
@@ -578,13 +583,24 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
         });
     });
 
-    // Restore previous selections if they still exist
-    if (currentShipper) shipperSelect.value = currentShipper;
-    if (currentCarrier) carrierSelect.value = currentCarrier;
-    if (currentLoading) loadingSelect.value = currentLoading;
-    if (currentDest) destSelect.value = currentDest;
-    if (currentTone) toneSelect.value = currentTone;
-    if (currentStatus) statusSelect.value = currentStatus;
+    // Restore previous selections using CustomMultiSelect where possible to update UI
+    if (currentShipper && window.cmsShipper) window.cmsShipper.setValue(currentShipper);
+    else if (currentShipper) shipperSelect.value = currentShipper;
+    
+    if (currentCarrier && window.cmsCarrier) window.cmsCarrier.setValue(currentCarrier);
+    else if (currentCarrier && carrierSelect) carrierSelect.value = currentCarrier;
+    
+    if (currentLoading && window.cmsLoading) window.cmsLoading.setValue(currentLoading);
+    else if (currentLoading) loadingSelect.value = currentLoading;
+    
+    if (currentDest && window.cmsDest) window.cmsDest.setValue(currentDest);
+    else if (currentDest) destSelect.value = currentDest;
+    
+    if (currentTone && window.cmsTone) window.cmsTone.setValue(currentTone);
+    else if (currentTone) toneSelect.value = currentTone;
+    
+    if (currentStatus && window.cmsStatus) window.cmsStatus.setValue(currentStatus);
+    else if (currentStatus) statusSelect.value = currentStatus;
 }
 
 // Calculate and Render KPIs
