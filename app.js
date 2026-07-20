@@ -410,6 +410,14 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     bindSync(window.cmsTone, window.cmsThTone);
     bindSync(window.cmsStatus, window.cmsThStatus);
 
+    // 페이지 로드시(F5, 데이터 새로고침) 초기 필터값을 'JM컴퍼니'로 설정
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue('JM컴퍼니');
+    }
+    if (window.cmsThCarrier) {
+        window.cmsThCarrier.setValue('JM컴퍼니');
+    }
+
     // Dynamically generate tabs
     const tableTabs = document.querySelector('.table-tabs');
     if (tableTabs) {
