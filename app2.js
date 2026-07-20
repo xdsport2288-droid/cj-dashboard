@@ -423,24 +423,32 @@ function initFilters() {
         toast.style.top = '20px';
         toast.style.left = '50%';
         toast.style.transform = 'translateX(-50%)';
-        toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // emerald
+        toast.style.backgroundColor = 'rgba(15, 23, 42, 0.9)'; // Dark premium background
         toast.style.color = '#fff';
         toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '8px';
+        toast.style.borderRadius = '12px';
         toast.style.zIndex = '99999';
         toast.style.fontWeight = 'bold';
-        toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-        toast.style.animation = 'fadein 0.3s';
-        toast.innerHTML = '✨ <b>운송기간, 간선사는 기본값으로 반영되었습니다</b>';
+        toast.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.2)';
+        toast.style.animation = 'fadein 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        toast.style.textAlign = 'center';
+        toast.style.lineHeight = '1.4';
+        
+        toast.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span><b>최신 데이터 동기화 완료!</b></span>
+        </div>
+        <div style="font-size:0.85em; font-weight:normal; color:#94a3b8; margin-top:4px;">업데이트: ${window.LAST_UPDATED || '최신'}</div>`;
         
         document.body.appendChild(toast);
         
         setTimeout(() => {
             if (document.getElementById('initial-load-toast')) {
-                toast.style.animation = 'fadeout 0.3s';
-                setTimeout(() => toast.remove(), 290);
+                toast.style.animation = 'fadeout 0.4s forwards';
+                setTimeout(() => toast.remove(), 390);
             }
-        }, 3000);
+        }, 3500);
     }
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
