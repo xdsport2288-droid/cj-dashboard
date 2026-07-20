@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CJ더운반)이천지점 - 배차/정산 대시보드</title>
+    <title>CJ?�운�??�천지??- 배차/?�산 ?�?�보??/title>
     <!-- PWA Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <link rel="apple-touch-icon" href="icon-192x192.png">
     <!-- Open Graph / Link Share Preview -->
-    <meta property="og:title" content="CJ더운반)이천지점 - 배차/정산 대시보드">
-    <meta property="og:description" content="배차 및 정산 통계 대시보드">
+    <meta property="og:title" content="CJ?�운�??�천지??- 배차/?�산 ?�?�보??>
+    <meta property="og:description" content="배차 �??�산 ?�계 ?�?�보??>
     <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css?v=58">
     <!-- Chart.js CDN -->
@@ -48,34 +48,33 @@
         <!-- Header -->
         <header>
             <div class="brand">
-                <span style="font-size: 1.8rem;">🚚</span>
+                <span style="font-size: 1.8rem;">?��</span>
                 <div>
-                    <h1><span class="hd-brand" id="brand-name">CJ더운반)이천지점</span> 통합운송 플랫폼</h1>
+                    <h1><span class="hd-brand" id="brand-name">CJ?�운�??�천지??/span> ?�합?�송 ?�랫??/h1>
                     <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
                         <span id="last-updated-time" style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;"></span>
-                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">🚀 v2.5 (26.07.20 14:00) 팝업창 크기 제한 및 스크롤 오류 완벽 해결</span>
+                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">?? v2.5 (26.07.20 14:00) ?�업�??�기 ?�한 �??�크�??�류 ?�벽 ?�결</span>
                     </p>
                 </div>
             </div>
             <div class="header-controls">
-                <button class="btn btn-secondary" id="btn-reload" title="새 데이터 불러오기" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10b981;">
-                    🔄 새 데이터 새로고침
+                <button class="btn btn-secondary" id="btn-reload" title="???�이??불러?�기" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2); color: #10b981;">
+                    ?�� ???�이???�로고침
                 </button>
                 <button class="btn btn-secondary" id="btn-edit">
-                    ⚙️ 편집 모드
+                    ?�️ ?�집 모드
                 </button>
                 <button class="btn btn-secondary" id="btn-cancel-edit" style="display: none; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
-                    ❌ 편집 취소
+                    ???�집 취소
                 </button>
 
                 <button class="btn btn-secondary" id="btn-export">
-                    <span>📥</span> CSV 내보내기
+                    <span>?��</span> CSV ?�보?�기
                 </button>
-                <button class="btn btn-secondary" id="btn-reset" title="모든 필터 선택 해제" style="background: rgba(255, 255, 255, 0.05);">
-                    🧹 필터 초기화
-                </button>
-                <button class="btn-icon" id="btn-theme" title="테마 전환">
-                    <span id="theme-icon">🌙</span>
+                <button class="btn btn-secondary" id="btn-reset" title="모든 ?�터 ?�택 ?�제" style="background: rgba(255, 255, 255, 0.05);">
+                    ?�� ?�터 초기??                </button>
+                <button class="btn-icon" id="btn-theme" title="?�마 ?�환">
+                    <span id="theme-icon">?��</span>
                 </button>
             </div>
         </header>
@@ -85,43 +84,43 @@
             <!-- Filter Section -->
             <section class="filters-panel animate-fade">
                 <div class="filter-item">
-                    <label for="filter-status">🔄 접수상태</label>
+                    <label for="filter-status">?�� ?�수?�태</label>
                     <select id="filter-status" class="filter-select" multiple>
                         <!-- Options populated via JS -->
                     </select>
                 </div>
                 <div class="filter-item">
-                    <label for="filter-shipper">🏢 화주사</label>
+                    <label for="filter-shipper">?�� ?�주??/label>
                     <select id="filter-shipper" class="filter-select" multiple>
                         <!-- Options populated via JS -->
                     </select>
                 </div>
                 <div class="filter-item">
-                    <label for="filter-carrier">🚚 간선사</label>
+                    <label for="filter-carrier">?�� 간선??/label>
                     <select id="filter-carrier" class="filter-select" multiple>
                         <!-- Options populated via JS -->
                     </select>
                 </div>
                 <div class="filter-item">
-                    <label for="filter-loading">📍 출발지명</label>
+                    <label for="filter-loading">?�� 출발지�?/label>
                     <select id="filter-loading" class="filter-select" multiple>
                         <!-- Options populated via JS -->
                     </select>
                 </div>
                 <div class="filter-item">
-                    <label for="filter-dest">📍 도착지명</label>
+                    <label for="filter-dest">?�� ?�착지�?/label>
                     <select id="filter-dest" class="filter-select" multiple>
                         <!-- Options populated via JS -->
                     </select>
                 </div>
                 <div class="filter-item">
-                    <label for="filter-tone">⚖️ 차량톤수</label>
+                    <label for="filter-tone">?�️ 차량?�수</label>
                     <select id="filter-tone" class="filter-select" multiple>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label id="date-range-label" for="filter-date-range">📅 운송 기간</label>
-                    <input type="text" id="filter-date-range" class="filter-input" placeholder="전체 기간">
+                    <label id="date-range-label" for="filter-date-range">?�� ?�송 기간</label>
+                    <input type="text" id="filter-date-range" class="filter-input" placeholder="?�체 기간">
                 </div>
             </section>
 
@@ -130,11 +129,11 @@
                 <!-- Total Orders KPI -->
                 <div class="kpi-card orders animate-fade" style="animation-delay: 0.1s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">총 배차 건수</span>
-                        <span class="kpi-icon">🚚</span>
+                        <span class="kpi-title">�?배차 건수</span>
+                        <span class="kpi-icon">?��</span>
                     </div>
                     <div class="kpi-value-container">
-                        <div class="kpi-value" id="kpi-orders">0 건</div>
+                        <div class="kpi-value" id="kpi-orders">0 �?/div>
                         <div class="kpi-sub-details" id="kpi-orders-detail"></div>
                     </div>
                     <div class="mom-slot" id="mom-orders"></div>
@@ -142,45 +141,45 @@
                 <!-- Sales KPI -->
                 <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">총 매출액</span>
-                        <span class="kpi-icon">💰</span>
+                        <span class="kpi-title">�?매출??/span>
+                        <span class="kpi-icon">?��</span>
                     </div>
-                    <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                    <div class="kpi-value" id="kpi-sales">??0</div>
                     <div class="mom-slot" id="mom-sales"></div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×101% (백원버림)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">?�임×101% (백원버림)</div>
                 </div>
-                <!-- 순수운임 KPI -->
+                <!-- ?�수?�임 KPI -->
                 <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
                     <div class="kpi-header">
-                        <span class="kpi-title">순수 운임</span>
-                        <span class="kpi-icon">🚛</span>
+                        <span class="kpi-title">?�수 ?�임</span>
+                        <span class="kpi-icon">?��</span>
                     </div>
-                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">원본 운임 100%</div>
+                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">??0</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">?�본 ?�임 100%</div>
                 </div>
                 <!-- Purchase KPI -->
                 <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">총 매입액</span>
-                        <span class="kpi-icon">💸</span>
+                        <span class="kpi-title">�?매입??/span>
+                        <span class="kpi-icon">?��</span>
                     </div>
-                    <div class="kpi-value" id="kpi-purchase">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×96%</div>
+                    <div class="kpi-value" id="kpi-purchase">??0</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">?�임×96%</div>
                 </div>
                 <!-- Profit KPI -->
                 <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">순이익</span>
-                        <span class="kpi-icon">📈</span>
+                        <span class="kpi-title">?�이??/span>
+                        <span class="kpi-icon">?��</span>
                     </div>
-                    <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    <div class="kpi-value" id="kpi-profit">??0</div>
                     <div class="mom-slot" id="mom-profit"></div>
                 </div>
                 <!-- Margin KPI -->
                 <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">순이익률</span>
-                        <span class="kpi-icon">📊</span>
+                        <span class="kpi-title">?�이?�률</span>
+                        <span class="kpi-icon">?��</span>
                     </div>
                     <div class="kpi-value" id="kpi-margin">0%</div>
                 </div>
@@ -189,39 +188,39 @@
             <!-- Monthly Prediction Panel -->
             <section class="prediction-panel animate-fade" id="prediction-panel" style="animation-delay: 0.7s;">
                 <div class="prediction-header">
-                    <span class="prediction-title">📈 당월 실적 예측 분석</span>
-                    <span class="prediction-badge" id="prediction-period-label">—</span>
+                    <span class="prediction-title">?�� ?�월 ?�적 ?�측 분석</span>
+                    <span class="prediction-badge" id="prediction-period-label">??/span>
                 </div>
                 <div class="prediction-grid">
                     <div class="prediction-item">
-                        <div class="pred-label">📅 경과 / 잔여 일수</div>
-                        <div class="pred-value" id="pred-elapsed">—</div>
-                        <div class="pred-sub" id="pred-days-info">—</div>
+                        <div class="pred-label">?�� 경과 / ?�여 ?�수</div>
+                        <div class="pred-value" id="pred-elapsed">??/div>
+                        <div class="pred-sub" id="pred-days-info">??/div>
                     </div>
                     <div class="prediction-item">
-                        <div class="pred-label">🚚 일 평균 건수</div>
-                        <div class="pred-value" id="pred-daily-count">—</div>
-                        <div class="pred-sub">건 / 일</div>
+                        <div class="pred-label">?�� ???�균 건수</div>
+                        <div class="pred-value" id="pred-daily-count">??/div>
+                        <div class="pred-sub">�?/ ??/div>
                     </div>
                     <div class="prediction-item highlight">
-                        <div class="pred-label">🎯 월 예상 총 건수</div>
-                        <div class="pred-value" id="pred-monthly-count">—</div>
-                        <div class="pred-sub" id="pred-count-sub">—</div>
+                        <div class="pred-label">?�� ???�상 �?건수</div>
+                        <div class="pred-value" id="pred-monthly-count">??/div>
+                        <div class="pred-sub" id="pred-count-sub">??/div>
                     </div>
                     <div class="prediction-item">
-                        <div class="pred-label">💰 일 평균 매출</div>
-                        <div class="pred-value" id="pred-daily-sales">—</div>
-                        <div class="pred-sub">원 / 일</div>
+                        <div class="pred-label">?�� ???�균 매출</div>
+                        <div class="pred-value" id="pred-daily-sales">??/div>
+                        <div class="pred-sub">??/ ??/div>
                     </div>
                     <div class="prediction-item highlight">
-                        <div class="pred-label">🎯 월 예상 매출</div>
-                        <div class="pred-value" id="pred-monthly-sales">—</div>
-                        <div class="pred-sub" id="pred-sales-sub">—</div>
+                        <div class="pred-label">?�� ???�상 매출</div>
+                        <div class="pred-value" id="pred-monthly-sales">??/div>
+                        <div class="pred-sub" id="pred-sales-sub">??/div>
                     </div>
                     <div class="prediction-item">
-                        <div class="pred-label">📊 월 예상 순이익</div>
-                        <div class="pred-value" id="pred-monthly-profit">—</div>
-                        <div class="pred-sub">예상 수익</div>
+                        <div class="pred-label">?�� ???�상 ?�이??/div>
+                        <div class="pred-value" id="pred-monthly-profit">??/div>
+                        <div class="pred-sub">?�상 ?�익</div>
                     </div>
                 </div>
             </section>
@@ -231,8 +230,8 @@
                 <!-- Date Sales & Purchase Trend Chart -->
                 <div class="chart-card animate-fade" style="animation-delay: 0.6s;">
                     <div class="chart-title">
-                        <span>📅 일별 매출/매입/순이익 추이</span>
-                        <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;">*막대: 매출/매입액, 라인: 순이익</span>
+                        <span>?�� ?�별 매출/매입/?�이??추이</span>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: normal;">*막�?: 매출/매입?? ?�인: ?�이??/span>
                     </div>
                     <div class="chart-container">
                         <canvas id="trendChart"></canvas>
@@ -241,7 +240,7 @@
                 <!-- Tone Distribution Chart -->
                 <div class="chart-card animate-fade" style="animation-delay: 0.7s;">
                     <div class="chart-title">
-                        <span>⚖️ 배차 차량 톤급 분포</span>
+                        <span>?�️ 배차 차량 ?�급 분포</span>
                     </div>
                     <div class="chart-container">
                         <canvas id="toneChart"></canvas>
@@ -253,7 +252,7 @@
                 <!-- Destination Ranking Chart -->
                 <div class="chart-card animate-fade" style="animation-delay: 0.8s; min-height: 300px;">
                     <div class="chart-title">
-                        <span>📍 목적지별 운송 빈도 랭킹 (Top 7)</span>
+                        <span>?�� 목적지�??�송 빈도 ??�� (Top 7)</span>
                     </div>
                     <div class="chart-container">
                         <canvas id="destChart"></canvas>
@@ -264,21 +263,21 @@
             <!-- Data Table Section -->
             <section class="table-card animate-fade" style="animation-delay: 0.9s;">
                 <div class="table-header">
-                    <h2 style="font-size: 1.1rem; font-weight: 600;">📋 상세 운송 내역 리스트</h2>
+                    <h2 style="font-size: 1.1rem; font-weight: 600;">?�� ?�세 ?�송 ?�역 리스??/h2>
                     <div class="search-box">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="search-input" class="search-input" placeholder="통합 검색 (운전자, 차량번호 등)">
+                        <span class="search-icon">?��</span>
+                        <input type="text" id="search-input" class="search-input" placeholder="?�합 검??(?�전?? 차량번호 ??">
                     </div>
                 </div>
                 <div class="table-tabs">
-                    <button class="tab-btn active" data-status="">전체</button>
-                    <button class="tab-btn" data-status="운송실적 확정">운송실적 확정</button>
-                    <button class="tab-btn" data-status="배차확정">배차확정</button>
+                    <button class="tab-btn active" data-status="">?�체</button>
+                    <button class="tab-btn" data-status="?�송?�적 ?�정">?�송?�적 ?�정</button>
+                    <button class="tab-btn" data-status="배차?�정">배차?�정</button>
                 </div>
                 <!-- Dynamic Summary Box -->
                 <div class="table-summary-box animate-fade" id="table-summary"></div>
                 
-                <!-- 상단 가로 스크롤바 추가 -->
+                <!-- ?�단 가�??�크롤바 추�? -->
                 <div class="top-scrollbar" id="top-scrollbar">
                     <div class="top-scrollbar-fake-content" id="top-scrollbar-fake-content"></div>
                 </div>
@@ -338,17 +337,17 @@
                     </table>
                 </div>
                 <!-- Custom DOM Scrollbar Buttons for Smooth Scroll -->
-                <button class="btn-table-jump btn-jump-up" onclick="document.getElementById('table-wrapper').scrollTo({top: 0, behavior: 'smooth'})" title="리스트 맨 위로">
+                <button class="btn-table-jump btn-jump-up" onclick="document.getElementById('table-wrapper').scrollTo({top: 0, behavior: 'smooth'})" title="리스??�??�로">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
                 </button>
-                <button class="btn-table-jump btn-jump-down" onclick="const tw = document.getElementById('table-wrapper'); tw.scrollTo({top: tw.scrollHeight, behavior: 'smooth'})" title="리스트 맨 아래로">
+                <button class="btn-table-jump btn-jump-down" onclick="const tw = document.getElementById('table-wrapper'); tw.scrollTo({top: tw.scrollHeight, behavior: 'smooth'})" title="리스??�??�래�?>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </button>
                 <!-- Horizontal Jump Buttons -->
-                <button class="btn-table-jump btn-jump-left" onclick="document.getElementById('table-wrapper').scrollTo({left: 0, behavior: 'smooth'})" title="왼쪽 끝으로">
+                <button class="btn-table-jump btn-jump-left" onclick="document.getElementById('table-wrapper').scrollTo({left: 0, behavior: 'smooth'})" title="?�쪽 ?�으�?>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <button class="btn-table-jump btn-jump-right" onclick="const tw = document.getElementById('table-wrapper'); tw.scrollTo({left: tw.scrollWidth, behavior: 'smooth'})" title="오른쪽 끝으로">
+                <button class="btn-table-jump btn-jump-right" onclick="const tw = document.getElementById('table-wrapper'); tw.scrollTo({left: tw.scrollWidth, behavior: 'smooth'})" title="?�른�??�으�?>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
             </div>
@@ -360,19 +359,19 @@
     <div id="dynamic-floating-panel" style="position: absolute; top: 0; left: 0; width: 100%; pointer-events: none; display: flex; justify-content: center; z-index: 1000; transform: translateY(0px);">
         <div style="width: 100%; max-width: 1850px; position: relative;">
             <div class="floating-control-panel">
-                <!-- 화면 맨 위로 (항상 표시) -->
-                <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="화면 맨 위로">
+                <!-- ?�면 �??�로 (??�� ?�시) -->
+                <button id="btn-scroll-top" class="scroll-btn ctrl-page" title="?�면 �??�로">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
                 </button>
-                <!-- 상세 내역으로 (테이블 아이콘) -->
-                <button id="btn-scroll-middle" class="scroll-btn ctrl-page" title="상세 내역으로">
+                <!-- ?�세 ?�역?�로 (?�이�??�이�? -->
+                <button id="btn-scroll-middle" class="scroll-btn ctrl-page" title="?�세 ?�역?�로">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                 </button>
                 
                 <div class="panel-divider"></div>
 
-                <!-- 데이터 새로고침 -->
-                <button id="btn-float-reload" class="scroll-btn ctrl-action" title="데이터 새로고침" style="color: #10b981;">
+                <!-- ?�이???�로고침 -->
+                <button id="btn-float-reload" class="scroll-btn ctrl-action" title="?�이???�로고침" style="color: #10b981;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
                 </button>
             </div>
@@ -389,7 +388,7 @@
                 dataScript.src = 'data.js?t=' + Date.now();
                 dataScript.onload = function() {
                     const appScript = document.createElement('script');
-                    appScript.src = 'app2.js?v=102&t=' + Date.now();
+                    appScript.src = 'app2.js?v=103&t=' + Date.now();
                     document.body.appendChild(appScript);
                 };
                 document.body.appendChild(dataScript);
