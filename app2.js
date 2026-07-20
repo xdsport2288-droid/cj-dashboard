@@ -1352,15 +1352,19 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 전체 기간으로 초기화 (빈 값)
+    // 날짜 선택기를 전체 기간으로 초기화 (빈 값 대신 전체 범위 날짜 지정)
     if (typeof datePicker !== 'undefined' && datePicker) {
         // 단일 객체인 경우와 배열인 경우 모두 처리
         const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
-        if (dp) dp.clear();
+        if (dp) {
+            const today = new Date();
+            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
+            dp.setDate([minDate, today]);
+        }
         
         // Label 원상복구
         const label = document.getElementById('date-range-label');
-        if (label) label.innerHTML = '📅 운송 기간';
+        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
     }
 
     // Refresh UI with cleared filters
@@ -1531,6 +1535,21 @@ function initDashboard() {
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     const fileStartDate = firstDay;
 
+    // Find the absolute earliest date in the data for "전체" (All)
+    window.absoluteEarliestDate = new Date(today.getFullYear(), today.getMonth(), 1); // fallback
+    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
+        let minDateStr = "9999-99-99";
+        window.TRANSPORT_DATA.forEach(row => {
+            const ds = (row['배차 요청 일시'] || row['접수일시'] || '').split(' ')[0];
+            if (ds && ds >= '2000-01-01' && ds < minDateStr) {
+                minDateStr = ds;
+            }
+        });
+        if (minDateStr !== "9999-99-99") {
+            window.absoluteEarliestDate = new Date(minDateStr);
+        }
+    }
+
     // Function to add custom buttons to flatpickr
     const addCustomButtons = function (selectedDates, dateStr, instance) {
         const btnContainer = document.createElement("div");
@@ -1580,7 +1599,9 @@ function initDashboard() {
         clearBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
         clearBtn.style.color = "var(--text-primary)";
         clearBtn.addEventListener("click", function () {
-            instance.setDate([fileStartDate, today], true); // true to trigger onChange
+            const today = new Date();
+            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
+            instance.setDate([minDate, today], true); // true to trigger onChange
             instance.close();
             // filterData() is called by onChange
         });
