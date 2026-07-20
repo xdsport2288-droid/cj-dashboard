@@ -1618,10 +1618,15 @@ function initDashboard() {
         if (selectedDates && selectedDates.length === 2) {
             const startStr = flatpickr.formatDate(selectedDates[0], "Y-m-d");
             const endStr = flatpickr.formatDate(selectedDates[1], "Y-m-d");
-            const fileStartStr = flatpickr.formatDate(fileStartDate, "Y-m-d");
-            const todayStr = flatpickr.formatDate(today, "Y-m-d");
             
-            if (startStr === fileStartStr && endStr === todayStr) {
+            const todayDate = new Date();
+            const monthStartStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), "Y-m-d");
+            const allStartStr = window.absoluteEarliestDate ? flatpickr.formatDate(window.absoluteEarliestDate, "Y-m-d") : monthStartStr;
+            const todayStr = flatpickr.formatDate(todayDate, "Y-m-d");
+            
+            if (startStr === monthStartStr && endStr === todayStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            } else if (startStr === allStartStr && endStr === todayStr) {
                 label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
             } else {
                 label.innerHTML = '📅 운송 기간';
