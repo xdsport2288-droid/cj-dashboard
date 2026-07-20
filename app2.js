@@ -415,6 +415,32 @@ function initFilters() {
     if (typeof window._hasSetInitialCarrier === 'undefined') {
         window._hasSetInitialCarrier = true;
         currentCarrier = 'JM컴퍼니';
+
+        // F5/초기 로드시 토스트 메시지 띄우기
+        const toast = document.createElement('div');
+        toast.id = 'initial-load-toast';
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // emerald
+        toast.style.color = '#fff';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '99999';
+        toast.style.fontWeight = 'bold';
+        toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        toast.style.animation = 'fadein 0.3s';
+        toast.innerHTML = '✨ <b>운송기간, 간선사는 기본값으로 반영되었습니다</b>';
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (document.getElementById('initial-load-toast')) {
+                toast.style.animation = 'fadeout 0.3s';
+                setTimeout(() => toast.remove(), 290);
+            }
+        }, 3000);
     }
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
@@ -1339,35 +1365,6 @@ function resetFilters() {
 
     // Refresh UI with cleared filters
     filterData();
-
-    // Show visual feedback toast for filter reset
-    const existingToast = document.getElementById('filter-reset-toast');
-    if (existingToast) existingToast.remove();
-
-    const toast = document.createElement('div');
-    toast.id = 'filter-reset-toast';
-    toast.style.position = 'fixed';
-    toast.style.top = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // emerald
-    toast.style.color = '#fff';
-    toast.style.padding = '12px 24px';
-    toast.style.borderRadius = '8px';
-    toast.style.zIndex = '99999';
-    toast.style.fontWeight = 'bold';
-    toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-    toast.style.animation = 'fadein 0.3s';
-    toast.innerHTML = '🧹 <b>모든 필터가 초기화되었습니다</b> (전체 데이터 표시)';
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        if (document.getElementById('filter-reset-toast')) {
-            toast.style.animation = 'fadeout 0.3s';
-            setTimeout(() => toast.remove(), 290);
-        }
-    }, 2500);
 }
 
 // Export CSV
@@ -1531,22 +1528,8 @@ function initDashboard() {
 
     // Initialize Flatpickr date range picker
     const today = new Date();
-    let fileStartDate = new Date(today.getFullYear(), today.getMonth(), 1); // fallback
-    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
-        let minDateStr = "9999-99-99";
-        window.TRANSPORT_DATA.forEach(row => {
-            const dateStr = row['상차 요청 일시'];
-            if (dateStr) {
-                const justDate = dateStr.split(' ')[0];
-                if (justDate < minDateStr) {
-                    minDateStr = justDate;
-                }
-            }
-        });
-        if (minDateStr !== "9999-99-99") {
-            fileStartDate = new Date(minDateStr);
-        }
-    }
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const fileStartDate = firstDay;
 
     // Function to add custom buttons to flatpickr
     const addCustomButtons = function (selectedDates, dateStr, instance) {
