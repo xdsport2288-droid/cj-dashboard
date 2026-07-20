@@ -495,7 +495,7 @@ function smoothReloadData() {
         const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
         mainContent.style.animation = 'none';
         void mainContent.offsetWidth; // Reflow 강제 발생
-        mainContent.style.animation = 'fadeSlideUp 0.7s ease-out forwards';
+        mainContent.style.animation = 'fadeSlideUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards';
         
         // Re-run initialization and filtering to update charts and table smoothly
         initFilters();
@@ -1453,7 +1453,7 @@ function resetFilters() {
     const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
     mainContent.style.animation = 'none';
     void mainContent.offsetWidth; // Reflow 강제 발생
-    mainContent.style.animation = 'fadeSlideUp 0.7s ease-out forwards';
+    mainContent.style.animation = 'fadeSlideUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards';
 
     // Clear all CustomMultiSelect instances dynamically
     const allCms = [
