@@ -1867,60 +1867,14 @@ setInterval(async () => {
             // Re-apply filters with new data
             filterData();
 
-            // Remove existing toast if present
-            const existingToast = document.getElementById('live-update-toast');
-            if (existingToast) {
-                existingToast.remove();
-            }
+            // 명시적 시각적 피드백: 화면 전체를 부드럽게 다시 그리는 애니메이션 효과
+            const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
+            mainContent.style.animation = 'none';
+            void mainContent.offsetWidth; // Reflow 강제 발생
+            mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
 
-            // Show a subtle notification (toast) to user
-            const toast = document.createElement('div');
-            toast.id = 'live-update-toast';
-            toast.style.position = 'fixed';
-            toast.style.bottom = '20px';
-            toast.style.right = '20px';
-            toast.style.backgroundColor = 'var(--accent)';
-            toast.style.color = '#fff';
-            toast.style.padding = '12px 24px';
-            toast.style.borderRadius = '8px';
-            toast.style.zIndex = '9999';
-            toast.style.fontWeight = 'bold';
-            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            toast.style.animation = 'fadein 0.5s';
-            toast.style.display = 'flex';
-            toast.style.alignItems = 'center';
-            toast.style.gap = '15px';
-
-            const msgSpan = document.createElement('span');
-            msgSpan.textContent = "데이터가 실시간으로 최신화되었습니다!";
-            toast.appendChild(msgSpan);
-
-            const closeBtn = document.createElement('button');
-            closeBtn.textContent = '확인 (닫기)';
-            closeBtn.style.background = 'rgba(255,255,255,0.2)';
-            closeBtn.style.border = 'none';
-            closeBtn.style.color = '#fff';
-            closeBtn.style.padding = '4px 10px';
-            closeBtn.style.borderRadius = '4px';
-            closeBtn.style.cursor = 'pointer';
-            closeBtn.style.fontWeight = 'bold';
-
-            const closeToast = () => {
-                toast.style.animation = 'fadeout 0.3s';
-                setTimeout(() => toast.remove(), 290);
-            };
-
-            closeBtn.onclick = closeToast;
-            
-            toast.appendChild(closeBtn);
-            document.body.appendChild(toast);
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                if (document.getElementById('live-update-toast')) {
-                    closeToast();
-                }
-            }, 5000);
+            // 큰 팝업창(확인 버튼 포함) 띄우기
+            checkAndShowUpdateToast();
         }
     } catch (e) {
         // silently fail on dev env or network errors
