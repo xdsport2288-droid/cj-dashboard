@@ -10,15 +10,9 @@ def get_mtime(f):
     return os.path.getmtime(f) if os.path.exists(f) else 0
 
 def show_notification(title, message):
-    vbs_code = f"""
-Set WshShell = CreateObject("WScript.Shell")
-WshShell.Popup "{message}", 3, "{title}", 4160
-"""
-    vbs_path = os.path.join(os.environ.get("TEMP", "."), "notify.vbs")
-    with open(vbs_path, "w", encoding="utf-16") as f:
-        f.write(vbs_code)
     # 백그라운드(비동기)로 실행하여 파이썬 스크립트가 멈추지 않게 함
-    subprocess.Popen(["wscript", vbs_path])
+    NO_WINDOW = 0x08000000
+    subprocess.Popen(["python", "toast.py", title, message], creationflags=NO_WINDOW)
 
 print("==================================================")
 print("엑셀/CSV 파일 자동 감지기가 실행되었습니다!")
