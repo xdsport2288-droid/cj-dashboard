@@ -1310,10 +1310,10 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    // Clear all CustomMultiSelect instances dynamically EXCEPT Carrier
+    // Clear all CustomMultiSelect instances dynamically
     const allCms = [
-        window.cmsShipper, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThLoading, 
+        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
         window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
         window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
     ];
@@ -1322,23 +1322,15 @@ function resetFilters() {
         if (cms) cms.setValue('');
     });
 
-    // 간선사는 초기화 시 기본값(JM컴퍼니)으로 되돌리기
-    if (window.cmsCarrier) {
-        window.cmsCarrier.setValue("JM컴퍼니");
-    }
-    if (window.cmsThCarrier) {
-        window.cmsThCarrier.setValue("JM컴퍼니");
-    }
-    
     // Clear search input
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 당월 1일 ~ 현재일로 초기화
+    // 날짜 선택기를 전체 기간으로 초기화 (빈 값)
     if (typeof datePicker !== 'undefined' && datePicker) {
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        datePicker.setDate([firstDay, today]);
+        // 단일 객체인 경우와 배열인 경우 모두 처리
+        const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+        if (dp) dp.clear();
         
         // Label 원상복구
         const label = document.getElementById('date-range-label');
@@ -1366,7 +1358,7 @@ function resetFilters() {
     toast.style.fontWeight = 'bold';
     toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
     toast.style.animation = 'fadein 0.3s';
-    toast.innerHTML = '🧹 <b>필터 초기화 완료</b> (간선사 및 운송기간은 기본값으로 유지됩니다)';
+    toast.innerHTML = '🧹 <b>모든 필터가 초기화되었습니다</b> (전체 데이터 표시)';
     
     document.body.appendChild(toast);
     
