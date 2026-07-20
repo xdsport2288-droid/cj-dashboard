@@ -1683,10 +1683,10 @@ function initDashboard() {
     });
 
     const btnReset = document.getElementById('btn-reset');
-    if (btnReset) btnReset.addEventListener('click', () => window.location.reload(true));
+    if (btnReset) btnReset.addEventListener('click', resetFilters);
     
     const btnReload = document.getElementById('btn-reload');
-    if (btnReload) btnReload.addEventListener('click', resetFilters);
+    if (btnReload) btnReload.addEventListener('click', () => window.location.reload(true));
 
     document.getElementById('btn-export').addEventListener('click', exportToCSV);
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
