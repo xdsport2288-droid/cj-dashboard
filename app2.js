@@ -1540,7 +1540,7 @@ function initDashboard() {
     if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
         let minDateStr = "9999-99-99";
         window.TRANSPORT_DATA.forEach(row => {
-            const ds = (row['배차 요청 일시'] || row['접수일시'] || '').split(' ')[0];
+            const ds = (row['상차 요청 일시'] || row['배차 요청 일시'] || row['접수일시'] || '').split(' ')[0];
             if (ds && ds >= '2000-01-01' && ds < minDateStr) {
                 minDateStr = ds;
             }
