@@ -491,6 +491,12 @@ function smoothReloadData() {
         setBtnState(false);
         activeData = [...window.TRANSPORT_DATA];
         
+        // 명시적 시각적 피드백: 화면 전체를 부드럽게 새로 그리는 애니메이션 효과 (사용자 인지용)
+        const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
+        mainContent.style.animation = 'none';
+        void mainContent.offsetWidth; // Reflow 강제 발생
+        mainContent.style.animation = 'fadeSlideUp 0.7s ease-out forwards';
+        
         // Re-run initialization and filtering to update charts and table smoothly
         initFilters();
         if (typeof filterData === 'function') {
@@ -1443,6 +1449,12 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
+    // 명시적 시각적 피드백: 초기화 시 화면 전체를 부드럽게 다시 그리는 애니메이션 효과
+    const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
+    mainContent.style.animation = 'none';
+    void mainContent.offsetWidth; // Reflow 강제 발생
+    mainContent.style.animation = 'fadeSlideUp 0.7s ease-out forwards';
+
     // Clear all CustomMultiSelect instances dynamically
     const allCms = [
         window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
