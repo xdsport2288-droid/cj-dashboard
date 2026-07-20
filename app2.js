@@ -468,14 +468,12 @@ function smoothReloadData() {
     
     const setBtnState = (loading) => {
         if (btnReload) {
-            btnReload.innerHTML = loading ? '🔄 데이터 로딩중...' : '새 데이터 새로고침';
             btnReload.style.pointerEvents = loading ? 'none' : 'auto';
             btnReload.style.opacity = loading ? '0.7' : '1';
         }
         if (floatBtn) {
             floatBtn.style.pointerEvents = loading ? 'none' : 'auto';
             floatBtn.style.opacity = loading ? '0.5' : '1';
-            floatBtn.innerHTML = loading ? '🔄' : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
         }
         document.body.style.cursor = loading ? 'wait' : 'default';
     };
@@ -495,7 +493,7 @@ function smoothReloadData() {
         const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
         mainContent.style.animation = 'none';
         void mainContent.offsetWidth; // Reflow 강제 발생
-        mainContent.style.animation = 'fadeSlideUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+        mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
         
         // Re-run initialization and filtering to update charts and table smoothly
         initFilters();
@@ -1453,7 +1451,7 @@ function resetFilters() {
     const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
     mainContent.style.animation = 'none';
     void mainContent.offsetWidth; // Reflow 강제 발생
-    mainContent.style.animation = 'fadeSlideUp 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+    mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
 
     // Clear all CustomMultiSelect instances dynamically
     const allCms = [
