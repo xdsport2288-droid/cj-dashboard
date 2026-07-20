@@ -417,38 +417,64 @@ function initFilters() {
         currentCarrier = 'JM컴퍼니';
 
         // F5/초기 로드시 토스트 메시지 띄우기
+        const lastSeenUpdate = localStorage.getItem('seen_update');
         const toast = document.createElement('div');
         toast.id = 'initial-load-toast';
         toast.style.position = 'fixed';
         toast.style.top = '20px';
         toast.style.left = '50%';
         toast.style.transform = 'translateX(-50%)';
-        toast.style.backgroundColor = 'rgba(15, 23, 42, 0.9)'; // Dark premium background
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '12px';
         toast.style.zIndex = '99999';
-        toast.style.fontWeight = 'bold';
-        toast.style.border = '1px solid rgba(16, 185, 129, 0.3)';
-        toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5), 0 0 15px rgba(16, 185, 129, 0.2)';
-        toast.style.animation = 'fadein 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         toast.style.textAlign = 'center';
         toast.style.lineHeight = '1.4';
         
-        toast.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <span><b>최신 데이터 동기화 완료!</b></span>
-        </div>
-        <div style="font-size:0.85em; font-weight:normal; color:#94a3b8; margin-top:4px;">업데이트: ${window.LAST_UPDATED || '최신'}</div>`;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (document.getElementById('initial-load-toast')) {
-                toast.style.animation = 'fadeout 0.4s forwards';
-                setTimeout(() => toast.remove(), 390);
-            }
-        }, 3500);
+        if (lastSeenUpdate !== window.LAST_UPDATED) {
+            // 새 업데이트 1회성 알림 (확인 버튼 포함, 자동 사라짐 없음)
+            toast.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+            toast.style.color = '#fff';
+            toast.style.padding = '16px 24px';
+            toast.style.borderRadius = '12px';
+            toast.style.border = '1px solid rgba(16, 185, 129, 0.5)';
+            toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(16, 185, 129, 0.3)';
+            toast.style.animation = 'fadein 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            
+            toast.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 6px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span style="font-size: 1.1em;"><b>새로운 데이터 동기화 완료!</b></span>
+            </div>
+            <div style="font-size:0.9em; font-weight:normal; color:#94a3b8; margin-bottom: 14px;">업데이트: ${window.LAST_UPDATED || '최신'}</div>
+            <button id="btn-confirm-update" style="background: #10b981; color: white; border: none; padding: 8px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95em; width: 100%; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">확인</button>`;
+            
+            document.body.appendChild(toast);
+            
+            const btn = document.getElementById('btn-confirm-update');
+            btn.onmouseover = () => btn.style.background = '#059669';
+            btn.onmouseout = () => btn.style.background = '#10b981';
+            btn.addEventListener('click', () => {
+                localStorage.setItem('seen_update', window.LAST_UPDATED);
+                toast.style.animation = 'fadeout 0.3s forwards';
+                setTimeout(() => toast.remove(), 290);
+            });
+        } else {
+            // 일반 새로고침시 짧은 안내 (기존 방식)
+            toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.fontWeight = 'bold';
+            toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+            toast.style.animation = 'fadein 0.3s';
+            toast.innerHTML = '✨ <b>운송기간, 간선사는 기본값으로 반영되었습니다</b>';
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (document.getElementById('initial-load-toast')) {
+                    toast.style.animation = 'fadeout 0.3s forwards';
+                    setTimeout(() => toast.remove(), 290);
+                }
+            }, 3000);
+        }
     }
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
