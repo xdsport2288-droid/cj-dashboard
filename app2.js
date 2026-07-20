@@ -570,8 +570,6 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     window.cmsThCarnum = new CustomMultiSelect(document.getElementById('th-filter-carnum'), '차량번호 (전체)');
     window.cmsThRemark = new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
     window.cmsThFare = new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-remark'), '비고 (전체)');
-    new CustomMultiSelect(document.getElementById('th-filter-fare'), '운임 (전체)');
 
     const bindSync = (cms1, cms2) => {
         if (cms1 && cms2) {
@@ -585,29 +583,6 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     bindSync(window.cmsDest, window.cmsThDest);
     bindSync(window.cmsTone, window.cmsThTone);
     bindSync(window.cmsStatus, window.cmsThStatus);
-
-    // Dynamically generate tabs
-    const tableTabs = document.querySelector('.table-tabs');
-    if (tableTabs) {
-        tableTabs.innerHTML = '<button class="tab-btn active" data-status="">전체</button>';
-        Array.from(statuses).sort().forEach(s => {
-            const btn = document.createElement('button');
-            btn.className = 'tab-btn';
-            btn.dataset.status = s;
-            btn.textContent = s;
-            tableTabs.appendChild(btn);
-        });
-    }
-
-    // Bind tab click events dynamically
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const selectedStatus = e.currentTarget.getAttribute('data-status');
-            if (window.cmsStatus) window.cmsStatus.setValue(selectedStatus);
-            if (window.cmsThStatus) window.cmsThStatus.setValue(selectedStatus);
-            filterData();
-        });
-    });
 
     // Restore previous selections using CustomMultiSelect where possible to update UI
     if (currentShipper && window.cmsShipper) window.cmsShipper.setValue(currentShipper);
@@ -1061,6 +1036,40 @@ function updateStatusTab(statusVal) {
     });
 }
 
+// Dynamically render table tabs based on valid statuses
+function renderTableTabs(validStatusSet) {
+    const tableTabs = document.querySelector('.table-tabs');
+    if (!tableTabs) return;
+    
+    let currentStatus = '';
+    const activeTab = tableTabs.querySelector('.tab-btn.active');
+    if (activeTab) currentStatus = activeTab.getAttribute('data-status');
+    
+    // Clear existing tabs
+    tableTabs.innerHTML = '<button class="tab-btn" data-status="">전체</button>';
+    
+    Array.from(validStatusSet).sort().forEach(s => {
+        if (!s) return;
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn';
+        btn.dataset.status = s;
+        btn.textContent = s;
+        tableTabs.appendChild(btn);
+    });
+    
+    // Re-bind events
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const selectedStatus = e.currentTarget.getAttribute('data-status');
+            if (window.cmsStatus) window.cmsStatus.setValue(selectedStatus);
+            updateStatusTab(selectedStatus);
+            filterData();
+        });
+    });
+    
+    updateStatusTab(currentStatus);
+}
+
 // Filter Action
 function filterData() {
     const getSelectedValues = (id) => {
@@ -1331,6 +1340,7 @@ function filterData() {
 
     updateKPIs(statusUnfilteredData);
     updateCharts();
+    renderTableTabs(validSets.status);
     updateTable();
 }
 
