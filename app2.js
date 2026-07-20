@@ -2097,7 +2097,6 @@ document.addEventListener('mouseup', () => {
 // Floating Scroll Buttons Logic
 const btnScrollTop = document.getElementById('btn-scroll-top');
 const btnScrollMiddle = document.getElementById('btn-scroll-middle');
-const btnFloatReset = document.getElementById('btn-float-reset');
 const btnFloatReload = document.getElementById('btn-float-reload');
 
 if (btnScrollTop) {
@@ -2110,14 +2109,6 @@ if (btnScrollMiddle) {
         const tableCard = document.querySelector('.table-card');
         if (tableCard) {
             tableCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    });
-}
-if (btnFloatReset) {
-    btnFloatReset.addEventListener('click', () => {
-        if (typeof resetFilters === 'function') {
-            resetFilters();
-            window.scrollTo({ top: 0, behavior: 'smooth' }); // 필터 초기화 후 최상단으로 이동
         }
     });
 }
