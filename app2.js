@@ -2098,6 +2098,7 @@ document.addEventListener('mouseup', () => {
 const btnScrollTop = document.getElementById('btn-scroll-top');
 const btnScrollMiddle = document.getElementById('btn-scroll-middle');
 const btnFloatReset = document.getElementById('btn-float-reset');
+const btnFloatReload = document.getElementById('btn-float-reload');
 
 if (btnScrollTop) {
     btnScrollTop.addEventListener('click', () => {
@@ -2118,6 +2119,11 @@ if (btnFloatReset) {
             resetFilters();
             window.scrollTo({ top: 0, behavior: 'smooth' }); // 필터 초기화 후 최상단으로 이동
         }
+    });
+}
+if (btnFloatReload) {
+    btnFloatReload.addEventListener('click', () => {
+        window.location.reload(true);
     });
 }
 
