@@ -1764,116 +1764,86 @@ function initDashboard() {
 
 
 // Live auto-polling mechanism
-// Use last_updated timestamp as primary change detection (reliable even if data rows are same)
-let lastKnownTimestamp = window.LAST_UPDATED || "";
+const knownDataStrings = new Set([JSON.stringify(window.TRANSPORT_DATA)]);
 
 setInterval(async () => {
     try {
         const res = await fetch('dashboard_data.json?t=' + Date.now());
         if (!res.ok) return;
         const newData = await res.json();
-        const serverLastUpdated = newData.last_updated || "";
-
-        // Primary check: compare timestamps
-        if (!serverLastUpdated || serverLastUpdated === lastKnownTimestamp) {
-            return; // No change
-        }
-
-        console.log("New data detected! Server timestamp:", serverLastUpdated, "| Previous:", lastKnownTimestamp);
-        lastKnownTimestamp = serverLastUpdated;
-
-        // Update data
         const actualData = newData.data || newData;
-        window.TRANSPORT_DATA = actualData;
+        const newStr = JSON.stringify(actualData);
 
-        if (newData.last_updated) {
-            window.LAST_UPDATED = newData.last_updated;
-            const timeSpan = document.getElementById('last-updated-time');
-            if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+        // Use a Set to remember seen versions. This prevents popup spam 
+        // if the GitHub CDN flip-flops between old and new versions during deployment.
+        if (!knownDataStrings.has(newStr)) {
+            console.log("New data detected! Updating dashboard live...");
+            knownDataStrings.add(newStr);
+            window.TRANSPORT_DATA = actualData;
+
+            if (newData.last_updated) {
+                window.LAST_UPDATED = newData.last_updated;
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+            }
+
+            // Update dropdowns in case there are new shippers/dests
+            initFilters();
+
+            // Re-apply filters with new data
+            filterData();
+
+            // Remove existing toast if present
+            const existingToast = document.getElementById('live-update-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Show notification (sticky until user closes)
+            const toast = document.createElement('div');
+            toast.id = 'live-update-toast';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.backgroundColor = 'var(--accent)';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '9999';
+            toast.style.fontWeight = 'bold';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            toast.style.animation = 'fadein 0.5s';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '15px';
+
+            const msgSpan = document.createElement('span');
+            msgSpan.textContent = "데이터가 실시간으로 최신화되었습니다!";
+            toast.appendChild(msgSpan);
+
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '확인 (닫기)';
+            closeBtn.style.background = 'rgba(255,255,255,0.2)';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.padding = '4px 10px';
+            closeBtn.style.borderRadius = '4px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontWeight = 'bold';
+
+            closeBtn.onclick = function() {
+                toast.style.animation = 'fadeout 0.3s';
+                setTimeout(() => toast.remove(), 290);
+            };
+            
+            toast.appendChild(closeBtn);
+            document.body.appendChild(toast);
         }
-
-        // Update dropdowns in case there are new shippers/dests
-        initFilters();
-
-        // Re-apply filters with new data
-        filterData();
-
-        // Remove existing toast if present
-        const existingToast = document.getElementById('live-update-toast');
-        if (existingToast) {
-            existingToast.remove();
-        }
-
-        // Show update notification (sticky - stays until user closes)
-        const toast = document.createElement('div');
-        toast.id = 'live-update-toast';
-        toast.style.cssText = [
-            'position:fixed',
-            'bottom:20px',
-            'right:20px',
-            'background:linear-gradient(135deg,#10b981,#059669)',
-            'color:#fff',
-            'padding:14px 20px',
-            'border-radius:12px',
-            'z-index:99999',
-            'font-weight:bold',
-            'box-shadow:0 6px 20px rgba(16,185,129,0.4)',
-            'display:flex',
-            'align-items:center',
-            'gap:12px',
-            'font-size:0.9rem',
-            'animation:fadeIn 0.4s ease'
-        ].join(';');
-
-        const iconSpan = document.createElement('span');
-        iconSpan.textContent = '✅';
-        iconSpan.style.fontSize = '1.3rem';
-        toast.appendChild(iconSpan);
-
-        const msgDiv = document.createElement('div');
-        const msgLine1 = document.createElement('div');
-        msgLine1.textContent = "데이터가 실시간으로 최신화되었습니다!";
-        const msgLine2 = document.createElement('div');
-        msgLine2.style.cssText = 'font-size:0.75rem;opacity:0.85;margin-top:2px';
-        msgLine2.textContent = "최근 업데이트: " + serverLastUpdated;
-        msgDiv.appendChild(msgLine1);
-        msgDiv.appendChild(msgLine2);
-        toast.appendChild(msgDiv);
-
-        const closeBtn = document.createElement('button');
-        closeBtn.textContent = '✕';
-        closeBtn.title = '닫기';
-        closeBtn.style.cssText = [
-            'background:rgba(255,255,255,0.25)',
-            'border:none',
-            'color:#fff',
-            'width:28px',
-            'height:28px',
-            'border-radius:50%',
-            'cursor:pointer',
-            'font-size:1rem',
-            'font-weight:bold',
-            'display:flex',
-            'align-items:center',
-            'justify-content:center',
-            'flex-shrink:0'
-        ].join(';');
-
-        const closeToast = () => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(10px)';
-            toast.style.transition = 'opacity 0.3s, transform 0.3s';
-            setTimeout(() => toast.remove(), 300);
-        };
-
-        closeBtn.onclick = closeToast;
-        toast.appendChild(closeBtn);
-        document.body.appendChild(toast);
-
     } catch (e) {
         // silently fail on dev env or network errors
     }
 }, 5000); // Check every 5 seconds
+
 
 
 // ==========================================
