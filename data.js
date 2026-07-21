@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-21 17:25:28';
+window.LAST_UPDATED = '2026-07-21 17:28:31';
 window.DASHBOARD_CONFIG = {
   "shipper_filter": {
     "display_name": "화주사",
@@ -106,7 +106,7 @@ window.TRANSPORT_DATA = [
     "경유지": 0.0,
     "수량": 1.0,
     "비고": "스마트윈드 네이버 도착보장",
-    "간선사": "다시",
+    "간선사": "됐다 안됏다 뭐지",
     "운송사": "",
     "소속": "",
     "추가운임": ""
