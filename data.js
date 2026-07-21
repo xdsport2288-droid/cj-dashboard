@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-21 16:38:24';
+window.LAST_UPDATED = '2026-07-21 16:38:30';
 window.DASHBOARD_CONFIG = {
   "shipper_filter": {
     "display_name": "화주사",
