@@ -1646,6 +1646,11 @@ function initDashboard() {
         }
     };
 
+    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) _dateRangeInput.value = "";
+    document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
+
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
         locale: "ko",
