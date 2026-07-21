@@ -16,7 +16,7 @@ def show_toast(title, message):
     screen_height = root.winfo_screenheight()
     
     # Window dimensions
-    window_width = 300
+    window_width = max(300, min(len(message) * 11 + 40, 500))
     window_height = 80
     
     # Position bottom right with some margin

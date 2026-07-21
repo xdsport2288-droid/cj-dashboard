@@ -52,7 +52,7 @@ while True:
         subprocess.run(["python", "convert_excel_to_json.py"], env={**os.environ, "PYTHONIOENCODING": "utf-8"}, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         
         print("2. 깃허브 서버로 자동 업로드(Push) 중...")
-        subprocess.run(["git", "add", "dashboard_data.json", "data.js", "config.js"], creationflags=NO_WINDOW)
+        subprocess.run(["git", "add", "dashboard_data.json", "data.js", "config.js", "*.xlsx", "*.csv"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         subprocess.run(["git", "commit", "-m", "Auto-update dashboard data"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
         
         # 다른 PC(회사 등)에서 먼저 push된 내용이 있다면 가져오되, 데이터 충돌 시 현재 PC의 데이터를 우선 적용

@@ -1400,7 +1400,11 @@ function resetFilters() {
 
     // Clear search input
     const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.value = '';
+    const searchClear = document.getElementById('search-clear');
+    if (searchInput) {
+        searchInput.value = '';
+        if (searchClear) searchClear.style.display = 'none';
+    }
 
     // 날짜 선택기를 전체 기간으로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
@@ -1720,7 +1724,22 @@ function initDashboard() {
     document.getElementById('filter-dest').addEventListener('change', filterData);
     document.getElementById('filter-tone').addEventListener('change', filterData);
     document.getElementById('filter-status').addEventListener('change', filterData);
-    document.getElementById('search-input').addEventListener('input', filterData);
+    const searchInputEl = document.getElementById('search-input');
+    const searchClearEl = document.getElementById('search-clear');
+    if (searchInputEl && searchClearEl) {
+        searchInputEl.addEventListener('input', () => {
+            searchClearEl.style.display = searchInputEl.value ? 'block' : 'none';
+            filterData();
+        });
+        searchClearEl.addEventListener('click', () => {
+            searchInputEl.value = '';
+            searchClearEl.style.display = 'none';
+            filterData();
+            searchInputEl.focus(); // Keep focus for usability
+        });
+    } else if (searchInputEl) {
+        searchInputEl.addEventListener('input', filterData);
+    }
 
     // Table header filters event listeners
     document.querySelectorAll('.th-filter').forEach(el => {
