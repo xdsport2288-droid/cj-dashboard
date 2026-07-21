@@ -1075,6 +1075,41 @@ function filterData() {
     const getSelectedValues = (id) => {
         const el = document.getElementById(id);
         if (!el) return [];
+        
+        const cmsMap = {
+            'filter-shipper': window.cmsShipper,
+            'filter-carrier': window.cmsCarrier,
+            'filter-loading': window.cmsLoading,
+            'filter-dest': window.cmsDest,
+            'filter-tone': window.cmsTone,
+            'filter-status': window.cmsStatus,
+            'th-filter-status': window.cmsThStatus,
+            'th-filter-ordernum': window.cmsThOrdernum,
+            'th-filter-shipper': window.cmsThShipper,
+            'th-filter-carrier': window.cmsThCarrier,
+            'th-filter-loading': window.cmsThLoading,
+            'th-filter-dest': window.cmsThDest,
+            'th-filter-startdate': window.cmsThStartdate,
+            'th-filter-enddate': window.cmsThEnddate,
+            'th-filter-waypoint': window.cmsThWaypoint,
+            'th-filter-tone': window.cmsThTone,
+            'th-filter-cartype': window.cmsThCartype,
+            'th-filter-driver': window.cmsThDriver,
+            'th-filter-carnum': window.cmsThCarnum,
+            'th-filter-remark': window.cmsThRemark,
+            'th-filter-fare': window.cmsThFare
+        };
+        const cmsObj = cmsMap[id];
+        if (cmsObj && cmsObj.checkboxes && cmsObj.options) {
+            const vals = [];
+            cmsObj.checkboxes.forEach((cb, i) => {
+                if (cb.checked && cmsObj.options[i]) {
+                    vals.push(cmsObj.options[i].value);
+                }
+            });
+            return vals.filter(v => v !== '');
+        }
+        
         return Array.from(el.selectedOptions).map(o => o.value).filter(v => v !== '');
     };
 
