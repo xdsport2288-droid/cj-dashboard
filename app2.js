@@ -1437,7 +1437,22 @@ function filterData() {
                passSearch;
     };
 
-    updateKPIs(statusUnfilteredData, window.checkRowFilters);
+    // ★ 전월 비교용 필터: 주문상태·접수번호·검색어 등 시점 의존 조건 제외
+    //   화주사, 간선사, 출발지, 도착지, 톤급 등 구조적 필터만 적용
+    const momRowFilter = (row) => {
+        let c = String(row['간선/시내'] || '').trim();
+        const cVal = c === '' ? '(미입력)' : c;
+        return checkMulti(shipperVals, row['화주사']) &&
+               checkMulti(carrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) &&
+               checkMulti(thCartypeVals, row['요청 차량']) &&
+               checkMulti(thDriverVals, row['운전자명']) &&
+               checkMulti(thCarnumVals, row['차량번호']);
+    };
+
+    updateKPIs(statusUnfilteredData, momRowFilter);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
