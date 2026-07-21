@@ -396,132 +396,6 @@ function cleanNumeric(val) {
     return isNaN(num) ? 0 : num;
 }
 
-// Check and show update toast
-function checkAndShowUpdateToast() {
-    const existing = document.getElementById('initial-load-toast');
-    if (existing) existing.remove();
-
-    const lastSeenUpdate = localStorage.getItem('seen_update');
-    const toast = document.createElement('div');
-    toast.id = 'initial-load-toast';
-    toast.style.position = 'fixed';
-    toast.style.top = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.zIndex = '99999';
-    toast.style.textAlign = 'center';
-    toast.style.lineHeight = '1.4';
-    
-    if (lastSeenUpdate !== window.LAST_UPDATED) {
-        // 새 업데이트 1회성 알림 (확인 버튼 포함, 자동 사라짐 없음)
-        toast.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
-        toast.style.color = '#fff';
-        toast.style.padding = '16px 24px';
-        toast.style.borderRadius = '12px';
-        toast.style.border = '1px solid rgba(16, 185, 129, 0.5)';
-        toast.style.boxShadow = '0 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(16, 185, 129, 0.3)';
-        toast.style.animation = 'fadein 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-        
-        toast.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom: 6px;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            <span style="font-size: 1.1em;"><b>새로운 데이터 동기화 완료!</b></span>
-        </div>
-        <div style="font-size:0.9em; font-weight:normal; color:#94a3b8; margin-bottom: 14px;">업데이트: ${window.LAST_UPDATED || '최신'}</div>
-        <button id="btn-confirm-update" style="background: #10b981; color: white; border: none; padding: 8px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.95em; width: 100%; transition: background 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">확인</button>`;
-        
-        document.body.appendChild(toast);
-        
-        const btn = document.getElementById('btn-confirm-update');
-        btn.onmouseover = () => btn.style.background = '#059669';
-        btn.onmouseout = () => btn.style.background = '#10b981';
-        btn.addEventListener('click', () => {
-            localStorage.setItem('seen_update', window.LAST_UPDATED);
-            toast.style.animation = 'fadeout 0.3s forwards';
-            setTimeout(() => toast.remove(), 290);
-        });
-    } else {
-        // 일반 새로고침시 짧은 안내
-        toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)';
-        toast.style.color = '#fff';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '8px';
-        toast.style.fontWeight = 'bold';
-        toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
-        toast.style.animation = 'fadein 0.3s';
-        toast.innerHTML = '✨ <b>운송기간, 간선사는 기본값으로 반영되었습니다</b>';
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            if (document.getElementById('initial-load-toast')) {
-                toast.style.animation = 'fadeout 0.3s forwards';
-                setTimeout(() => toast.remove(), 290);
-            }
-        }, 3000);
-    }
-}
-
-// Smooth data reload without full page flicker
-function smoothReloadData() {
-    const btnReload = document.getElementById('btn-reload');
-    const floatBtn = document.getElementById('btn-float-reload');
-    
-    const setBtnState = (loading) => {
-        if (btnReload) {
-            btnReload.style.pointerEvents = loading ? 'none' : 'auto';
-            btnReload.style.opacity = loading ? '0.7' : '1';
-        }
-        if (floatBtn) {
-            floatBtn.style.pointerEvents = loading ? 'none' : 'auto';
-            floatBtn.style.opacity = loading ? '0.5' : '1';
-        }
-        document.body.style.cursor = loading ? 'wait' : 'default';
-    };
-
-    setBtnState(true);
-    
-    // Create new data script with cache-busting
-    const script = document.createElement('script');
-    script.id = 'data-script-' + Date.now();
-    script.src = 'data.js?t=' + Date.now();
-    
-    script.onload = () => {
-        setBtnState(false);
-        activeData = [...window.TRANSPORT_DATA];
-        
-        // 명시적 시각적 피드백: 화면 전체를 부드럽게 새로 그리는 애니메이션 효과 (사용자 인지용)
-        const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
-        mainContent.style.animation = 'none';
-        void mainContent.offsetWidth; // Reflow 강제 발생
-        mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-        
-        // Re-run initialization and filtering to update charts and table smoothly
-        initFilters();
-        if (typeof filterData === 'function') {
-            filterData();
-        } else {
-            updateTable();
-            updateKPIs();
-            renderCharts();
-        }
-        
-        // Check if there's a new update and show the toast
-        checkAndShowUpdateToast();
-        
-        // Cleanup old scripts to prevent DOM bloat
-        document.querySelectorAll('script[id^="data-script-"]').forEach(s => {
-            if (s.id !== script.id) s.remove();
-        });
-    };
-    
-    script.onerror = () => {
-        setBtnState(false);
-        alert('데이터를 불러오는데 실패했습니다. 네트워크 상태를 확인해주세요.');
-    };
-    
-    document.head.appendChild(script);
-}
-
 // Extract unique values for filters
 function initFilters() {
     const shipperSelect = document.getElementById('filter-shipper');
@@ -536,12 +410,38 @@ function initFilters() {
     const currentLoading = loadingSelect.value;
     const currentDest = destSelect.value;
     const currentTone = toneSelect.value;
-    const currentStatus = statusSelect.value;
+    let currentStatus = statusSelect.value;
 
     if (typeof window._hasSetInitialCarrier === 'undefined') {
         window._hasSetInitialCarrier = true;
         currentCarrier = 'JM컴퍼니';
-        checkAndShowUpdateToast();
+        currentStatus = '운송완료';
+
+        // F5/초기 로드시 토스트 메시지 띄우기
+        const toast = document.createElement('div');
+        toast.id = 'initial-load-toast';
+        toast.style.position = 'fixed';
+        toast.style.top = '20px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.backgroundColor = 'rgba(16, 185, 129, 0.9)'; // emerald
+        toast.style.color = '#fff';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '8px';
+        toast.style.zIndex = '99999';
+        toast.style.fontWeight = 'bold';
+        toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        toast.style.animation = 'fadein 0.3s';
+        toast.innerHTML = '✨ <b>운송기간, 간선사(JM컴퍼니), 접수상태(운송완료) 기본값으로 반영되었습니다</b>';
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            if (document.getElementById('initial-load-toast')) {
+                toast.style.animation = 'fadeout 0.3s';
+                setTimeout(() => toast.remove(), 290);
+            }
+        }, 3000);
     }
 
     shipperSelect.innerHTML = '<option value="">전체 거래처</option>';
@@ -701,8 +601,12 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     if (currentTone && window.cmsTone) window.cmsTone.setValue(currentTone);
     else if (currentTone) toneSelect.value = currentTone;
     
-    if (currentStatus && window.cmsStatus) window.cmsStatus.setValue(currentStatus);
-    else if (currentStatus) statusSelect.value = currentStatus;
+    if (currentStatus && window.cmsStatus) {
+        window.cmsStatus.setValue(currentStatus);
+        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+    } else if (currentStatus) {
+        statusSelect.value = currentStatus;
+    }
 }
 
 // Calculate and Render KPIs
@@ -1176,6 +1080,41 @@ function filterData() {
     const getSelectedValues = (id) => {
         const el = document.getElementById(id);
         if (!el) return [];
+        
+        const cmsMap = {
+            'filter-shipper': window.cmsShipper,
+            'filter-carrier': window.cmsCarrier,
+            'filter-loading': window.cmsLoading,
+            'filter-dest': window.cmsDest,
+            'filter-tone': window.cmsTone,
+            'filter-status': window.cmsStatus,
+            'th-filter-status': window.cmsThStatus,
+            'th-filter-ordernum': window.cmsThOrdernum,
+            'th-filter-shipper': window.cmsThShipper,
+            'th-filter-carrier': window.cmsThCarrier,
+            'th-filter-loading': window.cmsThLoading,
+            'th-filter-dest': window.cmsThDest,
+            'th-filter-startdate': window.cmsThStartdate,
+            'th-filter-enddate': window.cmsThEnddate,
+            'th-filter-waypoint': window.cmsThWaypoint,
+            'th-filter-tone': window.cmsThTone,
+            'th-filter-cartype': window.cmsThCartype,
+            'th-filter-driver': window.cmsThDriver,
+            'th-filter-carnum': window.cmsThCarnum,
+            'th-filter-remark': window.cmsThRemark,
+            'th-filter-fare': window.cmsThFare
+        };
+        const cmsObj = cmsMap[id];
+        if (cmsObj && cmsObj.checkboxes && cmsObj.options) {
+            const vals = [];
+            cmsObj.checkboxes.forEach((cb, i) => {
+                if (cb.checked && cmsObj.options[i]) {
+                    vals.push(cmsObj.options[i].value);
+                }
+            });
+            return vals.filter(v => v !== '');
+        }
+        
         return Array.from(el.selectedOptions).map(o => o.value).filter(v => v !== '');
     };
 
@@ -1213,7 +1152,7 @@ function filterData() {
     } else if (shipperVals.length > 1) {
         brandNameSpan.textContent = `다중 거래처 (${shipperVals.length}곳)`;
     } else {
-        brandNameSpan.textContent = "더운반)이천지점";
+        brandNameSpan.textContent = "이천)안성ID허브센터_위니온운송";
     }
 
     let startDateVal = '';
@@ -1447,12 +1386,6 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    // 명시적 시각적 피드백: 초기화 시 화면 전체를 부드럽게 다시 그리는 애니메이션 효과
-    const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
-    mainContent.style.animation = 'none';
-    void mainContent.offsetWidth; // Reflow 강제 발생
-    mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-
     // Clear all CustomMultiSelect instances dynamically
     const allCms = [
         window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
@@ -1469,14 +1402,14 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 전체 기간으로 초기화 (빈 값 대신 전체 범위 날짜 지정)
+    // 날짜 선택기를 전체 기간으로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
         // 단일 객체인 경우와 배열인 경우 모두 처리
         const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
         if (dp) {
             const today = new Date();
             const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
-            dp.setDate([minDate, today]);
+            dp.setDate([minDate, today], false); // false prevents onChange from firing to avoid flicker
         }
         
         // Label 원상복구
@@ -1485,7 +1418,10 @@ function resetFilters() {
     }
 
     // Refresh UI with cleared filters
-    filterData();
+    // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
+    setTimeout(() => {
+        filterData();
+    }, 50);
 }
 
 // Export CSV
@@ -1753,6 +1689,11 @@ function initDashboard() {
         }
     };
 
+    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) _dateRangeInput.value = "";
+    document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
+
     datePicker = flatpickr("#filter-date-range", {
         mode: "range",
         locale: "ko",
@@ -1820,7 +1761,7 @@ function initDashboard() {
     if (btnReset) btnReset.addEventListener('click', resetFilters);
     
     const btnReload = document.getElementById('btn-reload');
-    if (btnReload) btnReload.addEventListener('click', smoothReloadData);
+    if (btnReload) btnReload.addEventListener('click', () => window.location.reload(true));
 
     document.getElementById('btn-export').addEventListener('click', exportToCSV);
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
@@ -1841,16 +1782,6 @@ setInterval(async () => {
         // Use a Set to remember seen versions. This prevents popup spam 
         // if the GitHub CDN flip-flops between old and new versions during deployment.
         if (!knownDataStrings.has(newStr)) {
-            // Compare timestamps to prevent older server data from overwriting newer local data
-            const currentLastUpdated = window.LAST_UPDATED || "";
-            const serverLastUpdated = newData.last_updated || "";
-            
-            if (serverLastUpdated && currentLastUpdated && serverLastUpdated < currentLastUpdated) {
-                console.log("Server data is older than local data. Ignoring server data.");
-                knownDataStrings.add(newStr);
-                return;
-            }
-
             console.log("New data detected! Updating dashboard live...");
             knownDataStrings.add(newStr);
             window.TRANSPORT_DATA = actualData;
@@ -1867,19 +1798,60 @@ setInterval(async () => {
             // Re-apply filters with new data
             filterData();
 
-            // 명시적 시각적 피드백: 화면 전체를 부드럽게 다시 그리는 애니메이션 효과
-            const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container') || document.body;
-            mainContent.style.animation = 'none';
-            void mainContent.offsetWidth; // Reflow 강제 발생
-            mainContent.style.animation = 'fadeSlideUp 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+            // Remove existing toast if present
+            const existingToast = document.getElementById('live-update-toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
 
-            // 큰 팝업창(확인 버튼 포함) 띄우기
-            checkAndShowUpdateToast();
+            // Show notification (sticky until user closes)
+            const toast = document.createElement('div');
+            toast.id = 'live-update-toast';
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = 'rgba(16, 185, 129, 0.95)';
+            toast.style.color = '#fff';
+            toast.style.padding = '12px 28px';
+            toast.style.borderRadius = '10px';
+            toast.style.zIndex = '99999';
+            toast.style.fontWeight = 'bold';
+            toast.style.boxShadow = '0 6px 20px rgba(16,185,129,0.45)';
+            toast.style.animation = 'fadein 0.4s';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '15px';
+            toast.style.whiteSpace = 'nowrap';
+
+            const msgSpan = document.createElement('span');
+            msgSpan.textContent = "데이터가 실시간으로 최신화되었습니다!";
+            toast.appendChild(msgSpan);
+
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = '확인 (닫기)';
+            closeBtn.style.background = 'rgba(255,255,255,0.2)';
+            closeBtn.style.border = 'none';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.padding = '4px 10px';
+            closeBtn.style.borderRadius = '4px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.fontWeight = 'bold';
+
+            closeBtn.onclick = function() {
+                toast.style.animation = 'fadeout 0.3s';
+                setTimeout(() => toast.remove(), 290);
+            };
+            
+            toast.appendChild(closeBtn);
+            document.body.appendChild(toast);
         }
     } catch (e) {
         // silently fail on dev env or network errors
     }
 }, 5000); // Check every 5 seconds
+
+
 
 // ==========================================
 // Edit Mode & Drag-and-Drop Implementation
@@ -2202,7 +2174,7 @@ if (btnScrollMiddle) {
 }
 if (btnFloatReload) {
     btnFloatReload.addEventListener('click', () => {
-        smoothReloadData();
+        window.location.reload(true);
     });
 }
 
