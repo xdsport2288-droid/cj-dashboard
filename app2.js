@@ -1413,7 +1413,10 @@ function resetFilters() {
     }
 
     // Refresh UI with cleared filters
-    filterData();
+    // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
+    setTimeout(() => {
+        filterData();
+    }, 50);
 }
 
 // Export CSV
