@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-21 12:45:13';
+window.LAST_UPDATED = '2026-07-21 12:47:26';
 window.DASHBOARD_CONFIG = {
   "shipper_filter": {
     "display_name": "화주사",
@@ -79,7 +79,7 @@ window.TRANSPORT_DATA = [
     "경유지": 0.0,
     "수량": 1.0,
     "비고": "TCL 인천 하이마트 물류",
-    "간선사": "누가5 야?",
+    "간선사": "누가56이냐고~",
     "운송사": "",
     "소속": "",
     "추가운임": ""
