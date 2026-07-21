@@ -1822,7 +1822,7 @@ setInterval(async () => {
             toast.style.zIndex = '9999';
             toast.style.fontWeight = 'bold';
             toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            toast.style.animation = 'fadein 0.5s';
+            toast.style.animation = 'fadeIn 0.5s';
             toast.style.display = 'flex';
             toast.style.alignItems = 'center';
             toast.style.gap = '15px';
@@ -1842,7 +1842,7 @@ setInterval(async () => {
             closeBtn.style.fontWeight = 'bold';
 
             const closeToast = () => {
-                toast.style.animation = 'fadeout 0.3s';
+                toast.style.animation = 'fadeSlideUp 0.3s reverse forwards';
                 setTimeout(() => toast.remove(), 290);
             };
 
@@ -1850,13 +1850,6 @@ setInterval(async () => {
             
             toast.appendChild(closeBtn);
             document.body.appendChild(toast);
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                if (document.getElementById('live-update-toast')) {
-                    closeToast();
-                }
-            }, 5000);
         }
     } catch (e) {
         // silently fail on dev env or network errors
