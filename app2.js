@@ -666,15 +666,19 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
         if (window.TRANSPORT_DATA) {
+            let debugTotal = 0, debugFiltered = 0;
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                    debugTotal++;
                     if (rowFilter && !rowFilter(row)) return;
+                    debugFiltered++;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
                 }
             });
+            console.log(`[MoM Debug] 전월범위: ${prevFirstStr}~${prevLastStr} | 전체: ${debugTotal}건 | 필터후: ${debugFiltered}건 | prevSales: ${prevSales.toLocaleString()}`);
         }
     }
 
