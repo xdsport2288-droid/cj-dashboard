@@ -610,7 +610,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 }
 
 // Calculate and Render KPIs
-function updateKPIs(statusUnfilteredData) {
+function updateKPIs(statusUnfilteredData, rowFilter) {
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
@@ -669,7 +669,7 @@ function updateKPIs(statusUnfilteredData) {
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
-                    if (window.checkRowFilters && !window.checkRowFilters(row)) return;
+                    if (rowFilter && !rowFilter(row)) return;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
@@ -679,7 +679,15 @@ function updateKPIs(statusUnfilteredData) {
     }
 
     const makeMomBadge = (current, prev, label, formatType = 'currency') => {
-        if (!prev) return '';
+        // prev가 없거나 0이어도 current가 있으면 배지 표시
+        if (prev == null || prev === undefined) return '';
+        // 전월 데이터가 0이면 신규 실적으로 표시
+        if (prev === 0 && current === 0) return '';
+        if (prev === 0) {
+            const formatType2 = formatType === 'count' ? '건' : '';
+            const valText = formatType === 'currency' ? formatKRW(current) : `${current.toLocaleString()}건`;
+            return `<span class="mom-badge up" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;" title="${label || '전월 데이터 없음'}">↑ 신규 (${valText})</span>`;
+        }
         const diff = current - prev;
         const pct = (diff / prev * 100);
         const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
@@ -1429,7 +1437,7 @@ function filterData() {
                passSearch;
     };
 
-    updateKPIs(statusUnfilteredData);
+    updateKPIs(statusUnfilteredData, window.checkRowFilters);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
