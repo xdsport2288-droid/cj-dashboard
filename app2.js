@@ -669,6 +669,7 @@ function updateKPIs(statusUnfilteredData) {
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                    if (window.checkRowFilters && !window.checkRowFilters(row)) return;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
@@ -1387,6 +1388,46 @@ function filterData() {
         }
         return true;
     });
+
+    window.checkRowFilters = (row) => {
+        let c = String(row['간선/시내'] || '').trim();
+        const cVal = c === '' ? '(미입력)' : c;
+        const sales = row['총 매출 금액'] || row['매출 금액'];
+        const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
+        const passSearch = (() => {
+            if (!searchVal) return true;
+            const driver = String(row['운전자명'] || '').toLowerCase();
+            const carNum = String(row['차량번호'] || '').toLowerCase();
+            const address = String(row['상차지 상세 주소'] || '').toLowerCase();
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주사'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+            const ordernum = String(row['접수번호'] || '').toLowerCase();
+            return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
+                   carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
+                   loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
+                   ordernum.includes(searchVal);
+        })();
+        return checkMulti(shipperVals, row['화주사']) && checkMulti(thShipperVals, row['화주사']) &&
+               checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']) &&
+               checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
+               checkMulti(thOrdernumVals, row['접수번호']) &&
+               checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
+               checkMulti(thCartypeVals, row['요청 차량']) &&
+               checkMulti(thDriverVals, row['운전자명']) &&
+               checkMulti(thCarnumVals, row['차량번호']) &&
+               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '') &&
+               (thFareVals.length === 0 || thFareVals.includes(salesVal)) &&
+               checkMulti(thStartDateVals, row['배차 요청 일시']) &&
+               checkMulti(thEndDateVals, row['배차 요청 일시']) &&
+               passSearch;
+    };
 
     updateKPIs(statusUnfilteredData);
     updateCharts();
