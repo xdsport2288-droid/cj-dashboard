@@ -410,11 +410,12 @@ function initFilters() {
     const currentLoading = loadingSelect.value;
     const currentDest = destSelect.value;
     const currentTone = toneSelect.value;
-    const currentStatus = statusSelect.value;
+    let currentStatus = statusSelect.value;
 
     if (typeof window._hasSetInitialCarrier === 'undefined') {
         window._hasSetInitialCarrier = true;
         currentCarrier = 'JM컴퍼니';
+        currentStatus = '운송완료';
 
         // F5/초기 로드시 토스트 메시지 띄우기
         const toast = document.createElement('div');
@@ -431,7 +432,7 @@ function initFilters() {
         toast.style.fontWeight = 'bold';
         toast.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
         toast.style.animation = 'fadein 0.3s';
-        toast.innerHTML = '✨ <b>운송기간, 간선사는 기본값으로 반영되었습니다</b>';
+        toast.innerHTML = '✨ <b>운송기간, 간선사(JM컴퍼니), 접수상태(운송완료) 기본값으로 반영되었습니다</b>';
         
         document.body.appendChild(toast);
         
@@ -600,8 +601,12 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     if (currentTone && window.cmsTone) window.cmsTone.setValue(currentTone);
     else if (currentTone) toneSelect.value = currentTone;
     
-    if (currentStatus && window.cmsStatus) window.cmsStatus.setValue(currentStatus);
-    else if (currentStatus) statusSelect.value = currentStatus;
+    if (currentStatus && window.cmsStatus) {
+        window.cmsStatus.setValue(currentStatus);
+        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+    } else if (currentStatus) {
+        statusSelect.value = currentStatus;
+    }
 }
 
 // Calculate and Render KPIs
