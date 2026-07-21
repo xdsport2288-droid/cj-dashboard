@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-07-21 22:00:32';
+window.LAST_UPDATED = '2026-07-21 22:07:03';
 
 window.TRANSPORT_DATA = [
   {
@@ -104,7 +104,7 @@ window.TRANSPORT_DATA = [
     "경유지": "1",
     "수량": "1",
     "비고": "",
-    "간선사": "JM컴퍼니",
+    "간선사": "누가5야?",
     "운송사": "",
     "소속": "",
     "추가운임": "0"
