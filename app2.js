@@ -1397,14 +1397,12 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 전체 기간으로 초기화 (빈 값 대신 전체 범위 날짜 지정)
+    // 날짜 선택기를 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
         // 단일 객체인 경우와 배열인 경우 모두 처리
         const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
         if (dp) {
-            const today = new Date();
-            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
-            dp.setDate([minDate, today]);
+            dp.clear(false); // false prevents onChange from firing
         }
         
         // Label 원상복구
