@@ -790,7 +790,7 @@ function filterData() {
     } else if (shipperVals.length > 1) {
         brandNameSpan.textContent = `다중 거래처 (${shipperVals.length}곳)`;
     } else {
-        brandNameSpan.textContent = "더운반)이천지점";
+        brandNameSpan.textContent = "이천)안성ID허브센터_위니온운송";
     }
 
     let startDateVal = '';
