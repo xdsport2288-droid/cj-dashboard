@@ -610,7 +610,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 }
 
 // Calculate and Render KPIs
-function updateKPIs(statusUnfilteredData, rowFilter) {
+function updateKPIs(statusUnfilteredData) {
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
@@ -666,56 +666,33 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
         if (window.TRANSPORT_DATA) {
-            let debugTotal = 0, debugFiltered = 0;
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
-                    debugTotal++;
-                    if (rowFilter && !rowFilter(row)) return;
-                    debugFiltered++;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
                 }
             });
-            console.log(`[MoM Debug] 전월범위: ${prevFirstStr}~${prevLastStr} | 전체: ${debugTotal}건 | 필터후: ${debugFiltered}건 | prevSales: ${prevSales.toLocaleString()}`);
         }
     }
 
-    const makeMomBadge = (current, prev, label, formatType = 'currency') => {
-        // prev가 없거나 0이어도 current가 있으면 배지 표시
-        if (prev == null || prev === undefined) return '';
-        // 전월 데이터가 0이면 신규 실적으로 표시
-        if (prev === 0 && current === 0) return '';
-        if (prev === 0) {
-            const formatType2 = formatType === 'count' ? '건' : '';
-            const valText = formatType === 'currency' ? formatKRW(current) : `${current.toLocaleString()}건`;
-            return `<span class="mom-badge up" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;" title="${label || '전월 데이터 없음'}">↑ 신규 (${valText})</span>`;
-        }
-        const diff = current - prev;
-        const pct = (diff / prev * 100);
+    const makeMomBadge = (current, prev, label) => {
+        if (!prev) return '';
+        const pct = ((current - prev) / prev * 100);
         const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
         const tip = label ? ` title="${label}"` : '';
-        
-        let diffText = '';
-        const diffSign = diff > 0 ? '+' : '';
-        if (formatType === 'currency') {
-            diffText = ` (${diffSign}${formatKRW(diff)})`;
-        } else if (formatType === 'count') {
-            diffText = ` (${diffSign}${diff.toLocaleString()}건)`;
-        }
-
-        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%${diffText}</span>`;
+        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%</span>`;
     };
 
-    const fillSlot = (slotId, current, prev, formatType = 'currency') => {
+    const fillSlot = (slotId, current, prev) => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel);
     };
-    fillSlot('mom-orders', ordersCount, prevCount, 'count');
-    fillSlot('mom-sales', salesTotal, prevSales, 'currency');
-    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / (salesTotal || 1)) : 0, 'currency');
+    fillSlot('mom-orders', ordersCount, prevCount);
+    fillSlot('mom-sales', salesTotal, prevSales);
+    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / (salesTotal || 1)) : 0);
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
@@ -1401,62 +1378,7 @@ function filterData() {
         return true;
     });
 
-    window.checkRowFilters = (row) => {
-        let c = String(row['간선/시내'] || '').trim();
-        const cVal = c === '' ? '(미입력)' : c;
-        const sales = row['총 매출 금액'] || row['매출 금액'];
-        const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
-        const passSearch = (() => {
-            if (!searchVal) return true;
-            const driver = String(row['운전자명'] || '').toLowerCase();
-            const carNum = String(row['차량번호'] || '').toLowerCase();
-            const address = String(row['상차지 상세 주소'] || '').toLowerCase();
-            const carType = String(row['요청 차량'] || '').toLowerCase();
-            const tone = String(row['요청 톤급'] || '').toLowerCase();
-            const shipper = String(row['화주사'] || '').toLowerCase();
-            const loading = String(row['상차지명'] || '').toLowerCase();
-            const dest = String(row['하차지명'] || '').toLowerCase();
-            const remark = String(row['비고'] || '').toLowerCase();
-            const ordernum = String(row['접수번호'] || '').toLowerCase();
-            return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
-                   carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
-                   loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
-                   ordernum.includes(searchVal);
-        })();
-        return checkMulti(shipperVals, row['화주사']) && checkMulti(thShipperVals, row['화주사']) &&
-               checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
-               checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
-               checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']) &&
-               checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']) &&
-               checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
-               checkMulti(thOrdernumVals, row['접수번호']) &&
-               checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
-               checkMulti(thCartypeVals, row['요청 차량']) &&
-               checkMulti(thDriverVals, row['운전자명']) &&
-               checkMulti(thCarnumVals, row['차량번호']) &&
-               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '') &&
-               (thFareVals.length === 0 || thFareVals.includes(salesVal)) &&
-               checkMulti(thStartDateVals, row['배차 요청 일시']) &&
-               checkMulti(thEndDateVals, row['배차 요청 일시']) &&
-               passSearch;
-    };
-
-    // ★ 전월 비교용 필터: 주문상태·접수번호·검색어 등 시점 의존 조건 제외
-    //   화주사, 간선사, 출발지, 도착지, 톤급 등 구조적 필터만 적용
-    const momRowFilter = (row) => {
-        let c = String(row['간선사'] || '').trim();
-        const cVal = c === '' ? '(미지정)' : c;
-        return checkMulti(shipperVals, row['화주명']) &&
-               checkMulti(carrierVals, cVal) &&
-               checkMulti(loadingVals, row['상차지명']) &&
-               checkMulti(destVals, row['하차지명']) &&
-               checkMulti(toneVals, row['요청 톤급']) &&
-               checkMulti(thCartypeVals, row['요청 차량']) &&
-               checkMulti(thDriverVals, row['운전자명']) &&
-               checkMulti(thCarnumVals, row['차량번호']);
-    };
-
-    updateKPIs(statusUnfilteredData, momRowFilter);
+    updateKPIs(statusUnfilteredData);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
@@ -1478,11 +1400,7 @@ function resetFilters() {
 
     // Clear search input
     const searchInput = document.getElementById('search-input');
-    const searchClear = document.getElementById('search-clear');
-    if (searchInput) {
-        searchInput.value = '';
-        if (searchClear) searchClear.style.display = 'none';
-    }
+    if (searchInput) searchInput.value = '';
 
     // 날짜 선택기를 전체 기간으로 초기화
     if (typeof datePicker !== 'undefined' && datePicker) {
@@ -1802,22 +1720,7 @@ function initDashboard() {
     document.getElementById('filter-dest').addEventListener('change', filterData);
     document.getElementById('filter-tone').addEventListener('change', filterData);
     document.getElementById('filter-status').addEventListener('change', filterData);
-    const searchInputEl = document.getElementById('search-input');
-    const searchClearEl = document.getElementById('search-clear');
-    if (searchInputEl && searchClearEl) {
-        searchInputEl.addEventListener('input', () => {
-            searchClearEl.style.display = searchInputEl.value ? 'block' : 'none';
-            filterData();
-        });
-        searchClearEl.addEventListener('click', () => {
-            searchInputEl.value = '';
-            searchClearEl.style.display = 'none';
-            filterData();
-            searchInputEl.focus(); // Keep focus for usability
-        });
-    } else if (searchInputEl) {
-        searchInputEl.addEventListener('input', filterData);
-    }
+    document.getElementById('search-input').addEventListener('input', filterData);
 
     // Table header filters event listeners
     document.querySelectorAll('.th-filter').forEach(el => {
