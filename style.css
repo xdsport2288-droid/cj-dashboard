@@ -532,7 +532,7 @@ header {
     background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     color: var(--text-primary);
-    padding: 0.6rem 1rem 0.6rem 2.2rem;
+    padding: 0.6rem 2rem 0.6rem 2.2rem;
     border-radius: var(--radius-sm);
     outline: none;
     font-size: 0.9rem;
@@ -542,6 +542,12 @@ header {
 
 .search-input:focus {
     border-color: var(--accent);
+}
+
+#search-clear-btn:hover {
+    color: var(--text-primary) !important;
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 50%;
 }
 
 .search-icon {
