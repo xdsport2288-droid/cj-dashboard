@@ -1728,6 +1728,23 @@ function initDashboard() {
     document.getElementById('filter-status').addEventListener('change', filterData);
     document.getElementById('search-input').addEventListener('input', filterData);
 
+    // X (clear) button for search input
+    const searchInputEl = document.getElementById('search-input');
+    const searchClearBtn = document.getElementById('search-clear-btn');
+    if (searchInputEl && searchClearBtn) {
+        // Show/hide X based on input content
+        searchInputEl.addEventListener('input', () => {
+            searchClearBtn.style.display = searchInputEl.value ? 'block' : 'none';
+        });
+        // Click X: clear and re-filter
+        searchClearBtn.addEventListener('click', () => {
+            searchInputEl.value = '';
+            searchClearBtn.style.display = 'none';
+            searchInputEl.focus();
+            filterData();
+        });
+    }
+
     // Table header filters event listeners
     document.querySelectorAll('.th-filter').forEach(el => {
         el.addEventListener('change', filterData);
