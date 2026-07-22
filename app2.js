@@ -684,22 +684,32 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         var prevProfit = prevSales - prevPurchaseTotal;
     }
 
-    const makeMomBadge = (current, prev, label) => {
+    const makeMomBadge = (current, prev, label, formatType = 'currency') => {
         if (!prev) return '';
-        const pct = ((current - prev) / prev * 100);
+        const diff = current - prev;
+        const pct = (diff / prev * 100);
         const sign = pct > 0 ? '↑' : pct < 0 ? '↓' : '→';
         const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
         const tip = label ? ` title="${label}"` : '';
-        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%</span>`;
+        
+        let diffText = '';
+        const diffSign = diff > 0 ? '+' : '';
+        if (formatType === 'currency') {
+            diffText = ` (${diffSign}${formatKRW(diff)})`;
+        } else if (formatType === 'count') {
+            diffText = ` (${diffSign}${diff.toLocaleString()}건)`;
+        }
+
+        return `<span class="mom-badge ${cls}" style="font-size:0.82rem; padding:0.2rem 0.55rem; cursor:help;"${tip}>${sign} ${Math.abs(pct).toFixed(1)}%${diffText}</span>`;
     };
 
-    const fillSlot = (slotId, current, prev) => {
+    const fillSlot = (slotId, current, prev, formatType = 'currency') => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel);
+        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
     };
-    fillSlot('mom-orders', ordersCount, prevCount);
-    fillSlot('mom-sales', salesTotal, prevSales);
-    fillSlot('mom-profit', profitTotal, typeof prevProfit !== 'undefined' ? prevProfit : 0);
+    fillSlot('mom-orders', ordersCount, prevCount, 'count');
+    fillSlot('mom-sales', salesTotal, prevSales, 'currency');
+    fillSlot('mom-profit', profitTotal, typeof prevProfit !== 'undefined' ? prevProfit : 0, 'currency');
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
