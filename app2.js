@@ -613,7 +613,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 }
 
 // Calculate and Render KPIs
-function updateKPIs(statusUnfilteredData) {
+function updateKPIs(statusUnfilteredData, rowFilter) {
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
@@ -673,6 +673,7 @@ function updateKPIs(statusUnfilteredData) {
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                    if (rowFilter && !rowFilter(row)) return;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
@@ -1384,7 +1385,20 @@ function filterData() {
         return true;
     });
 
-    updateKPIs(statusUnfilteredData);
+    const momRowFilter = (row) => {
+        let c = String(row['간선사'] || '').trim();
+        const cVal = c === '' ? '(미지정)' : c;
+        return checkMulti(shipperVals, row['화주명']) &&
+               checkMulti(carrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) &&
+               checkMulti(thCartypeVals, row['요청 차량']) &&
+               checkMulti(thDriverVals, row['운전자명']) &&
+               checkMulti(thCarnumVals, row['차량번호']);
+    };
+
+    updateKPIs(statusUnfilteredData, momRowFilter);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
