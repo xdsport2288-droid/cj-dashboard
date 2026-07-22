@@ -532,7 +532,7 @@ header {
     background: var(--bg-secondary);
     border: 1px solid var(--card-border);
     color: var(--text-primary);
-    padding: 0.6rem 1rem 0.6rem 2.2rem;
+    padding: 0.6rem 2rem 0.6rem 2.2rem;
     border-radius: var(--radius-sm);
     outline: none;
     font-size: 0.9rem;
@@ -544,23 +544,10 @@ header {
     border-color: var(--accent);
 }
 
-.search-clear {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: none;
-    padding: 2px 5px;
+#search-clear-btn:hover {
+    color: var(--text-primary) !important;
+    background: rgba(255,255,255,0.08) !important;
     border-radius: 50%;
-    transition: var(--transition);
-}
-
-.search-clear:hover {
-    color: var(--text-primary);
-    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .search-icon {
