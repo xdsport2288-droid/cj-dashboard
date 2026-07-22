@@ -602,8 +602,11 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     else if (currentTone) toneSelect.value = currentTone;
     
     if (currentStatus && window.cmsStatus) {
-        window.cmsStatus.setValue(currentStatus);
-        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+        // 타이밍 보장: 옵션이 렌더된 후 setValue 적용
+        setTimeout(() => {
+            window.cmsStatus.setValue(currentStatus);
+            if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+        }, 0);
     } else if (currentStatus) {
         statusSelect.value = currentStatus;
     }
@@ -665,6 +668,7 @@ function updateKPIs(statusUnfilteredData) {
 
         momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
+        let prevPurchaseTotal = 0;
         if (window.TRANSPORT_DATA) {
             window.TRANSPORT_DATA.forEach(row => {
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
@@ -672,9 +676,11 @@ function updateKPIs(statusUnfilteredData) {
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
+                    prevPurchaseTotal += Math.floor(f * 0.96);
                 }
             });
         }
+        var prevProfit = prevSales - prevPurchaseTotal;
     }
 
     const makeMomBadge = (current, prev, label) => {
@@ -692,7 +698,7 @@ function updateKPIs(statusUnfilteredData) {
     };
     fillSlot('mom-orders', ordersCount, prevCount);
     fillSlot('mom-sales', salesTotal, prevSales);
-    fillSlot('mom-profit', profitTotal, prevSales > 0 ? prevSales * (profitTotal / (salesTotal || 1)) : 0);
+    fillSlot('mom-profit', profitTotal, typeof prevProfit !== 'undefined' ? prevProfit : 0);
 
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
