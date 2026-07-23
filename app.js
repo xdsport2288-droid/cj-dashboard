@@ -477,7 +477,7 @@ function updateKPIs(statusUnfilteredData) {
     const freightEl = document.getElementById('kpi-freight');
     if (freightEl) freightEl.textContent = formatKRW(freightTotal);
 
-    const countSource = activeData;
+    const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
         const status = row['주문 상태'] || '상태 없음';

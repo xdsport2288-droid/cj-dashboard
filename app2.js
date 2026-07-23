@@ -708,7 +708,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
     fillSlot('mom-profit', profitTotal, typeof prevProfit !== 'undefined' ? prevProfit : 0, 'currency');
 
-    const countSource = activeData;
+    const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
         const status = row['주문 상태'] || '상태 없음';
