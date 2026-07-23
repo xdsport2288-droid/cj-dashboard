@@ -514,6 +514,15 @@ function updateKPIs(statusUnfilteredData) {
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
+
+    let titleText = '총 배차 건수';
+    if (activeStatuses.length === 1) {
+        titleText = activeStatuses[0] + ' 건수';
+    } else if (activeStatuses.length > 1) {
+        titleText = '선택 상태 건수';
+    }
+    const titleEl = document.getElementById('kpi-orders-title');
+    if (titleEl) titleEl.textContent = titleText;
 }
 
 // Populate and Update Table
