@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 from playwright.async_api import async_playwright
 
 async def main():
@@ -48,7 +49,7 @@ async def main():
         except Exception as e:
             print("Failed to find search button:", e)
             await browser.close()
-            return
+            sys.exit(1)
             
         print("Clicking search button...")
         await page.click(".search-button")
@@ -76,6 +77,8 @@ async def main():
             
         except Exception as e:
             print("Download failed:", e)
+            await browser.close()
+            sys.exit(1)
         
         await browser.close()
 
