@@ -7,9 +7,9 @@ from playwright.async_api import async_playwright
 async def main():
     print("[Auto Downloader] Starting...")
     
-    # 깃허브 시크릿(환경변수) 우선, 없으면 기본값 사용
-    USER_ID = os.environ.get("TMS_USER_ID", "01082670779")
-    USER_PW = os.environ.get("TMS_USER_PW", "01082670779")
+    # 깃허브 시크릿(환경변수) 우선, 값이 비어있으면 기본값(사용자 전화번호) 사용
+    USER_ID = os.environ.get("TMS_USER_ID") or "01082670779"
+    USER_PW = os.environ.get("TMS_USER_PW") or "01082670779"
     
     async with async_playwright() as p:
         # 뷰포트 크기를 PC 화면처럼 크게 설정
