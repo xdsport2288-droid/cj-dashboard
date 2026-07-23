@@ -36,6 +36,13 @@ jobs:
         run: |
           python auto_downloader.py
 
+      - name: 📸 에러 스크린샷 업로드 (실패 시)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-screenshot
+          path: error_screenshot.png
+
       - name: 🔄 2단계. 다운로드된 엑셀을 대시보드용 JSON으로 자동 변환
         run: |
           python convert_excel_to_json.py

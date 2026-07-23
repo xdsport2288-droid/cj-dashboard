@@ -12,13 +12,18 @@ async def main():
     USER_PW = os.environ.get("TMS_USER_PW", "01082670779")
     
     async with async_playwright() as p:
+        # 뷰포트 크기를 PC 화면처럼 크게 설정
         browser = await p.chromium.launch(headless=True)
-        context = await browser.new_context(accept_downloads=True)
+        context = await browser.new_context(
+            accept_downloads=True,
+            viewport={'width': 1920, 'height': 1080},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+        )
         page = await context.new_page()
         
         print("Navigating to login page...")
         await page.goto("https://tms.winionlogis.co.kr/main/main.do#")
-        await page.wait_for_timeout(2000)
+        await page.wait_for_timeout(3000)
         
         print("Filling login info...")
         inputs = await page.locator("input").all()
@@ -45,10 +50,13 @@ async def main():
 
         print("Waiting for main page to load...")
         try:
-            await page.wait_for_selector(".search-button", timeout=15000)
+            # 타임아웃을 25초로 늘림
+            await page.wait_for_selector(".search-button", timeout=25000)
             print("Main page loaded successfully.")
         except Exception as e:
             print("Failed to find search button:", e)
+            await page.screenshot(path="error_screenshot.png", full_page=True)
+            print("Saved error_screenshot.png for debugging.")
             await browser.close()
             sys.exit(1)
             
@@ -61,21 +69,25 @@ async def main():
             
             date_inputs = await page.locator("input[type='date']").all()
             if len(date_inputs) >= 1:
-                # fill triggers change event automatically in playwright
                 await date_inputs[0].fill(first_day_prev_month)
                 print(f"Set start date to: {first_day_prev_month}")
         except Exception as e:
             print("Failed to set date:", e)
             
         print("Clicking search button...")
-        await page.click(".search-button")
+        try:
+            await page.click(".search-button")
+        except Exception as e:
+            print("Failed to click search button:", e)
+            await page.screenshot(path="error_screenshot.png", full_page=True)
+            sys.exit(1)
         
         print("Waiting for data to load...")
         await page.wait_for_timeout(10000)
         
         print("Initiating Excel download...")
         try:
-            async with page.expect_download(timeout=15000) as download_info:
+            async with page.expect_download(timeout=25000) as download_info:
                 await page.click("#exceldownBtn")
                 
             download = await download_info.value
@@ -93,6 +105,7 @@ async def main():
             
         except Exception as e:
             print("Download failed:", e)
+            await page.screenshot(path="error_screenshot.png", full_page=True)
             await browser.close()
             sys.exit(1)
         
