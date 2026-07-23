@@ -1,6 +1,7 @@
 import asyncio
 import os
 import sys
+import datetime
 from playwright.async_api import async_playwright
 
 async def main():
@@ -50,6 +51,21 @@ async def main():
             print("Failed to find search button:", e)
             await browser.close()
             sys.exit(1)
+            
+        print("Setting start date to 1st of previous month...")
+        try:
+            today = datetime.date.today()
+            first_day_this_month = today.replace(day=1)
+            last_day_prev_month = first_day_this_month - datetime.timedelta(days=1)
+            first_day_prev_month = last_day_prev_month.replace(day=1).strftime('%Y-%m-%d')
+            
+            date_inputs = await page.locator("input[type='date']").all()
+            if len(date_inputs) >= 1:
+                # fill triggers change event automatically in playwright
+                await date_inputs[0].fill(first_day_prev_month)
+                print(f"Set start date to: {first_day_prev_month}")
+        except Exception as e:
+            print("Failed to set date:", e)
             
         print("Clicking search button...")
         await page.click(".search-button")
