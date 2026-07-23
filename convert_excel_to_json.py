@@ -5,7 +5,7 @@ import json
 import os
 import sys
 import glob
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import tempfile
 import shutil
 
@@ -92,8 +92,11 @@ try:
         })
         mapped_records.append(mapped_row)
     
+    # 한국 시간(KST, UTC+9)으로 현재 시간 설정
+    kst_now = datetime.now(timezone(timedelta(hours=9)))
+    
     output = {
-        "last_updated": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "last_updated": kst_now.strftime('%Y-%m-%d %H:%M:%S'),
         "data": mapped_records
     }
     
