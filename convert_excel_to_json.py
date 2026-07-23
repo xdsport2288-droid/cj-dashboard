@@ -28,20 +28,10 @@ file_path = max(xlsx_files, key=os.path.getmtime)
 print(f"👉 감지된 파일: {file_path}")
 
 try:
-    # 엑셀 파일이 열려있을 때 발생하는 PermissionError를 방지하기 위해 임시 파일로 복사 후 읽기
-    temp_dir = tempfile.gettempdir()
-    temp_file = os.path.join(temp_dir, "temp_winnion.xlsx")
-    shutil.copy2(file_path, temp_file)
+    # 엑셀 파일 열기 (문자열로 읽기)
+    df = pd.read_excel(file_path, dtype=str)
     
-    try:
-        # 데이터 읽기 (문자열 타입 지정)
-        df = pd.read_excel(temp_file, dtype=str)
-    finally:
-        # 임시 파일 삭제
-        if os.path.exists(temp_file):
-            os.remove(temp_file)
-            
-    # NaN 값 빈 문자열로 처리
+    # NaN 등 빈 문자열로 처리
     df = df.fillna("")
     
     # datetime 객체가 있으면 문자열로 변환
