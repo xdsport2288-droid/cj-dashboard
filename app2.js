@@ -651,9 +651,16 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     let prevSales = 0, prevCount = 0, momLabel = '';
 
+    let shouldShowMom = false;
+
     if (currentDates.length > 0) {
         const firstDate = new Date(currentDates[0]);
         const lastDate  = new Date(currentDates[currentDates.length - 1]);
+
+        if (firstDate.getFullYear() === lastDate.getFullYear() && 
+            firstDate.getMonth() === lastDate.getMonth()) {
+            shouldShowMom = true;
+        }
 
         // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
         const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
@@ -702,7 +709,15 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     const fillSlot = (slotId, current, prev, formatType = 'currency') => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+        if (el) {
+            if (shouldShowMom) {
+                el.style.display = '';
+                el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+            } else {
+                el.style.display = 'none';
+                el.innerHTML = '';
+            }
+        }
     };
     fillSlot('mom-orders', ordersCount, prevCount, 'count');
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
