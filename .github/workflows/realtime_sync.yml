@@ -51,6 +51,6 @@ jobs:
         run: |
           git config --global user.name "Anti-Gravity Bot"
           git config --global user.email "bot@anti-gravity.local"
-          git add dashboard_data.xlsx dashboard_data.json
-          git commit -m "🚀 실시간 데이터 자동 동기화 (5분 주기)" || echo "변경된 데이터가 없습니다."
+          git add dashboard_data.xlsx dashboard_data.json data.js
+          git commit -m "🔄 실시간 데이터 자동 동기화 (5분 주기)" || echo "변경된 데이터가 없습니다."
           git push
