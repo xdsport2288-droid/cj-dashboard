@@ -602,11 +602,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     else if (currentTone) toneSelect.value = currentTone;
     
     if (currentStatus && window.cmsStatus) {
-        // 타이밍 보장: 옵션이 렌더된 후 setValue 적용
-        setTimeout(() => {
-            window.cmsStatus.setValue(currentStatus);
-            if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
-        }, 0);
+        window.cmsStatus.setValue(currentStatus);
+        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
     } else if (currentStatus) {
         statusSelect.value = currentStatus;
     }
@@ -711,7 +708,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
     fillSlot('mom-profit', profitTotal, typeof prevProfit !== 'undefined' ? prevProfit : 0, 'currency');
 
-    const countSource = statusUnfilteredData || activeData;
+    const countSource = activeData;
     const statusCounts = {};
     countSource.forEach(row => {
         const status = row['주문 상태'] || '상태 없음';

@@ -1225,6 +1225,7 @@ th:has(.custom-multiselect.is-open) {
 .status-tag.dispatch { 
     background: rgba(139, 92, 246, 0.12); 
     color: var(--dispatch); 
+    border: 1px solid rgba(139, 92, 246, 0.6);
 }
 
 .badge-dispatch {
