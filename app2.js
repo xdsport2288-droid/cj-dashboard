@@ -292,7 +292,7 @@ class CustomMultiSelect {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             
             let extraClass = '';
-            if (selectedText.includes('배차완료')) extraClass = 'success-text';
+            if (selectedText.includes('배차완료')) extraClass = 'dispatch-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
             else if (selectedText.includes('접수')) extraClass = 'info-text';
@@ -735,7 +735,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('배차완료')) colorClass = 'success';
+        if (status.includes('배차완료')) colorClass = 'dispatch';
         else if (status.includes('운송완료')) colorClass = 'warning';
         else if (status.includes('취소')) colorClass = 'danger';
         else if (status.includes('접수')) colorClass = 'info';
