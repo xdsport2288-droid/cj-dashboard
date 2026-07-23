@@ -26,27 +26,28 @@ async def main():
         await page.wait_for_timeout(3000)
         
         print("Filling login info...")
-        inputs = await page.locator("input").all()
-        for i in inputs:
-            type_val = await i.get_attribute("type")
-            if type_val in ["text", "password"]:
-                try:
-                    await i.fill(USER_ID)
-                except:
-                    pass
+        try:
+            # ID 입력창이 나타날 때까지 확실하게 대기 (최대 30초)
+            await page.wait_for_selector("#inputId", timeout=30000)
+            await page.fill("#inputId", USER_ID)
+            await page.fill("#inputPwd", USER_PW)
+        except Exception as e:
+            print("Failed to find login inputs:", e)
+            await page.screenshot(path="error_screenshot.png", full_page=True)
+            sys.exit(1)
         
         print("Clicking login button...")
-        buttons = await page.locator("button, a, input[type='button'], input[type='submit']").all()
-        for b in buttons:
-            text = await b.inner_text()
-            if text and ("로그인" in text or "LOGIN" in text.upper()):
-                await b.click()
-                break
-        else:
-            try:
-                await page.click(".login_btn")
-            except:
-                pass
+        try:
+            # 로그인 버튼 클래스를 클릭
+            await page.click(".login_btn", timeout=10000)
+        except:
+            # 혹시 버튼 클래스가 다를 경우 fallback
+            buttons = await page.locator("button, a, input[type='button'], input[type='submit']").all()
+            for b in buttons:
+                text = await b.inner_text()
+                if text and ("로그인" in text or "LOGIN" in text.upper()):
+                    await b.click()
+                    break
 
         print("Waiting for main page to load...")
         try:
