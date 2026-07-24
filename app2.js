@@ -1544,6 +1544,30 @@ function toggleTheme() {
     updateCharts();
 }
 
+function getLatestDataTime() {
+    let maxDateStr = "";
+    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
+        window.TRANSPORT_DATA.forEach(row => {
+            const dt = row['상차 요청 일시'] || row['배차 요청 일시'] || row['접수일시'] || '';
+            if (dt && dt > maxDateStr) {
+                maxDateStr = dt;
+            }
+        });
+    }
+    if (maxDateStr) {
+        const parts = maxDateStr.split(' ');
+        if (parts.length >= 2) {
+            const dateParts = parts[0].split('-');
+            const timeParts = parts[1].split(':');
+            if (dateParts.length >= 3 && timeParts.length >= 2) {
+                return `${dateParts[0]}.${dateParts[1]}.${dateParts[2]} ${timeParts[0]}:${timeParts[1]}`;
+            }
+        }
+        return maxDateStr;
+    }
+    return new Date().toLocaleString();
+}
+
 function applyDynamicLabels() {
     // Load Configuration
     const getConfigName = (key, defaultName) => {
@@ -1632,10 +1656,14 @@ function initDashboard() {
     // Show initial update time
     const timeSpan = document.getElementById('lastUpdateTime');
     if (timeSpan) {
-        timeSpan.textContent = `데이터 업데이트: ${new Date().toLocaleString()}`;
+        timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
     }
 
     // Initialize Flatpickr date range picker
+    if (window.flatpickr && window.flatpickr.l10ns) {
+        if (window.flatpickr.l10ns.ko) window.flatpickr.l10ns.ko.rangeSeparator = ' ~ ';
+        if (window.flatpickr.l10ns.default) window.flatpickr.l10ns.default.rangeSeparator = ' ~ ';
+    }
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     const fileStartDate = firstDay;
@@ -1862,7 +1890,7 @@ setInterval(async () => {
             if (newData.last_updated) {
                 window.LAST_UPDATED = newData.last_updated;
                 const timeSpan = document.getElementById('lastUpdateTime');
-                if (timeSpan) timeSpan.textContent = `데이터 업데이트: ${new Date().toLocaleString()}`;
+                if (timeSpan) timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
             }
 
             // Update dropdowns in case there are new shippers/dests
