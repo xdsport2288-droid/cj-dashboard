@@ -613,7 +613,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 }
 
 // Calculate and Render KPIs
-function updateKPIs(statusUnfilteredData, rowFilter) {
+function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
@@ -1428,7 +1428,7 @@ function filterData() {
                checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '');
     };
 
-    updateKPIs(statusUnfilteredData, momRowFilter);
+    updateKPIs(statusUnfilteredData, momRowFilter, startDateVal, endDateVal);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
