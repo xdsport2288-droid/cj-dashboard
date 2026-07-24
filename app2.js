@@ -746,7 +746,15 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
 
     let kpiHtml = '';
 
-    Object.keys(statusCounts).sort().forEach(status => {
+    const statusOrder = ['접수', '배차완료', '운송완료'];
+    Object.keys(statusCounts).sort((a, b) => {
+        const idxA = statusOrder.indexOf(a);
+        const idxB = statusOrder.indexOf(b);
+        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    }).forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         

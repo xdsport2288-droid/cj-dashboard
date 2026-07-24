@@ -398,6 +398,13 @@ header {
     margin-bottom: 0.5rem;
 }
 
+.kpi-main.row-layout {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+}
+
 .kpi-value {
     font-size: 1.4rem;
     font-weight: 700;
@@ -412,6 +419,14 @@ header {
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
+}
+
+.kpi-main.row-layout .kpi-sub-details {
+    margin-top: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    flex-wrap: nowrap;
 }
 
 .kpi-bottom {
