@@ -1590,7 +1590,9 @@ function applyDynamicLabels() {
 // On Load
 function initDashboard() {
     applyDynamicLabels();
-    initEditMode();
+    try {
+        initEditMode();
+    } catch(e) { console.error('initEditMode error:', e); }
     initFilters();
     
     // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화 (기본 필터 없는 전체 데이터 상태)
@@ -1971,11 +1973,12 @@ function initEditMode() {
             }
             if(label && window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
                 if(label.tagName === 'BUTTON') {
-                    label.innerText = window.DASHBOARD_CONFIG[key].display_name;
+                    label.textContent = window.DASHBOARD_CONFIG[key].display_name;
                 } else {
-                    const textParts = label.innerText.split(' ');
-                    const icon = textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) ? textParts[0] + ' ' : '';
-                    label.innerText = icon + window.DASHBOARD_CONFIG[key].display_name;
+                    const text = label.textContent || label.innerText || '';
+                    const textParts = text.split(' ');
+                    const icon = (textParts[0] && textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/)) ? textParts[0] + ' ' : '';
+                    label.textContent = icon + window.DASHBOARD_CONFIG[key].display_name;
                 }
             }
         }
