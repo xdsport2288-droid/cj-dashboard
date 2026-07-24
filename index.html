@@ -136,11 +136,13 @@
                         <span class="kpi-title">운송완료 건수</span>
                         <span class="kpi-icon">🚚</span>
                     </div>
-                    <div class="kpi-value-container">
+                    <div class="kpi-main">
                         <div class="kpi-value" id="kpi-orders">0 건</div>
                         <div class="kpi-sub-details" id="kpi-orders-detail"></div>
                     </div>
-                    <div class="mom-slot" id="mom-orders"></div>
+                    <div class="kpi-bottom">
+                        <div class="mom-slot" id="mom-orders"></div>
+                    </div>
                 </div>
                 <!-- Sales KPI -->
                 <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
@@ -148,9 +150,13 @@
                         <span class="kpi-title">총 매출액</span>
                         <span class="kpi-icon">💰</span>
                     </div>
-                    <div class="kpi-value" id="kpi-sales">₩ 0</div>
-                    <div class="mom-slot" id="mom-sales"></div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×101% (백원버림)</div>
+                    <div class="kpi-main">
+                        <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                        <div class="kpi-sub-text">운임×101% (백원버림)</div>
+                    </div>
+                    <div class="kpi-bottom">
+                        <div class="mom-slot" id="mom-sales"></div>
+                    </div>
                 </div>
                 <!-- 순수운임 KPI -->
                 <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
@@ -158,8 +164,13 @@
                         <span class="kpi-title">순수 운임</span>
                         <span class="kpi-icon">🚛</span>
                     </div>
-                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">원본 운임 100%</div>
+                    <div class="kpi-main">
+                        <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
+                        <div class="kpi-sub-text">원본 운임 100%</div>
+                    </div>
+                    <div class="kpi-bottom">
+                        <!-- empty for alignment -->
+                    </div>
                 </div>
                 <!-- Purchase KPI -->
                 <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
@@ -167,8 +178,13 @@
                         <span class="kpi-title">총 매입액</span>
                         <span class="kpi-icon">💸</span>
                     </div>
-                    <div class="kpi-value" id="kpi-purchase">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×96%</div>
+                    <div class="kpi-main">
+                        <div class="kpi-value" id="kpi-purchase">₩ 0</div>
+                        <div class="kpi-sub-text">운임×96%</div>
+                    </div>
+                    <div class="kpi-bottom">
+                        <!-- empty for alignment -->
+                    </div>
                 </div>
                 <!-- Profit KPI -->
                 <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
@@ -176,8 +192,12 @@
                         <span class="kpi-title">순이익</span>
                         <span class="kpi-icon">📈</span>
                     </div>
-                    <div class="kpi-value" id="kpi-profit">₩ 0</div>
-                    <div class="mom-slot" id="mom-profit"></div>
+                    <div class="kpi-main">
+                        <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    </div>
+                    <div class="kpi-bottom">
+                        <div class="mom-slot" id="mom-profit"></div>
+                    </div>
                 </div>
                 <!-- Margin KPI -->
                 <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
@@ -185,7 +205,12 @@
                         <span class="kpi-title">순이익률</span>
                         <span class="kpi-icon">📊</span>
                     </div>
-                    <div class="kpi-value" id="kpi-margin">0%</div>
+                    <div class="kpi-main">
+                        <div class="kpi-value" id="kpi-margin">0%</div>
+                    </div>
+                    <div class="kpi-bottom">
+                        <!-- empty for alignment -->
+                    </div>
                 </div>
             </section>
 

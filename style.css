@@ -343,9 +343,7 @@ header {
     padding: 0.9rem 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: center !important;
-    gap: 0.5rem;
-    min-height: 90px;
+    min-height: 120px;
     position: relative;
     overflow: hidden;
     transition: var(--transition);
@@ -378,6 +376,7 @@ header {
     justify-content: space-between;
     align-items: center;
     color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
 .kpi-title {
@@ -391,31 +390,33 @@ header {
     font-size: 1rem;
 }
 
+.kpi-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    margin-bottom: 0.5rem;
+}
+
 .kpi-value {
     font-size: 1.4rem;
     font-weight: 700;
-    margin-top: 0.4rem;
+    line-height: 1.2;
     letter-spacing: -0.5px;
 }
 
-.kpi-value-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    margin-top: 0.5rem;
-}
-
-.kpi-value-container .kpi-value {
-    margin-top: 0;
-}
-
-.kpi-sub-details {
-    font-size: 0.8rem;
+.kpi-sub-text, .kpi-sub-details {
+    font-size: 0.68rem;
     color: var(--text-secondary);
+    margin-top: 0.3rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.kpi-bottom {
+    min-height: 22px; /* Ensure space for MoM badge even if empty */
+    display: flex;
     align-items: flex-end;
 }
 
