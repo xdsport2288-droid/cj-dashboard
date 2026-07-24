@@ -1793,7 +1793,7 @@ function initDashboard() {
     // Explicitly set value to ensure filterData picks it up correctly on load
     const _dateRangeInput = document.getElementById('filter-date-range');
     if (_dateRangeInput) {
-        _dateRangeInput.value = flatpickr.formatDate(fileStartDate, "Y-m-d") + " to " + flatpickr.formatDate(today, "Y-m-d");
+        _dateRangeInput.value = flatpickr.formatDate(fileStartDate, "Y-m-d") + " ~ " + flatpickr.formatDate(today, "Y-m-d");
     }
 
     filterData();
