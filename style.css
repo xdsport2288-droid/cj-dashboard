@@ -340,12 +340,10 @@ header {
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-md);
-    padding: 1.2rem 1.1rem;
+    padding: 0.9rem 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start !important;
-    height: 100%;
-    gap: 0.5rem;
+    justify-content: space-between;
     min-height: 90px;
     position: relative;
     overflow: hidden;
@@ -1218,24 +1216,4 @@ th:has(.custom-multiselect.is-open) {
     .floating-control-panel {
         right: 48px;
     }
-}
-:root {
-    --dispatch: #8b5cf6;
-    --dispatch-glow: rgba(139, 92, 246, 0.15);
-}
-
-.status-tag.dispatch { 
-    background: rgba(139, 92, 246, 0.12); 
-    color: var(--dispatch); 
-}
-
-.badge-dispatch {
-    background: var(--dispatch-glow);
-    color: var(--dispatch);
-}
-
-.custom-multiselect-btn.has-selection.dispatch-text {
-    color: var(--dispatch);
-    border-color: rgba(139, 92, 246, 0.3);
-    background: rgba(139, 92, 246, 0.05);
 }
