@@ -654,10 +654,16 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     let prevSales = 0, prevCount = 0, momLabel = '';
 
-    if (currentDates.length > 0) {
-        const firstDate = new Date(currentDates[0]);
-        const lastDate  = new Date(currentDates[currentDates.length - 1]);
+    let firstDate, lastDate;
+    if (startDateVal && endDateVal) {
+        firstDate = new Date(startDateVal);
+        lastDate = new Date(endDateVal);
+    } else if (currentDates.length > 0) {
+        firstDate = new Date(currentDates[0]);
+        lastDate  = new Date(currentDates[currentDates.length - 1]);
+    }
 
+    if (firstDate && lastDate) {
         // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
         const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
         const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
@@ -669,18 +675,29 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
         let prevPurchaseTotal = 0;
+        let currentMonthCount = 0; // For debug logging
         if (window.TRANSPORT_DATA) {
             window.TRANSPORT_DATA.forEach(row => {
+                if (rowFilter && !rowFilter(row)) return; // First apply the exact same filter
+                
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
-                    if (rowFilter && !rowFilter(row)) return;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
                     prevPurchaseTotal += Math.floor(f * 0.96);
                 }
+                
+                if (firstDate && lastDate) {
+                    const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+                    if (dateStr >= fmt(firstDate) && dateStr <= fmt(lastDate)) {
+                        currentMonthCount++;
+                    }
+                }
             });
         }
+        console.log(`[MoM Debug] Filtered Current (${fmt(firstDate)} ~ ${fmt(lastDate)}): ${currentMonthCount}건`);
+        console.log(`[MoM Debug] Filtered Previous (${prevFirstStr} ~ ${prevLastStr}): ${prevCount}건`);
         var prevProfit = prevSales - prevPurchaseTotal;
     }
 

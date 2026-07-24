@@ -343,7 +343,7 @@ header {
     padding: 0.9rem 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: center !important;
     gap: 0.5rem;
     min-height: 90px;
     position: relative;
