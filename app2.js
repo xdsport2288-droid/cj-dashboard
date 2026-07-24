@@ -689,7 +689,6 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
                 }
                 
                 if (firstDate && lastDate) {
-                    const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
                     if (dateStr >= fmt(firstDate) && dateStr <= fmt(lastDate)) {
                         currentMonthCount++;
                     }
@@ -1740,9 +1739,7 @@ function initDashboard() {
         }
     };
 
-    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
-    const _dateRangeInput = document.getElementById('filter-date-range');
-    if (_dateRangeInput) _dateRangeInput.value = "";
+    // Force clear cached browser form states on load for selects
     document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
 
     datePicker = flatpickr("#filter-date-range", {
@@ -1762,6 +1759,12 @@ function initDashboard() {
             updateDateLabel(selectedDates);
         }
     });
+    
+    // Explicitly set value to ensure filterData picks it up correctly on load
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) {
+        _dateRangeInput.value = flatpickr.formatDate(fileStartDate, "Y-m-d") + " to " + flatpickr.formatDate(today, "Y-m-d");
+    }
 
     filterData();
 
