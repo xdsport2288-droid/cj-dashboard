@@ -292,7 +292,7 @@ class CustomMultiSelect {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             
             let extraClass = '';
-            if (selectedText.includes('배차완료')) extraClass = 'dispatch-text';
+            if (selectedText.includes('배차완료')) extraClass = 'success-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
             else if (selectedText.includes('접수')) extraClass = 'info-text';
@@ -602,8 +602,11 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     else if (currentTone) toneSelect.value = currentTone;
     
     if (currentStatus && window.cmsStatus) {
-        window.cmsStatus.setValue(currentStatus);
-        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+        // 타이밍 보장: 옵션이 렌더된 후 setValue 적용
+        setTimeout(() => {
+            window.cmsStatus.setValue(currentStatus);
+            if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
+        }, 0);
     } else if (currentStatus) {
         statusSelect.value = currentStatus;
     }
@@ -651,16 +654,9 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     let prevSales = 0, prevCount = 0, momLabel = '';
 
-    let shouldShowMom = false;
-
     if (currentDates.length > 0) {
         const firstDate = new Date(currentDates[0]);
         const lastDate  = new Date(currentDates[currentDates.length - 1]);
-
-        if (firstDate.getFullYear() === lastDate.getFullYear() && 
-            firstDate.getMonth() === lastDate.getMonth()) {
-            shouldShowMom = true;
-        }
 
         // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
         const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
@@ -709,15 +705,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     const fillSlot = (slotId, current, prev, formatType = 'currency') => {
         const el = document.getElementById(slotId);
-        if (el) {
-            if (shouldShowMom) {
-                el.style.display = '';
-                el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
-            } else {
-                el.style.display = 'none';
-                el.innerHTML = '';
-            }
-        }
+        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
     };
     fillSlot('mom-orders', ordersCount, prevCount, 'count');
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
@@ -747,7 +735,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('배차완료')) colorClass = 'dispatch';
+        if (status.includes('배차완료')) colorClass = 'success';
         else if (status.includes('운송완료')) colorClass = 'warning';
         else if (status.includes('취소')) colorClass = 'danger';
         else if (status.includes('접수')) colorClass = 'info';
@@ -760,15 +748,6 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
-
-    let titleText = '총 배차 건수';
-    if (activeStatuses.length === 1) {
-        titleText = activeStatuses[0] + ' 건수';
-    } else if (activeStatuses.length > 1) {
-        titleText = '선택 상태 건수';
-    }
-    const titleEl = document.getElementById('kpi-orders-title');
-    if (titleEl) titleEl.textContent = titleText;
 }
 
 // Monthly Prediction Analysis
@@ -1419,14 +1398,18 @@ function filterData() {
     const momRowFilter = (row) => {
         let c = String(row['간선사'] || '').trim();
         const cVal = c === '' ? '(미지정)' : c;
-        return checkMulti(shipperVals, row['화주명']) &&
-               checkMulti(carrierVals, cVal) &&
-               checkMulti(loadingVals, row['상차지명']) &&
-               checkMulti(destVals, row['하차지명']) &&
-               checkMulti(toneVals, row['요청 톤급']) &&
+        return checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']) &&
+               checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']) &&
+               checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
+               checkMulti(thOrdernumVals, row['접수번호']) &&
+               checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
                checkMulti(thCartypeVals, row['요청 차량']) &&
                checkMulti(thDriverVals, row['운전자명']) &&
-               checkMulti(thCarnumVals, row['차량번호']);
+               checkMulti(thCarnumVals, row['차량번호']) &&
+               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '');
     };
 
     updateKPIs(statusUnfilteredData, momRowFilter);
