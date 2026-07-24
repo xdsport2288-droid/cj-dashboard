@@ -1628,10 +1628,10 @@ function initDashboard() {
         });
     }
 
-    // Show initial update time if available
-    const timeSpan = document.getElementById('last-updated-time');
-    if (timeSpan && window.LAST_UPDATED) {
-        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+    // Show initial update time
+    const timeSpan = document.getElementById('lastUpdateTime');
+    if (timeSpan) {
+        timeSpan.textContent = `데이터 업데이트: ${new Date().toLocaleString()}`;
     }
 
     // Initialize Flatpickr date range picker
@@ -1856,8 +1856,8 @@ setInterval(async () => {
 
             if (newData.last_updated) {
                 window.LAST_UPDATED = newData.last_updated;
-                const timeSpan = document.getElementById('last-updated-time');
-                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+                const timeSpan = document.getElementById('lastUpdateTime');
+                if (timeSpan) timeSpan.textContent = `데이터 업데이트: ${new Date().toLocaleString()}`;
             }
 
             // Update dropdowns in case there are new shippers/dests
