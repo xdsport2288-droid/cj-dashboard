@@ -617,8 +617,12 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     let activeStatuses = [];
     if (window.cmsStatus && window.cmsStatus.checkboxes) {
         const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
-        if (checkedBoxes.length > 0 && checkedBoxes.length < window.cmsStatus.checkboxes.length) {
-            activeStatuses = checkedBoxes.map(cb => cb.value);
+        if (checkedBoxes.length > 0) {
+            if (checkedBoxes.length === window.cmsStatus.checkboxes.length && window.cmsStatus.checkboxes.length > 1) {
+                // "All" selected, leave activeStatuses empty so title becomes '총 배차 건수'
+            } else {
+                activeStatuses = checkedBoxes.map(cb => cb.value);
+            }
         }
     } else {
         const selectEl = document.getElementById('filter-status');
@@ -750,7 +754,7 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
-        const status = row['주문 상태'] || '상태 없음';
+        const status = String(row['주문 상태'] || '상태 없음').trim();
         statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
 
@@ -1812,12 +1816,11 @@ function initDashboard() {
     });
     
     // Explicitly set value to ensure filterData picks it up correctly on load
-    const _dateRangeInput = document.getElementById('filter-date-range');
-    if (_dateRangeInput) {
-        _dateRangeInput.value = flatpickr.formatDate(fileStartDate, "Y-m-d") + " ~ " + flatpickr.formatDate(today, "Y-m-d");
+    if (datePicker) {
+        datePicker.setDate([fileStartDate, today], true);
+    } else {
+        filterData();
     }
-
-    filterData();
 
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);
