@@ -1453,33 +1453,10 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 2. 강제 기본값 세팅 (Hardcoding Default)
-    // - 날짜 당월 복원
-    if (typeof datePicker !== 'undefined' && datePicker) {
-        const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
-        if (dp) {
-            dp.setDate([fileStartDate, today], false); // false prevents onChange from firing to avoid flicker
-        }
-        
-        // Label 원상복구
-        const label = document.getElementById('date-range-label');
-        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
-    }
-    
-    // - 상태 및 간선사 기본값 복원
-    if (window.cmsStatus) {
-        window.cmsStatus.setValue('운송완료');
-        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
-    }
-    const statusSelect = document.getElementById('filter-status');
-    if (statusSelect) statusSelect.value = '운송완료';
+    // 공통 필터 강제 초기화 호출
+    setHardcodedDefaults();
 
-    if (window.cmsCarrier) {
-        window.cmsCarrier.setValue('JM컴퍼니');
-        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
-    }
-    const carrierSelect = document.getElementById('filter-carrier');
-    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
+    
 
     // Refresh UI with cleared filters
     // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
@@ -1608,25 +1585,10 @@ function initDashboard() {
     initFilters();
     
     // 1. 페이지 진입 시 기본 필터 값 강제 설정 (Hardcoding Default)
-    if (datePicker) {
-        datePicker.setDate([fileStartDate, today], false);
-    }
-    
-    if (window.cmsStatus) {
-        window.cmsStatus.setValue('운송완료');
-        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
-    }
-    const statusSelect = document.getElementById('filter-status');
-    if (statusSelect) statusSelect.value = '운송완료';
-
-    if (window.cmsCarrier) {
-        window.cmsCarrier.setValue('JM컴퍼니');
-        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
-    }
-    const carrierSelect = document.getElementById('filter-carrier');
-    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
+    setHardcodedDefaults();
 
     // 강제로 세팅된 필터를 적용하여 초기화면 데이터와 UI 동기화
+
     filterData();
     const topScroll = document.getElementById('top-scrollbar');
     const fakeContent = document.getElementById('top-scrollbar-fake-content');
@@ -2509,6 +2471,43 @@ if (btnTableScrollDown && dynamicTableWrapper) {
     btnTableScrollDown.addEventListener('click', () => {
         dynamicTableWrapper.scrollTo({ top: dynamicTableWrapper.scrollHeight, behavior: 'smooth' }); // 맨 아래로
     });
+}
+
+
+// ==========================================
+// 공통 필터 강제 초기화 함수 (F5 및 초기화 버튼 공통)
+// ==========================================
+function setHardcodedDefaults() {
+    console.log("Applying Hardcoded Defaults...");
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const minDate = typeof fileStartDate !== 'undefined' ? fileStartDate : firstDay;
+
+    // 1. 운송 기간 (당월)
+    if (typeof datePicker !== 'undefined' && datePicker) {
+        const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+        if (dp) {
+            dp.setDate([minDate, today], false);
+        }
+        const label = document.getElementById('date-range-label');
+        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+    }
+
+    // 2. 접수상태 (운송완료)
+    if (window.cmsStatus) {
+        window.cmsStatus.setValue('운송완료');
+        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
+    }
+    const statusSelect = document.getElementById('filter-status');
+    if (statusSelect) statusSelect.value = '운송완료';
+
+    // 3. 간선사 (JM컴퍼니)
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue('JM컴퍼니');
+        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
+    }
+    const carrierSelect = document.getElementById('filter-carrier');
+    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
 }
 
 // App execution
