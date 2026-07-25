@@ -189,7 +189,7 @@ class CustomMultiSelect {
             this.btn.textContent = selectedText;
             
             let extraClass = '';
-            if (selectedText.includes('배차완료')) extraClass = 'dispatch-text';
+            if (selectedText.includes('배차완료')) extraClass = 'success-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
             else if (selectedText.includes('접수')) extraClass = 'info-text';
@@ -501,7 +501,7 @@ function updateKPIs(statusUnfilteredData) {
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('배차완료')) colorClass = 'dispatch';
+        if (status.includes('배차완료')) colorClass = 'success';
         else if (status.includes('운송완료')) colorClass = 'warning';
         else if (status.includes('취소')) colorClass = 'danger';
         else if (status.includes('접수')) colorClass = 'info';
@@ -514,15 +514,6 @@ function updateKPIs(statusUnfilteredData) {
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
-
-    let titleText = '총 배차 건수';
-    if (activeStatuses.length === 1) {
-        titleText = activeStatuses[0] + ' 건수';
-    } else if (activeStatuses.length > 1) {
-        titleText = '선택 상태 건수';
-    }
-    const titleEl = document.getElementById('kpi-orders-title');
-    if (titleEl) titleEl.textContent = titleText;
 }
 
 // Populate and Update Table
