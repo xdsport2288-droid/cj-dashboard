@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
     --bg-primary: #0f172a;
@@ -343,7 +343,8 @@ header {
     padding: 1.2rem 1.1rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-start !important;
+    height: 100%;
     gap: 0.5rem;
     min-height: 90px;
     position: relative;
@@ -1237,4 +1238,15 @@ th:has(.custom-multiselect.is-open) {
     color: var(--dispatch);
     border-color: rgba(139, 92, 246, 0.3);
     background: rgba(139, 92, 246, 0.05);
+}
+
+.mom-slot {
+    margin-top: auto;
+    font-size: 0.8rem;
+}
+
+.kpi-sub-text {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    margin-top: -0.2rem;
 }

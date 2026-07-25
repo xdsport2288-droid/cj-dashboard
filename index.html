@@ -57,7 +57,7 @@
                     <h1><span class="hd-brand" id="brand-name">이천)안성ID허브센터_위니온운송</span> 플랫폼</h1>
                     <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
                         <span id="last-updated-time" style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;"></span>
-                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.1_rollback (26.07.25) UI 롤백 및 기본필터 강제적용</span>
+                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.1_fixed (26.07.25) KPI 레이아웃 개선 및 필터 고정</span>
                     </p>
                 </div>
             </div>
@@ -130,12 +130,12 @@
             </section>
 
             <!-- KPI Cards Section -->
-            <section class="kpi-grid">
+                        <section class="kpi-grid">
                 <!-- Total Orders KPI -->
                 <div class="kpi-card orders animate-fade" style="animation-delay: 0.1s;">
                     <div class="kpi-header">
                         <span class="kpi-title" id="kpi-orders-title">총 배차 건수</span>
-                        <span class="kpi-icon">🚚</span>
+                        <span class="kpi-icon">📊</span>
                     </div>
                     <div class="kpi-value-container">
                         <div class="kpi-value" id="kpi-orders">0 건</div>
@@ -146,30 +146,36 @@
                 <!-- Sales KPI -->
                 <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">총 매출액</span>
+                        <span class="kpi-title">매출액</span>
                         <span class="kpi-icon">💰</span>
                     </div>
-                    <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                    </div>
+                    <div class="kpi-sub-text">운임×101% (절사)</div>
                     <div class="mom-slot" id="mom-sales"></div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×101% (백원버림)</div>
                 </div>
-                <!-- 순수운임 KPI -->
+                <!-- 운임 KPI -->
                 <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
                     <div class="kpi-header">
-                        <span class="kpi-title">순수 운임</span>
-                        <span class="kpi-icon">🚛</span>
+                        <span class="kpi-title">운임</span>
+                        <span class="kpi-icon">🚚</span>
                     </div>
-                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">원본 운임 100%</div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
+                    </div>
+                    <div class="kpi-sub-text">운임 100%</div>
                 </div>
                 <!-- Purchase KPI -->
                 <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
                     <div class="kpi-header">
-                        <span class="kpi-title">총 매입액</span>
-                        <span class="kpi-icon">💸</span>
+                        <span class="kpi-title">매입액</span>
+                        <span class="kpi-icon">💳</span>
                     </div>
-                    <div class="kpi-value" id="kpi-purchase">₩ 0</div>
-                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×96%</div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-purchase">₩ 0</div>
+                    </div>
+                    <div class="kpi-sub-text">운임×96%</div>
                 </div>
                 <!-- Profit KPI -->
                 <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
@@ -177,16 +183,20 @@
                         <span class="kpi-title">순이익</span>
                         <span class="kpi-icon">📈</span>
                     </div>
-                    <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    </div>
                     <div class="mom-slot" id="mom-profit"></div>
                 </div>
                 <!-- Margin KPI -->
                 <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
                     <div class="kpi-header">
                         <span class="kpi-title">순이익률</span>
-                        <span class="kpi-icon">📊</span>
+                        <span class="kpi-icon">🎯</span>
                     </div>
-                    <div class="kpi-value" id="kpi-margin">0%</div>
+                    <div class="kpi-value-container">
+                        <div class="kpi-value" id="kpi-margin">0%</div>
+                    </div>
                 </div>
             </section>
 
@@ -394,7 +404,7 @@
                 dataScript.src = 'data.js?t=' + Date.now();
                 dataScript.onload = function() {
                     const appScript = document.createElement('script');
-                    appScript.src = 'app2.js?v=2.7.1_rollback&t=' + Date.now();
+                    appScript.src = 'app2.js?v=2.7.1_fixed&t=' + Date.now();
                     document.body.appendChild(appScript);
                 };
                 document.body.appendChild(dataScript);
