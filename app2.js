@@ -1,4 +1,4 @@
-// Interactive Transport Dashboard Logic
+﻿// Interactive Transport Dashboard Logic
 
 // === REAL DOM OVERLAY for backdrop dimming (not CSS pseudo-element) ===
 const __overlay = document.createElement('div');
@@ -292,7 +292,7 @@ class CustomMultiSelect {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             
             let extraClass = '';
-            if (selectedText.includes('배차완료')) extraClass = 'success-text';
+            if (selectedText.includes('배차완료')) extraClass = 'dispatch-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
             else if (selectedText.includes('접수')) extraClass = 'info-text';
@@ -611,36 +611,12 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 
 // Calculate and Render KPIs
 function updateKPIs(statusUnfilteredData, rowFilter) {
-    let activeStatuses = [];
-    if (window.cmsStatus && window.cmsStatus.checkboxes) {
-        const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
-        if (checkedBoxes.length > 0) {
-            if (checkedBoxes.length === window.cmsStatus.checkboxes.length && window.cmsStatus.checkboxes.length > 1) {
-                // "All" selected, leave activeStatuses empty so title becomes '총 배차 건수'
-            } else {
-                activeStatuses = checkedBoxes.map(cb => cb.value);
-            }
-        }
-    } else {
-        const selectEl = document.getElementById('filter-status');
-        if (selectEl) {
-            const vals = Array.from(selectEl.selectedOptions).map(o => o.value).filter(v => v !== '');
-            if (vals.length > 0) activeStatuses = vals;
-        }
-    }
-
-    // 명시적으로 현재 선택된 상태값만 필터링 (KPI 요약 수치용)
-    const kpiData = activeData.filter(row => {
-        if (activeStatuses.length === 0) return true;
-        return activeStatuses.includes(String(row['주문 상태'] || '').trim());
-    });
-
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
-    let ordersCount = kpiData.length;
+    let ordersCount = activeData.length;
 
-    kpiData.forEach(row => {
+    activeData.forEach(row => {
         const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
         const sales = Math.floor(운임 * 1.01 / 100) * 100; // ROUNDDOWN(운임×101%, -2)
         const purchase = Math.floor(운임 * 0.96); // 운임×96%
@@ -675,16 +651,17 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     let prevSales = 0, prevCount = 0, momLabel = '';
 
-    let firstDate, lastDate;
-    if (startDateVal && endDateVal) {
-        firstDate = new Date(startDateVal);
-        lastDate = new Date(endDateVal);
-    } else if (currentDates.length > 0) {
-        firstDate = new Date(currentDates[0]);
-        lastDate  = new Date(currentDates[currentDates.length - 1]);
-    }
+    let shouldShowMom = false;
 
-    if (firstDate && lastDate) {
+    if (currentDates.length > 0) {
+        const firstDate = new Date(currentDates[0]);
+        const lastDate  = new Date(currentDates[currentDates.length - 1]);
+
+        if (firstDate.getFullYear() === lastDate.getFullYear() && 
+            firstDate.getMonth() === lastDate.getMonth()) {
+            shouldShowMom = true;
+        }
+
         // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
         const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
         const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
@@ -696,28 +673,18 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
         let prevPurchaseTotal = 0;
-        let currentMonthCount = 0; // For debug logging
         if (window.TRANSPORT_DATA) {
             window.TRANSPORT_DATA.forEach(row => {
-                if (rowFilter && !rowFilter(row)) return; // First apply the exact same filter
-                
                 const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
                 if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                    if (rowFilter && !rowFilter(row)) return;
                     prevCount++;
                     const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
                     prevSales += Math.floor(f * 1.01 / 100) * 100;
                     prevPurchaseTotal += Math.floor(f * 0.96);
                 }
-                
-                if (firstDate && lastDate) {
-                    if (dateStr >= fmt(firstDate) && dateStr <= fmt(lastDate)) {
-                        currentMonthCount++;
-                    }
-                }
             });
         }
-        console.log(`[MoM Debug] Filtered Current (${fmt(firstDate)} ~ ${fmt(lastDate)}): ${currentMonthCount}건`);
-        console.log(`[MoM Debug] Filtered Previous (${prevFirstStr} ~ ${prevLastStr}): ${prevCount}건`);
         var prevProfit = prevSales - prevPurchaseTotal;
     }
 
@@ -742,7 +709,15 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     const fillSlot = (slotId, current, prev, formatType = 'currency') => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+        if (el) {
+            if (shouldShowMom) {
+                el.style.display = '';
+                el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+            } else {
+                el.style.display = 'none';
+                el.innerHTML = '';
+            }
+        }
     };
     fillSlot('mom-orders', ordersCount, prevCount, 'count');
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
@@ -751,28 +726,28 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     const countSource = statusUnfilteredData || activeData;
     const statusCounts = {};
     countSource.forEach(row => {
-        const status = String(row['주문 상태'] || '상태 없음').trim();
+        const status = row['주문 상태'] || '상태 없음';
         statusCounts[status] = (statusCounts[status] || 0) + 1;
     });
 
     const totalSourceCount = countSource.length;
     
+    let activeStatuses = [];
+    if (window.cmsStatus && window.cmsStatus.checkboxes) {
+        const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
+        if (checkedBoxes.length > 0 && checkedBoxes.length < window.cmsStatus.checkboxes.length) {
+            activeStatuses = checkedBoxes.map(cb => cb.value);
+        }
+    }
+
     let kpiHtml = '';
 
-    const statusOrder = ['접수', '배차완료', '운송완료'];
-    Object.keys(statusCounts).sort((a, b) => {
-        const idxA = statusOrder.indexOf(a);
-        const idxB = statusOrder.indexOf(b);
-        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
-    }).forEach(status => {
+    Object.keys(statusCounts).sort().forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('배차완료')) colorClass = 'allocated';
+        if (status.includes('배차완료')) colorClass = 'dispatch';
         else if (status.includes('운송완료')) colorClass = 'warning';
         else if (status.includes('취소')) colorClass = 'danger';
         else if (status.includes('접수')) colorClass = 'info';
@@ -781,11 +756,19 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         window.statusColorMap[status] = colorClass;
         
         const isInactive = activeStatuses.length > 0 && !activeStatuses.includes(status);
-        if (isInactive) return; // Hide unselected status
-        kpiHtml += `<span class="status-tag ${colorClass}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
+        kpiHtml += `<span class="status-tag ${colorClass} ${isInactive ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
+
+    let titleText = '총 배차 건수';
+    if (activeStatuses.length === 1) {
+        titleText = activeStatuses[0] + ' 건수';
+    } else if (activeStatuses.length > 1) {
+        titleText = '선택 상태 건수';
+    }
+    const titleEl = document.getElementById('kpi-orders-title');
+    if (titleEl) titleEl.textContent = titleText;
 }
 
 // Monthly Prediction Analysis
@@ -1436,21 +1419,17 @@ function filterData() {
     const momRowFilter = (row) => {
         let c = String(row['간선사'] || '').trim();
         const cVal = c === '' ? '(미지정)' : c;
-        return checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']) &&
-               checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
-               checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
-               checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']) &&
-               checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']) &&
-               checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
-               checkMulti(thOrdernumVals, row['접수번호']) &&
-               checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
+        return checkMulti(shipperVals, row['화주명']) &&
+               checkMulti(carrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) &&
                checkMulti(thCartypeVals, row['요청 차량']) &&
                checkMulti(thDriverVals, row['운전자명']) &&
-               checkMulti(thCarnumVals, row['차량번호']) &&
-               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '');
+               checkMulti(thCarnumVals, row['차량번호']);
     };
 
-    updateKPIs(statusUnfilteredData, momRowFilter, startDateVal, endDateVal);
+    updateKPIs(statusUnfilteredData, momRowFilter);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();
@@ -1474,20 +1453,33 @@ function resetFilters() {
     const searchInput = document.getElementById('search-input');
     if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 전체 기간으로 초기화
+    // 2. 강제 기본값 세팅 (Hardcoding Default)
+    // - 날짜 당월 복원
     if (typeof datePicker !== 'undefined' && datePicker) {
-        // 단일 객체인 경우와 배열인 경우 모두 처리
         const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
         if (dp) {
-            const today = new Date();
-            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
-            dp.setDate([minDate, today], false); // false prevents onChange from firing to avoid flicker
+            dp.setDate([fileStartDate, today], false); // false prevents onChange from firing to avoid flicker
         }
         
         // Label 원상복구
         const label = document.getElementById('date-range-label');
-        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
+        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
     }
+    
+    // - 상태 및 간선사 기본값 복원
+    if (window.cmsStatus) {
+        window.cmsStatus.setValue('운송완료');
+        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
+    }
+    const statusSelect = document.getElementById('filter-status');
+    if (statusSelect) statusSelect.value = '운송완료';
+
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue('JM컴퍼니');
+        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
+    }
+    const carrierSelect = document.getElementById('filter-carrier');
+    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
 
     // Refresh UI with cleared filters
     // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
@@ -1566,30 +1558,6 @@ function toggleTheme() {
     updateCharts();
 }
 
-function getLatestDataTime() {
-    let maxDateStr = "";
-    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
-        window.TRANSPORT_DATA.forEach(row => {
-            const dt = row['상차 요청 일시'] || row['배차 요청 일시'] || row['접수일시'] || '';
-            if (dt && dt > maxDateStr) {
-                maxDateStr = dt;
-            }
-        });
-    }
-    if (maxDateStr) {
-        const parts = maxDateStr.split(' ');
-        if (parts.length >= 2) {
-            const dateParts = parts[0].split('-');
-            const timeParts = parts[1].split(':');
-            if (dateParts.length >= 3 && timeParts.length >= 2) {
-                return `${dateParts[0]}.${dateParts[1]}.${dateParts[2]} ${timeParts[0]}:${timeParts[1]}`;
-            }
-        }
-        return maxDateStr;
-    }
-    return new Date().toLocaleString();
-}
-
 function applyDynamicLabels() {
     // Load Configuration
     const getConfigName = (key, defaultName) => {
@@ -1636,9 +1604,7 @@ function applyDynamicLabels() {
 // On Load
 function initDashboard() {
     applyDynamicLabels();
-    try {
-        initEditMode();
-    } catch(e) { console.error('initEditMode error:', e); }
+    initEditMode();
     initFilters();
     
     // 1. 페이지 진입 시 기본 필터 값 강제 설정 (Hardcoding Default)
@@ -1650,11 +1616,18 @@ function initDashboard() {
         window.cmsStatus.setValue('운송완료');
         if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
     }
-    
-    // 강제로 세팅된 필터를 적용하여 초기화면 데이터 및 KPI 세팅
-    filterData();
+    const statusSelect = document.getElementById('filter-status');
+    if (statusSelect) statusSelect.value = '운송완료';
 
-    // 상단 가로 스크롤바 동기화 초기화
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue('JM컴퍼니');
+        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
+    }
+    const carrierSelect = document.getElementById('filter-carrier');
+    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
+
+    // 강제로 세팅된 필터를 적용하여 초기화면 데이터와 UI 동기화
+    filterData();
     const topScroll = document.getElementById('top-scrollbar');
     const fakeContent = document.getElementById('top-scrollbar-fake-content');
     const tableWrapper = document.getElementById('table-wrapper');
@@ -1685,17 +1658,13 @@ function initDashboard() {
         });
     }
 
-    // Show initial update time
-    const timeSpan = document.getElementById('lastUpdateTime');
-    if (timeSpan) {
-        timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
+    // Show initial update time if available
+    const timeSpan = document.getElementById('last-updated-time');
+    if (timeSpan && window.LAST_UPDATED) {
+        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
     // Initialize Flatpickr date range picker
-    if (window.flatpickr && window.flatpickr.l10ns) {
-        if (window.flatpickr.l10ns.ko) window.flatpickr.l10ns.ko.rangeSeparator = ' ~ ';
-        if (window.flatpickr.l10ns.default) window.flatpickr.l10ns.default.rangeSeparator = ' ~ ';
-    }
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     const fileStartDate = firstDay;
@@ -1801,7 +1770,9 @@ function initDashboard() {
         }
     };
 
-    // Force clear cached browser form states on load for selects
+    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) _dateRangeInput.value = "";
     document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
 
     datePicker = flatpickr("#filter-date-range", {
@@ -1821,9 +1792,8 @@ function initDashboard() {
             updateDateLabel(selectedDates);
         }
     });
-    
-    // Remove explicit global datePicker.setDate, now handled in initDashboard
 
+    // Global filterData call removed
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);
     document.getElementById('filter-loading').addEventListener('change', filterData);
@@ -1915,8 +1885,8 @@ setInterval(async () => {
 
             if (newData.last_updated) {
                 window.LAST_UPDATED = newData.last_updated;
-                const timeSpan = document.getElementById('lastUpdateTime');
-                if (timeSpan) timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
             }
 
             // Update dropdowns in case there are new shippers/dests
@@ -2027,12 +1997,11 @@ function initEditMode() {
             }
             if(label && window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
                 if(label.tagName === 'BUTTON') {
-                    label.textContent = window.DASHBOARD_CONFIG[key].display_name;
+                    label.innerText = window.DASHBOARD_CONFIG[key].display_name;
                 } else {
-                    const text = label.textContent || label.innerText || '';
-                    const textParts = text.split(' ');
-                    const icon = (textParts[0] && textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/)) ? textParts[0] + ' ' : '';
-                    label.textContent = icon + window.DASHBOARD_CONFIG[key].display_name;
+                    const textParts = label.innerText.split(' ');
+                    const icon = textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) ? textParts[0] + ' ' : '';
+                    label.innerText = icon + window.DASHBOARD_CONFIG[key].display_name;
                 }
             }
         }

@@ -1,12 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>이천)안성ID허브센터_위니온운송 플랫폼</title>
+    <!-- HTTP Cache Control -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>이천)안성ID허브센터_위니온운송 플랫폼</title>
     <!-- PWA Settings -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
@@ -15,9 +16,7 @@
     <meta property="og:title" content="이천)안성ID허브센터_위니온운송 플랫폼">
     <meta property="og:description" content="배차 및 정산 통계 대시보드">
     <meta property="og:type" content="website">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.2_0724_16">
+    <link rel="stylesheet" href="style.css?v=2.7.1_20260723">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Flatpickr CSS & JS (Date Range Picker) -->
@@ -58,7 +57,7 @@
                     <h1><span class="hd-brand" id="brand-name">이천)안성ID허브센터_위니온운송</span> 플랫폼</h1>
                     <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
                         <span id="last-updated-time" style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;"></span>
-                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.4 (26.07.25) 초기 로딩 시 기본필터 강제적용</span>
+                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.1_rollback (26.07.25) UI 롤백 및 기본필터 강제적용</span>
                     </p>
                 </div>
             </div>
@@ -138,13 +137,11 @@
                         <span class="kpi-title" id="kpi-orders-title">총 배차 건수</span>
                         <span class="kpi-icon">🚚</span>
                     </div>
-                    <div class="kpi-main row-layout">
+                    <div class="kpi-value-container">
                         <div class="kpi-value" id="kpi-orders">0 건</div>
                         <div class="kpi-sub-details" id="kpi-orders-detail"></div>
                     </div>
-                    <div class="kpi-bottom">
-                        <div class="mom-slot" id="mom-orders"></div>
-                    </div>
+                    <div class="mom-slot" id="mom-orders"></div>
                 </div>
                 <!-- Sales KPI -->
                 <div class="kpi-card sales animate-fade" style="animation-delay: 0.2s;">
@@ -152,13 +149,9 @@
                         <span class="kpi-title">총 매출액</span>
                         <span class="kpi-icon">💰</span>
                     </div>
-                    <div class="kpi-main">
-                        <div class="kpi-value" id="kpi-sales">₩ 0</div>
-                        <div class="kpi-sub-text">운임×101% (백원버림)</div>
-                    </div>
-                    <div class="kpi-bottom">
-                        <div class="mom-slot" id="mom-sales"></div>
-                    </div>
+                    <div class="kpi-value" id="kpi-sales">₩ 0</div>
+                    <div class="mom-slot" id="mom-sales"></div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×101% (백원버림)</div>
                 </div>
                 <!-- 순수운임 KPI -->
                 <div class="kpi-card animate-fade" style="animation-delay: 0.3s; background: rgba(99,102,241,0.08); border-color: rgba(99,102,241,0.25);">
@@ -166,13 +159,8 @@
                         <span class="kpi-title">순수 운임</span>
                         <span class="kpi-icon">🚛</span>
                     </div>
-                    <div class="kpi-main">
-                        <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
-                        <div class="kpi-sub-text">원본 운임 100%</div>
-                    </div>
-                    <div class="kpi-bottom">
-                        <!-- empty for alignment -->
-                    </div>
+                    <div class="kpi-value" id="kpi-freight" style="color: #a5b4fc;">₩ 0</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">원본 운임 100%</div>
                 </div>
                 <!-- Purchase KPI -->
                 <div class="kpi-card purchase animate-fade" style="animation-delay: 0.4s;">
@@ -180,13 +168,8 @@
                         <span class="kpi-title">총 매입액</span>
                         <span class="kpi-icon">💸</span>
                     </div>
-                    <div class="kpi-main">
-                        <div class="kpi-value" id="kpi-purchase">₩ 0</div>
-                        <div class="kpi-sub-text">운임×96%</div>
-                    </div>
-                    <div class="kpi-bottom">
-                        <!-- empty for alignment -->
-                    </div>
+                    <div class="kpi-value" id="kpi-purchase">₩ 0</div>
+                    <div style="font-size: 0.68rem; color: var(--text-secondary);">운임×96%</div>
                 </div>
                 <!-- Profit KPI -->
                 <div class="kpi-card profit animate-fade" style="animation-delay: 0.5s;">
@@ -194,12 +177,8 @@
                         <span class="kpi-title">순이익</span>
                         <span class="kpi-icon">📈</span>
                     </div>
-                    <div class="kpi-main">
-                        <div class="kpi-value" id="kpi-profit">₩ 0</div>
-                    </div>
-                    <div class="kpi-bottom">
-                        <div class="mom-slot" id="mom-profit"></div>
-                    </div>
+                    <div class="kpi-value" id="kpi-profit">₩ 0</div>
+                    <div class="mom-slot" id="mom-profit"></div>
                 </div>
                 <!-- Margin KPI -->
                 <div class="kpi-card margin animate-fade" style="animation-delay: 0.6s;">
@@ -207,12 +186,7 @@
                         <span class="kpi-title">순이익률</span>
                         <span class="kpi-icon">📊</span>
                     </div>
-                    <div class="kpi-main">
-                        <div class="kpi-value" id="kpi-margin">0%</div>
-                    </div>
-                    <div class="kpi-bottom">
-                        <!-- empty for alignment -->
-                    </div>
+                    <div class="kpi-value" id="kpi-margin">0%</div>
                 </div>
             </section>
 
@@ -420,7 +394,7 @@
                 dataScript.src = 'data.js?t=' + Date.now();
                 dataScript.onload = function() {
                     const appScript = document.createElement('script');
-                    appScript.src = 'app2.js?v=2.7.4&t=' + Date.now();
+                    appScript.src = 'app2.js?v=2.7.1_rollback&t=' + Date.now();
                     document.body.appendChild(appScript);
                 };
                 document.body.appendChild(dataScript);
