@@ -611,12 +611,32 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 
 // Calculate and Render KPIs
 function updateKPIs(statusUnfilteredData, rowFilter) {
+    let activeStatuses = [];
+    if (window.cmsStatus && window.cmsStatus.checkboxes) {
+        const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
+        if (checkedBoxes.length > 0 && checkedBoxes.length < window.cmsStatus.checkboxes.length) {
+            activeStatuses = checkedBoxes.map(cb => cb.value);
+        }
+    } else {
+        const selectEl = document.getElementById('filter-status');
+        if (selectEl) {
+            const vals = Array.from(selectEl.selectedOptions).map(o => o.value).filter(v => v !== '');
+            if (vals.length > 0) activeStatuses = vals;
+        }
+    }
+
+    // 명시적으로 현재 선택된 상태값만 필터링 (KPI 요약 수치용)
+    const kpiData = activeData.filter(row => {
+        if (activeStatuses.length === 0) return true;
+        return activeStatuses.includes(String(row['주문 상태'] || '').trim());
+    });
+
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
-    let ordersCount = activeData.length;
+    let ordersCount = kpiData.length;
 
-    activeData.forEach(row => {
+    kpiData.forEach(row => {
         const 운임 = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
         const sales = Math.floor(운임 * 1.01 / 100) * 100; // ROUNDDOWN(운임×101%, -2)
         const purchase = Math.floor(운임 * 0.96); // 운임×96%
@@ -732,14 +752,6 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
 
     const totalSourceCount = countSource.length;
     
-    let activeStatuses = [];
-    if (window.cmsStatus && window.cmsStatus.checkboxes) {
-        const checkedBoxes = window.cmsStatus.checkboxes.filter(cb => cb.checked);
-        if (checkedBoxes.length > 0 && checkedBoxes.length < window.cmsStatus.checkboxes.length) {
-            activeStatuses = checkedBoxes.map(cb => cb.value);
-        }
-    }
-
     let kpiHtml = '';
 
     Object.keys(statusCounts).sort().forEach(status => {
@@ -756,7 +768,8 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
         window.statusColorMap[status] = colorClass;
         
         const isInactive = activeStatuses.length > 0 && !activeStatuses.includes(status);
-        kpiHtml += `<span class="status-tag ${colorClass} ${isInactive ? 'inactive' : ''}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
+        if (isInactive) return; // Hide unselected status
+        kpiHtml += `<span class="status-tag ${colorClass}" data-status="${status}">${status} ${count} (${pct}%)</span>\n`;
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
