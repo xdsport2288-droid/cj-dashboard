@@ -2481,7 +2481,7 @@ function setHardcodedDefaults() {
     console.log("Applying Hardcoded Defaults...");
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const minDate = typeof fileStartDate !== 'undefined' ? fileStartDate : firstDay;
+    const minDate = firstDay;
 
     // 1. 운송 기간 (당월)
     if (typeof datePicker !== 'undefined' && datePicker) {
@@ -2517,6 +2517,7 @@ if (document.readyState === 'loading') {
 } else {
     initDashboard();
 }
+
 
 
 
