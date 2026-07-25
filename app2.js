@@ -602,11 +602,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     else if (currentTone) toneSelect.value = currentTone;
     
     if (currentStatus && window.cmsStatus) {
-        // 타이밍 보장: 옵션이 렌더된 후 setValue 적용
-        setTimeout(() => {
-            window.cmsStatus.setValue(currentStatus);
-            if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
-        }, 0);
+        window.cmsStatus.setValue(currentStatus);
+        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
     } else if (currentStatus) {
         statusSelect.value = currentStatus;
     }
@@ -1644,7 +1641,17 @@ function initDashboard() {
     } catch(e) { console.error('initEditMode error:', e); }
     initFilters();
     
-    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화 (기본 필터 없는 전체 데이터 상태)
+    // 1. 페이지 진입 시 기본 필터 값 강제 설정 (Hardcoding Default)
+    if (datePicker) {
+        datePicker.setDate([fileStartDate, today], false);
+    }
+    
+    if (window.cmsStatus) {
+        window.cmsStatus.setValue('운송완료');
+        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
+    }
+    
+    // 강제로 세팅된 필터를 적용하여 초기화면 데이터 및 KPI 세팅
     filterData();
 
     // 상단 가로 스크롤바 동기화 초기화
@@ -1815,12 +1822,7 @@ function initDashboard() {
         }
     });
     
-    // Explicitly set value to ensure filterData picks it up correctly on load
-    if (datePicker) {
-        datePicker.setDate([fileStartDate, today], true);
-    } else {
-        filterData();
-    }
+    // Remove explicit global datePicker.setDate, now handled in initDashboard
 
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);
