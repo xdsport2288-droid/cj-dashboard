@@ -1437,8 +1437,9 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    console.log('resetFilters() called');
+    console.log('resetFilters() called - smooth reset');
     try {
+        // 모든 CustomMultiSelect 객체 가져오기
         const allCms = [
             window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
             window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
@@ -1446,8 +1447,13 @@ function resetFilters() {
             window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
         ];
         
+        // 일단 모든 필터의 값을 비웁니다.
         allCms.forEach(cms => {
             if (cms && typeof cms.setValue === 'function') {
+                // 하드코딩될 필터들은 굳이 여기서 비우지 않음으로써 깜빡임을 줄일 수 있습니다.
+                if (cms === window.cmsStatus || cms === window.cmsThStatus || cms === window.cmsCarrier || cms === window.cmsThCarrier) {
+                    return; // setHardcodedDefaults에서 값을 지정할 것이므로 skip
+                }
                 cms.setValue('');
             }
         });
@@ -1455,18 +1461,13 @@ function resetFilters() {
         const searchInput = document.getElementById('search-input');
         if (searchInput) searchInput.value = '';
         
-        if (typeof datePicker !== 'undefined' && datePicker) {
-            const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
-            if (dp && typeof dp.clear === 'function') dp.clear();
-        }
-
-        console.log('Calling setHardcodedDefaults()');
+        // 날짜 초기화는 setHardcodedDefaults가 알아서 당월로 덮어씌웁니다.
+        
+        // 기본값 세팅 (JM컴퍼니, 운송완료, 당월)
         setHardcodedDefaults();
 
-        console.log('Setting timeout for filterData()');
-        setTimeout(() => {
-            filterData();
-        }, 50);
+        // Timeout 없이 즉시 단 1회 렌더링
+        filterData();
     } catch (e) {
         console.error('Error in resetFilters:', e);
     }
