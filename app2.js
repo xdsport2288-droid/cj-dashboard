@@ -1437,39 +1437,37 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    console.log('resetFilters() called - smooth reset');
+    console.log('resetFilters() 호출 - 즉시 기본값 복원');
     try {
-        // 모든 CustomMultiSelect 객체 가져오기
+        // 1. 모든 필터 빈값으로 1차 초기화 (스킵 로직 제거하여 오류 방지)
         const allCms = [
             window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
             window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
             window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
             window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
         ];
-        
-        // 일단 모든 필터의 값을 비웁니다.
         allCms.forEach(cms => {
             if (cms && typeof cms.setValue === 'function') {
-                // 하드코딩될 필터들은 굳이 여기서 비우지 않음으로써 깜빡임을 줄일 수 있습니다.
-                if (cms === window.cmsStatus || cms === window.cmsThStatus || cms === window.cmsCarrier || cms === window.cmsThCarrier) {
-                    return; // setHardcodedDefaults에서 값을 지정할 것이므로 skip
-                }
                 cms.setValue('');
             }
         });
 
+        // 2. 검색어 및 기타 UI 입력창 비우기
         const searchInput = document.getElementById('search-input');
         if (searchInput) searchInput.value = '';
-        
-        // 날짜 초기화는 setHardcodedDefaults가 알아서 당월로 덮어씌웁니다.
-        
-        // 기본값 세팅 (JM컴퍼니, 운송완료, 당월)
-        setHardcodedDefaults();
 
-        // Timeout 없이 즉시 단 1회 렌더링
-        filterData();
+        // 3. 기본 필터값 강제 세팅 (JM컴퍼니, 운송완료, 당월)
+        // ※ 이 함수가 필수 커스텀 드롭다운 및 달력 값을 기본값으로 즉시 덮어씌웁니다.
+        if (typeof setHardcodedDefaults === 'function') {
+            setHardcodedDefaults();
+        }
+
+        // 4. 지연 시간(setTimeout) 없이 즉시 1회만 데이터 재계산
+        if (typeof filterData === 'function') {
+            filterData();
+        }
     } catch (e) {
-        console.error('Error in resetFilters:', e);
+        console.error('필터 초기화 중 오류:', e);
     }
 }
 
