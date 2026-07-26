@@ -1724,8 +1724,24 @@ function initDashboard() {
             instance.close();
         });
 
+        const prevMonthBtn = document.createElement("button");
+        prevMonthBtn.textContent = "전월";
+        prevMonthBtn.className = "btn btn-secondary";
+        prevMonthBtn.style.flex = "1";
+        prevMonthBtn.style.padding = "6px";
+        prevMonthBtn.style.cursor = "pointer";
+        prevMonthBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        prevMonthBtn.style.color = "#48bb78";
+        prevMonthBtn.addEventListener("click", function () {
+            const today = new Date();
+            const prevMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+            instance.setDate([prevMonthFirstDay, prevMonthLastDay], true); // true to trigger onChange
+            instance.close();
+        });
+
         const clearBtn = document.createElement("button");
-        clearBtn.textContent = "전체선택 (전체날짜)";
+        clearBtn.textContent = "전체날짜";
         clearBtn.className = "btn btn-secondary";
         clearBtn.style.flex = "2";
         clearBtn.style.padding = "6px";
@@ -1742,6 +1758,7 @@ function initDashboard() {
 
         btnContainer.appendChild(todayBtn);
         btnContainer.appendChild(monthBtn);
+        btnContainer.appendChild(prevMonthBtn);
         btnContainer.appendChild(clearBtn);
         instance.calendarContainer.appendChild(btnContainer);
     };
@@ -1755,11 +1772,15 @@ function initDashboard() {
             
             const todayDate = new Date();
             const monthStartStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), "Y-m-d");
+            const prevMonthFirstStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth() - 1, 1), "Y-m-d");
+            const prevMonthLastStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 0), "Y-m-d");
             const allStartStr = window.absoluteEarliestDate ? flatpickr.formatDate(window.absoluteEarliestDate, "Y-m-d") : monthStartStr;
             const todayStr = flatpickr.formatDate(todayDate, "Y-m-d");
             
             if (startStr === monthStartStr && endStr === todayStr) {
                 label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            } else if (startStr === prevMonthFirstStr && endStr === prevMonthLastStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전월)</span>';
             } else if (startStr === allStartStr && endStr === todayStr) {
                 label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
             } else {
