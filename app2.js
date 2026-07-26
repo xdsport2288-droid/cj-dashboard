@@ -1,4 +1,4 @@
-﻿// Interactive Transport Dashboard Logic
+// Interactive Transport Dashboard Logic
 
 // === REAL DOM OVERLAY for backdrop dimming (not CSS pseudo-element) ===
 const __overlay = document.createElement('div');
@@ -1437,7 +1437,7 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    console.log('resetFilters() 호출 - 모든 필터 전체(All)로 초기화');
+    console.log('resetFilters() 호출 - 모든 필터 전체(All)로 초기화, 날짜는 당월');
     try {
         const allCms = [
             window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
@@ -1456,7 +1456,14 @@ function resetFilters() {
 
         if (typeof datePicker !== 'undefined' && datePicker) {
             const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
-            if (dp && typeof dp.clear === 'function') dp.clear();
+            if (dp) {
+                const today = new Date();
+                const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                dp.setDate([minDate, today], false);
+                
+                const label = document.getElementById('date-range-label');
+                if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            }
         }
 
         // 사용자가 명시적으로 필터를 비우기 원하므로, setHardcodedDefaults()를 호출하지 않고
