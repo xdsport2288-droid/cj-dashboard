@@ -1810,7 +1810,11 @@ function initDashboard() {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
         onOpen: function (selectedDates, dateStr, instance) {
-            instance.jumpToDate(new Date());
+            if (selectedDates && selectedDates.length > 0) {
+                instance.jumpToDate(selectedDates[0]);
+            } else {
+                instance.jumpToDate(new Date());
+            }
         },
         onReady: function (selectedDates, dateStr, instance) {
             addCustomButtons(selectedDates, dateStr, instance);
