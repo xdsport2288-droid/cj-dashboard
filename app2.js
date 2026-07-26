@@ -1437,32 +1437,39 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    // Clear all CustomMultiSelect instances dynamically
-    const allCms = [
-        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
-        window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
-        window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
-    ];
-    
-    allCms.forEach(cms => {
-        if (cms) cms.setValue('');
-    });
+    console.log('resetFilters() called');
+    try {
+        const allCms = [
+            window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+            window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
+            window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
+            window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
+        ];
+        
+        allCms.forEach(cms => {
+            if (cms && typeof cms.setValue === 'function') {
+                cms.setValue('');
+            }
+        });
 
-    // Clear search input
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.value = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
+        
+        if (typeof datePicker !== 'undefined' && datePicker) {
+            const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+            if (dp && typeof dp.clear === 'function') dp.clear();
+        }
 
-    // 공통 필터 강제 초기화 호출
-    setHardcodedDefaults();
+        console.log('Calling setHardcodedDefaults()');
+        setHardcodedDefaults();
 
-    
-
-    // Refresh UI with cleared filters
-    // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
-    setTimeout(() => {
-        filterData();
-    }, 50);
+        console.log('Setting timeout for filterData()');
+        setTimeout(() => {
+            filterData();
+        }, 50);
+    } catch (e) {
+        console.error('Error in resetFilters:', e);
+    }
 }
 
 // Export CSV
