@@ -1735,7 +1735,9 @@ function initDashboard() {
         prevMonthBtn.addEventListener("click", function () {
             const today = new Date();
             const prevMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth(), 0);
+            const maxPrevMonthDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            const targetDay = Math.min(today.getDate(), maxPrevMonthDay);
+            const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth() - 1, targetDay);
             instance.setDate([prevMonthFirstDay, prevMonthLastDay], true); // true to trigger onChange
             instance.close();
         });
@@ -1773,7 +1775,9 @@ function initDashboard() {
             const todayDate = new Date();
             const monthStartStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), "Y-m-d");
             const prevMonthFirstStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth() - 1, 1), "Y-m-d");
-            const prevMonthLastStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 0), "Y-m-d");
+            const maxPrevMonthDay = new Date(todayDate.getFullYear(), todayDate.getMonth(), 0).getDate();
+            const targetDay = Math.min(todayDate.getDate(), maxPrevMonthDay);
+            const prevMonthLastStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth() - 1, targetDay), "Y-m-d");
             const allStartStr = window.absoluteEarliestDate ? flatpickr.formatDate(window.absoluteEarliestDate, "Y-m-d") : monthStartStr;
             const todayStr = flatpickr.formatDate(todayDate, "Y-m-d");
             
