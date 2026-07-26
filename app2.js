@@ -734,7 +734,19 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
 
     let kpiHtml = '';
 
-    Object.keys(statusCounts).sort().forEach(status => {
+    const orderMap = {
+        '접수': 1,
+        '배차완료': 2,
+        '운송완료': 3,
+        '취소': 4
+    };
+
+    Object.keys(statusCounts).sort((a, b) => {
+        const orderA = orderMap[a] || 99;
+        const orderB = orderMap[b] || 99;
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b);
+    }).forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
