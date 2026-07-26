@@ -1,9 +1,9 @@
-name: 5-Minute Realtime Data Sync
+name: 30-Minute Realtime Data Sync
 
 on:
   schedule:
-    # 5분 간격 실행 (GitHub Actions 최소 주기)
-    - cron: '*/5 * * * *'
+    # 30분 간격 실행 (서버 부하 감소 및 안정성 확보)
+    - cron: '*/30 * * * *'
   # 수동으로 버튼을 눌러 실행할 수 있도록 허용
   workflow_dispatch:
 
@@ -52,5 +52,5 @@ jobs:
           git config --global user.name "Anti-Gravity Bot"
           git config --global user.email "bot@anti-gravity.local"
           git add dashboard_data.xlsx dashboard_data.json data.js
-          git commit -m "🔄 실시간 데이터 자동 동기화 (5분 주기)" || echo "변경된 데이터가 없습니다."
+          git commit -m "🔄 실시간 데이터 자동 동기화 (30분 주기)" || echo "변경된 데이터가 없습니다."
           git push
