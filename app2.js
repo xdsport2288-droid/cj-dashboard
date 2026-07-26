@@ -1437,9 +1437,8 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    console.log('resetFilters() 호출 - 즉시 기본값 복원');
+    console.log('resetFilters() 호출 - 모든 필터 전체(All)로 초기화');
     try {
-        // 1. 모든 필터 빈값으로 1차 초기화 (스킵 로직 제거하여 오류 방지)
         const allCms = [
             window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
             window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
@@ -1452,17 +1451,16 @@ function resetFilters() {
             }
         });
 
-        // 2. 검색어 및 기타 UI 입력창 비우기
         const searchInput = document.getElementById('search-input');
         if (searchInput) searchInput.value = '';
 
-        // 3. 기본 필터값 강제 세팅 (JM컴퍼니, 운송완료, 당월)
-        // ※ 이 함수가 필수 커스텀 드롭다운 및 달력 값을 기본값으로 즉시 덮어씌웁니다.
-        if (typeof setHardcodedDefaults === 'function') {
-            setHardcodedDefaults();
+        if (typeof datePicker !== 'undefined' && datePicker) {
+            const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+            if (dp && typeof dp.clear === 'function') dp.clear();
         }
 
-        // 4. 지연 시간(setTimeout) 없이 즉시 1회만 데이터 재계산
+        // 사용자가 명시적으로 필터를 비우기 원하므로, setHardcodedDefaults()를 호출하지 않고
+        // 즉시 데이터만 전체 기준으로 갱신합니다.
         if (typeof filterData === 'function') {
             filterData();
         }
