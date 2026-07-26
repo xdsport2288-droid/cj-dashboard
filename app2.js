@@ -610,7 +610,7 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
 }
 
 // Calculate and Render KPIs
-function updateKPIs(statusUnfilteredData, rowFilter) {
+function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
     let salesTotal = 0;
     let purchaseTotal = 0;
     let freightTotal = 0;
@@ -640,52 +640,44 @@ function updateKPIs(statusUnfilteredData, rowFilter) {
     updatePrediction(salesTotal);
 
     // ====== 전월 대비 (MoM) 계산 ======
-    const today = new Date();
-    const thisYear = today.getFullYear();
-    // ====== 전월 동기간 대비 계산 ======
-    // 현재 활성 데이터의 날짜 범위를 파악
-    const currentDates = activeData
-        .map(r => (r['상차 요청 일시'] || '').split(' ')[0])
-        .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
-        .sort();
-
     let prevSales = 0, prevCount = 0, momLabel = '';
-
     let shouldShowMom = false;
 
-    if (currentDates.length > 0) {
-        const firstDate = new Date(currentDates[0]);
-        const lastDate  = new Date(currentDates[currentDates.length - 1]);
+    if (startDateVal && endDateVal) {
+        const firstDate = new Date(startDateVal);
+        const lastDate  = new Date(endDateVal);
 
         if (firstDate.getFullYear() === lastDate.getFullYear() && 
             firstDate.getMonth() === lastDate.getMonth()) {
             shouldShowMom = true;
         }
 
-        // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
-        const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
-        const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
+        if (shouldShowMom) {
+            // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
+            const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
+            const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
 
-        const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const prevFirstStr = fmt(prevFirst);
-        const prevLastStr  = fmt(prevLast);
+            const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const prevFirstStr = fmt(prevFirst);
+            const prevLastStr  = fmt(prevLast);
 
-        momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
+            momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
-        let prevPurchaseTotal = 0;
-        if (window.TRANSPORT_DATA) {
-            window.TRANSPORT_DATA.forEach(row => {
-                const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
-                if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
-                    if (rowFilter && !rowFilter(row)) return;
-                    prevCount++;
-                    const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-                    prevSales += Math.floor(f * 1.01 / 100) * 100;
-                    prevPurchaseTotal += Math.floor(f * 0.96);
-                }
-            });
+            let prevPurchaseTotal = 0;
+            if (window.TRANSPORT_DATA) {
+                window.TRANSPORT_DATA.forEach(row => {
+                    const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
+                    if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                        if (rowFilter && !rowFilter(row)) return;
+                        prevCount++;
+                        const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+                        prevSales += Math.floor(f * 1.01 / 100) * 100;
+                        prevPurchaseTotal += Math.floor(f * 0.96);
+                    }
+                });
+            }
+            var prevProfit = prevSales - prevPurchaseTotal;
         }
-        var prevProfit = prevSales - prevPurchaseTotal;
     }
 
     const makeMomBadge = (current, prev, label, formatType = 'currency') => {
@@ -1419,17 +1411,43 @@ function filterData() {
     const momRowFilter = (row) => {
         let c = String(row['간선사'] || '').trim();
         const cVal = c === '' ? '(미지정)' : c;
-        return checkMulti(shipperVals, row['화주명']) &&
-               checkMulti(carrierVals, cVal) &&
-               checkMulti(loadingVals, row['상차지명']) &&
-               checkMulti(destVals, row['하차지명']) &&
-               checkMulti(toneVals, row['요청 톤급']) &&
-               checkMulti(thCartypeVals, row['요청 차량']) &&
-               checkMulti(thDriverVals, row['운전자명']) &&
-               checkMulti(thCarnumVals, row['차량번호']);
+        const sales = row['총 매출 금액'] || row['매출 금액'];
+        const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
+        
+        const passSearch = (() => {
+            if (!searchVal) return true;
+            const driver = String(row['운전자명'] || '').toLowerCase();
+            const carNum = String(row['차량번호'] || '').toLowerCase();
+            const address = String(row['하차지 상세 주소'] || '').toLowerCase();
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+            const ordernum = String(row['접수번호'] || '').toLowerCase();
+            return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
+                   carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
+                   loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
+                   ordernum.includes(searchVal);
+        })();
+
+        return checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']) &&
+               checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
+               checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
+               checkMulti(destVals, row['하차지명']) && checkMulti(thDestVals, row['하차지명']) &&
+               checkMulti(toneVals, row['요청 톤급']) && checkMulti(thToneVals, row['요청 톤급']) &&
+               checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
+               checkMulti(thOrdernumVals, row['접수번호']) &&
+               checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
+               checkMulti(thCartypeVals, row['요청 차량']) && checkMulti(thDriverVals, row['운전자명']) &&
+               checkMulti(thCarnumVals, row['차량번호']) &&
+               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '') &&
+               (thFareVals.length === 0 || thFareVals.includes(salesVal)) &&
+               passSearch;
     };
 
-    updateKPIs(statusUnfilteredData, momRowFilter);
+    updateKPIs(statusUnfilteredData, momRowFilter, startDateVal, endDateVal);
     updateCharts();
     renderTableTabs(validSets.status);
     updateTable();

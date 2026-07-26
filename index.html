@@ -57,7 +57,7 @@
                     <h1><span class="hd-brand" id="brand-name">이천)안성ID허브센터_위니온운송</span> 플랫폼</h1>
                     <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px;">
                         <span id="last-updated-time" style="color: #10b981; font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 2px 8px; border-radius: 4px;"></span>
-                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.1_reset_date (26.07.26) 초기화 시 운송기간 당월 유지 적용</span>
+                        <span id="code-updated-time" style="margin-left: 10px; color: #f59e0b; font-weight: bold; background: rgba(245, 158, 11, 0.1); padding: 2px 8px; border-radius: 4px;">v2.7.1_mom_fix (26.07.26) 전월 대비(MoM) MTD 동일기간 및 전체필터 적용 완료</span>
                     </p>
                 </div>
             </div>
@@ -404,7 +404,7 @@
                 dataScript.src = 'data.js?t=' + Date.now();
                 dataScript.onload = function() {
                     const appScript = document.createElement('script');
-                    appScript.src = 'app2.js?v=2.7.1_reset_date&t=' + Date.now();
+                    appScript.src = 'app2.js?v=2.7.1_mom_fix&t=' + Date.now();
                     document.body.appendChild(appScript);
                 };
                 document.body.appendChild(dataScript);
