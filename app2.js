@@ -1679,27 +1679,188 @@ function filterData() {
     updateTable();
 }
 
-// Reset Filters
-function resetFilters() {
-    // Clear all CustomMultiSelect instances dynamically
-    const allCms = [
-        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
-        window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
-        window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
-    ];
-    
-    allCms.forEach(cms => {
-        if (cms) cms.setValue('');
+    const topScroll = document.getElementById('top-scrollbar');
+    const fakeContent = document.getElementById('top-scrollbar-fake-content');
+    const tableWrapper = document.getElementById('table-wrapper');
+    const table = tableWrapper ? tableWrapper.querySelector('table') : null;
+
+    if (topScroll && fakeContent && tableWrapper && table) {
+        window.syncScrollWidth = () => {
+            fakeContent.style.width = tableWrapper.scrollWidth + 'px';
+        };
+        window.addEventListener('resize', window.syncScrollWidth);
+        
+        let isSyncingLeft = false;
+        let isSyncingRight = false;
+        
+        topScroll.addEventListener('scroll', () => {
+            if (!isSyncingLeft) {
+                isSyncingRight = true;
+                tableWrapper.scrollLeft = topScroll.scrollLeft;
+            }
+            isSyncingLeft = false;
+        });
+        tableWrapper.addEventListener('scroll', () => {
+            if (!isSyncingRight) {
+                isSyncingLeft = true;
+                topScroll.scrollLeft = tableWrapper.scrollLeft;
+            }
+            isSyncingRight = false;
+        });
+    }
+
+    // Show initial update time if available
+    const timeSpan = document.getElementById('last-updated-time');
+    if (timeSpan && window.LAST_UPDATED) {
+        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
+    }
+
+    // Initialize Flatpickr date range picker
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const fileStartDate = firstDay;
+
+    // Find the absolute earliest date in the data for "전체" (All)
+    window.absoluteEarliestDate = new Date(today.getFullYear(), today.getMonth(), 1); // fallback
+    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
+        let minDateStr = "9999-99-99";
+        window.TRANSPORT_DATA.forEach(row => {
+            const ds = (row['상차 요청 일시'] || row['배차 요청 일시'] || row['접수일시'] || '').split(' ')[0];
+            if (ds && ds >= '2000-01-01' && ds < minDateStr) {
+                minDateStr = ds;
+            }
+        });
+        if (minDateStr !== "9999-99-99") {
+            window.absoluteEarliestDate = new Date(minDateStr);
+        }
+    }
+
+    // Function to add custom buttons to flatpickr
+    const addCustomButtons = function (selectedDates, dateStr, instance) {
+        const btnContainer = document.createElement("div");
+        btnContainer.style.display = "flex";
+        btnContainer.style.gap = "5px";
+        btnContainer.style.padding = "5px 10px 10px 10px";
+        btnContainer.style.backgroundColor = "var(--bg-secondary)";
+        btnContainer.style.borderTop = "1px solid var(--card-border)";
+        btnContainer.style.borderRadius = "0 0 5px 5px";
+
+        const todayBtn = document.createElement("button");
+        todayBtn.textContent = "오늘";
+        todayBtn.className = "btn btn-secondary";
+        todayBtn.style.flex = "1";
+        todayBtn.style.padding = "6px";
+        todayBtn.style.cursor = "pointer";
+        todayBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        todayBtn.style.color = "#48bb78";
+        todayBtn.addEventListener("click", function () {
+            const today = new Date();
+            instance.setDate([today, today], true); // true to trigger onChange
+            instance.close();
+            // filterData() is called by onChange
+        });
+
+        const monthBtn = document.createElement("button");
+        monthBtn.textContent = "당월";
+        monthBtn.className = "btn btn-secondary";
+        monthBtn.style.flex = "1";
+        monthBtn.style.padding = "6px";
+        monthBtn.style.cursor = "pointer";
+        monthBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        monthBtn.style.color = "#48bb78";
+        monthBtn.addEventListener("click", function () {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            instance.setDate([firstDay, today], true); // true to trigger onChange
+            instance.close();
+        });
+
+        const clearBtn = document.createElement("button");
+        clearBtn.textContent = "전체선택 (전체날짜)";
+        clearBtn.className = "btn btn-secondary";
+        clearBtn.style.flex = "2";
+        clearBtn.style.padding = "6px";
+        clearBtn.style.cursor = "pointer";
+        clearBtn.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+        clearBtn.style.color = "var(--text-primary)";
+        clearBtn.addEventListener("click", function () {
+            const today = new Date();
+            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
+            instance.setDate([minDate, today], true); // true to trigger onChange
+            instance.close();
+            // filterData() is called by onChange
+        });
+
+        btnContainer.appendChild(todayBtn);
+        btnContainer.appendChild(monthBtn);
+        btnContainer.appendChild(clearBtn);
+        instance.calendarContainer.appendChild(btnContainer);
+    };
+
+    const updateDateLabel = function(selectedDates) {
+        const label = document.getElementById('date-range-label');
+        if (!label) return;
+        if (selectedDates && selectedDates.length === 2) {
+            const startStr = flatpickr.formatDate(selectedDates[0], "Y-m-d");
+            const endStr = flatpickr.formatDate(selectedDates[1], "Y-m-d");
+            
+            const todayDate = new Date();
+            const monthStartStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), "Y-m-d");
+            const allStartStr = window.absoluteEarliestDate ? flatpickr.formatDate(window.absoluteEarliestDate, "Y-m-d") : monthStartStr;
+            const todayStr = flatpickr.formatDate(todayDate, "Y-m-d");
+            
+            if (startStr === monthStartStr && endStr === todayStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            } else if (startStr === allStartStr && endStr === todayStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
+            } else {
+                label.innerHTML = '📅 운송 기간';
+            }
+        } else {
+            label.innerHTML = '📅 운송 기간';
+        }
+    };
+
+    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) _dateRangeInput.value = "";
+    document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
+
+    datePicker = flatpickr("#filter-date-range", {
+        mode: "range",
+        locale: "ko",
+        dateFormat: "Y-m-d",
+        defaultDate: [fileStartDate, today],
+        onChange: function (selectedDates, dateStr, instance) {
+            updateDateLabel(selectedDates);
+            if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
+        },
+        onOpen: function (selectedDates, dateStr, instance) {
+            instance.jumpToDate(new Date());
+        },
+        onReady: function (selectedDates, dateStr, instance) {
+            addCustomButtons(selectedDates, dateStr, instance);
+            updateDateLabel(selectedDates);
+        }
     });
 
-    // Clear search input
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.value = '';
+    // Global filterData call removed
+    // Event listeners
+    document.getElementById('filter-shipper').addEventListener('change', filterData);
+    document.getElementById('filter-loading').addEventListener('change', filterData);
+    document.getElementById('filter-dest').addEventListener('change', filterData);
+    document.getElementById('filter-tone').addEventListener('change', filterData);
+    document.getElementById('filter-status').addEventListener('change', filterData);
+    document.getElementById('search-input').addEventListener('input', filterData);
 
-    // 공통 필터 강제 초기화 호출
-    setHardcodedDefaults();
-
+    // X (clear) button for search input
+    const searchInputEl = document.getElementById('search-input');
+    const searchClearBtn = document.getElementById('search-clear-btn');
+    if (searchInputEl && searchClearBtn) {
+        // Show/hide X based on input content
+        searchInputEl.addEventListener('input', () => {
+            searchClearBtn.style.display = searchInputEl.value ? 'block' : 'none';
+        });
         // Click X: clear and re-filter
         searchClearBtn.addEventListener('click', () => {
             searchInputEl.value = '';
@@ -1744,6 +1905,9 @@ function resetFilters() {
         }
     });
 
+    // [긴급 수정] 데이터 수집 및 초기화 가장 마지막에 필터 강제 설정
+    setHardcodedDefaults();
+    
     const btnReset = document.getElementById('btn-reset');
     if (btnReset) btnReset.addEventListener('click', resetFilters);
     
@@ -1753,6 +1917,33 @@ function resetFilters() {
     document.getElementById('btn-export').addEventListener('click', exportToCSV);
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
 }
+
+// Reset Filters
+function resetFilters() {
+    // Clear all CustomMultiSelect instances dynamically
+    const allCms = [
+        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
+        window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
+        window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
+    ];
+    
+    allCms.forEach(cms => {
+        if (cms) cms.setValue('');
+    });
+
+    // Clear search input
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) searchInput.value = '';
+
+    // 공통 필터 강제 초기화 호출
+    setHardcodedDefaults();
+    
+    setTimeout(() => {
+        filterData();
+    }, 50);
+}
+
 
 
 // Live auto-polling mechanism
