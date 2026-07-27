@@ -292,7 +292,7 @@ class CustomMultiSelect {
             const selectedText = selectedCheckboxes[0].parentElement.textContent.trim();
             
             let extraClass = '';
-            if (selectedText.includes('배차완료')) extraClass = 'success-text';
+            if (selectedText.includes('배차완료')) extraClass = 'dispatch-text';
             else if (selectedText.includes('운송완료')) extraClass = 'warning-text';
             else if (selectedText.includes('취소')) extraClass = 'danger-text';
             else if (selectedText.includes('접수')) extraClass = 'info-text';
@@ -602,11 +602,8 @@ if (thCarnum) Array.from(carnums).sort().forEach(c => { const o = document.creat
     else if (currentTone) toneSelect.value = currentTone;
     
     if (currentStatus && window.cmsStatus) {
-        // 타이밍 보장: 옵션이 렌더된 후 setValue 적용
-        setTimeout(() => {
-            window.cmsStatus.setValue(currentStatus);
-            if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
-        }, 0);
+        window.cmsStatus.setValue(currentStatus);
+        if (window.cmsThStatus) window.cmsThStatus.setValue(currentStatus);
     } else if (currentStatus) {
         statusSelect.value = currentStatus;
     }
@@ -643,85 +640,44 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
     updatePrediction(salesTotal);
 
     // ====== 전월 대비 (MoM) 계산 ======
-    const today = new Date();
-    const thisYear = today.getFullYear();
-    // ====== 전월 동기간 대비 계산 ======
-    // 현재 활성 데이터의 날짜 범위를 파악
-    const currentDates = activeData
-        .map(r => (r['상차 요청 일시'] || '').split(' ')[0])
-        .filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d))
-        .sort();
-
     let prevSales = 0, prevCount = 0, momLabel = '';
+    let shouldShowMom = false;
 
-    let firstDate, lastDate;
     if (startDateVal && endDateVal) {
-        firstDate = new Date(startDateVal);
-        lastDate = new Date(endDateVal);
-    } else if (currentDates.length > 0) {
-        firstDate = new Date(currentDates[0]);
-        lastDate  = new Date(currentDates[currentDates.length - 1]);
-    }
+        const firstDate = new Date(startDateVal);
+        const lastDate  = new Date(endDateVal);
 
-    if (firstDate && lastDate) {
-        // --- Added Logic: Auto-detect Last Available Date ---
-        if (window.TRANSPORT_DATA) {
-            let actualMaxStr = "";
-            const fmtRaw = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-            const fStr = fmtRaw(firstDate);
-            const lStr = fmtRaw(lastDate);
-            
-            window.TRANSPORT_DATA.forEach(row => {
-                if (rowFilter && !rowFilter(row)) return;
-                const dtStr = (row['상차 요청 일시'] || '').split(' ')[0];
-                if (dtStr >= fStr && dtStr <= lStr) {
-                    if (dtStr > actualMaxStr) actualMaxStr = dtStr;
-                }
-            });
-            
-            if (actualMaxStr) {
-                const actualMaxDt = new Date(actualMaxStr);
-                if (actualMaxDt < lastDate) {
-                    lastDate = actualMaxDt;
-                }
-            }
+        if (firstDate.getFullYear() === lastDate.getFullYear() && 
+            firstDate.getMonth() === lastDate.getMonth()) {
+            shouldShowMom = true;
         }
-        // ----------------------------------------------------
 
-        // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
-        const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
-        const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
+        if (shouldShowMom) {
+            // 동기간: 첫날~마지막날 각각 전월 같은 일(day) 로 이동
+            const prevFirst = new Date(firstDate.getFullYear(), firstDate.getMonth() - 1, firstDate.getDate());
+            const prevLast  = new Date(lastDate.getFullYear(),  lastDate.getMonth() - 1,  lastDate.getDate());
 
-        const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        const prevFirstStr = fmt(prevFirst);
-        const prevLastStr  = fmt(prevLast);
+            const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            const prevFirstStr = fmt(prevFirst);
+            const prevLastStr  = fmt(prevLast);
 
-        momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
+            momLabel = `전월 동기간 (${prevFirstStr} ~ ${prevLastStr})`;
 
-        let prevPurchaseTotal = 0;
-        let currentMonthCount = 0; // For debug logging
-        if (window.TRANSPORT_DATA) {
-            window.TRANSPORT_DATA.forEach(row => {
-                if (rowFilter && !rowFilter(row)) return; // First apply the exact same filter
-                
-                const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
-                if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
-                    prevCount++;
-                    const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
-                    prevSales += Math.floor(f * 1.01 / 100) * 100;
-                    prevPurchaseTotal += Math.floor(f * 0.96);
-                }
-                
-                if (firstDate && lastDate) {
-                    if (dateStr >= fmt(firstDate) && dateStr <= fmt(lastDate)) {
-                        currentMonthCount++;
+            let prevPurchaseTotal = 0;
+            if (window.TRANSPORT_DATA) {
+                window.TRANSPORT_DATA.forEach(row => {
+                    const dateStr = (row['상차 요청 일시'] || '').split(' ')[0];
+                    if (dateStr >= prevFirstStr && dateStr <= prevLastStr) {
+                        if (rowFilter && !rowFilter(row)) return;
+                        prevCount++;
+                        const f = cleanNumeric(row['총 매출 금액'] || row['매출 금액']);
+                        prevSales += Math.floor(f * 1.01 / 100) * 100;
+                        prevPurchaseTotal += Math.floor(f * 0.96);
                     }
-                }
-            });
+                });
+            }
+            var prevProfit = prevSales - prevPurchaseTotal;
         }
-        console.log(`[MoM Debug] Filtered Current (${fmt(firstDate)} ~ ${fmt(lastDate)}): ${currentMonthCount}건`);
-        console.log(`[MoM Debug] Filtered Previous (${prevFirstStr} ~ ${prevLastStr}): ${prevCount}건`);
-        var prevProfit = prevSales - prevPurchaseTotal;
     }
 
     const makeMomBadge = (current, prev, label, formatType = 'currency') => {
@@ -745,7 +701,15 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
 
     const fillSlot = (slotId, current, prev, formatType = 'currency') => {
         const el = document.getElementById(slotId);
-        if (el) el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+        if (el) {
+            if (shouldShowMom) {
+                el.style.display = '';
+                el.innerHTML = makeMomBadge(current, prev, momLabel, formatType);
+            } else {
+                el.style.display = 'none';
+                el.innerHTML = '';
+            }
+        }
     };
     fillSlot('mom-orders', ordersCount, prevCount, 'count');
     fillSlot('mom-sales', salesTotal, prevSales, 'currency');
@@ -770,20 +734,12 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
 
     let kpiHtml = '';
 
-    const statusOrder = ['접수', '배차완료', '운송완료'];
-    Object.keys(statusCounts).sort((a, b) => {
-        const idxA = statusOrder.indexOf(a);
-        const idxB = statusOrder.indexOf(b);
-        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
-    }).forEach(status => {
+    Object.keys(statusCounts).sort().forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
         let colorClass = 'primary';
-        if (status.includes('배차완료')) colorClass = 'allocated';
+        if (status.includes('배차완료')) colorClass = 'dispatch';
         else if (status.includes('운송완료')) colorClass = 'warning';
         else if (status.includes('취소')) colorClass = 'danger';
         else if (status.includes('접수')) colorClass = 'info';
@@ -796,6 +752,15 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
     });
 
     document.getElementById('kpi-orders-detail').innerHTML = kpiHtml;
+
+    let titleText = '총 배차 건수';
+    if (activeStatuses.length === 1) {
+        titleText = activeStatuses[0] + ' 건수';
+    } else if (activeStatuses.length > 1) {
+        titleText = '선택 상태 건수';
+    }
+    const titleEl = document.getElementById('kpi-orders-title');
+    if (titleEl) titleEl.textContent = titleText;
 }
 
 // Monthly Prediction Analysis
@@ -1446,6 +1411,27 @@ function filterData() {
     const momRowFilter = (row) => {
         let c = String(row['간선사'] || '').trim();
         const cVal = c === '' ? '(미지정)' : c;
+        const sales = row['총 매출 금액'] || row['매출 금액'];
+        const salesVal = String(sales !== undefined && sales !== null ? sales : '').trim();
+        
+        const passSearch = (() => {
+            if (!searchVal) return true;
+            const driver = String(row['운전자명'] || '').toLowerCase();
+            const carNum = String(row['차량번호'] || '').toLowerCase();
+            const address = String(row['하차지 상세 주소'] || '').toLowerCase();
+            const carType = String(row['요청 차량'] || '').toLowerCase();
+            const tone = String(row['요청 톤급'] || '').toLowerCase();
+            const shipper = String(row['화주명'] || '').toLowerCase();
+            const loading = String(row['상차지명'] || '').toLowerCase();
+            const dest = String(row['하차지명'] || '').toLowerCase();
+            const remark = String(row['비고'] || '').toLowerCase();
+            const ordernum = String(row['접수번호'] || '').toLowerCase();
+            return driver.includes(searchVal) || carNum.includes(searchVal) || address.includes(searchVal) ||
+                   carType.includes(searchVal) || tone.includes(searchVal) || shipper.includes(searchVal) ||
+                   loading.includes(searchVal) || dest.includes(searchVal) || remark.includes(searchVal) ||
+                   ordernum.includes(searchVal);
+        })();
+
         return checkMulti(shipperVals, row['화주명']) && checkMulti(thShipperVals, row['화주명']) &&
                checkMulti(carrierVals, cVal) && checkMulti(thCarrierVals, cVal) &&
                checkMulti(loadingVals, row['상차지명']) && checkMulti(thLoadingVals, row['상차지명']) &&
@@ -1454,10 +1440,11 @@ function filterData() {
                checkMulti(statusVals, row['주문 상태']) && checkMulti(thStatusVals, row['주문 상태']) &&
                checkMulti(thOrdernumVals, row['접수번호']) &&
                checkMulti(thWaypointVals, row['경유지'] !== undefined && row['경유지'] !== null ? row['경유지'] : '') &&
-               checkMulti(thCartypeVals, row['요청 차량']) &&
-               checkMulti(thDriverVals, row['운전자명']) &&
+               checkMulti(thCartypeVals, row['요청 차량']) && checkMulti(thDriverVals, row['운전자명']) &&
                checkMulti(thCarnumVals, row['차량번호']) &&
-               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '');
+               checkMulti(thRemarkVals, row['비고'] !== undefined && row['비고'] !== null ? row['비고'] : '') &&
+               (thFareVals.length === 0 || thFareVals.includes(salesVal)) &&
+               passSearch;
     };
 
     updateKPIs(statusUnfilteredData, momRowFilter, startDateVal, endDateVal);
@@ -1468,42 +1455,43 @@ function filterData() {
 
 // Reset Filters
 function resetFilters() {
-    // Clear all CustomMultiSelect instances dynamically
-    const allCms = [
-        window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
-        window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
-        window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
-        window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
-    ];
-    
-    allCms.forEach(cms => {
-        if (cms) cms.setValue('');
-    });
+    console.log('resetFilters() 호출 - 모든 필터 전체(All)로 초기화, 날짜는 당월');
+    try {
+        const allCms = [
+            window.cmsShipper, window.cmsCarrier, window.cmsLoading, window.cmsDest, window.cmsTone, window.cmsStatus,
+            window.cmsThStatus, window.cmsThOrdernum, window.cmsThShipper, window.cmsThCarrier, window.cmsThLoading, 
+            window.cmsThDest, window.cmsThStartdate, window.cmsThEnddate, window.cmsThWaypoint, window.cmsThTone, 
+            window.cmsThCartype, window.cmsThDriver, window.cmsThCarnum, window.cmsThRemark, window.cmsThFare
+        ];
+        allCms.forEach(cms => {
+            if (cms && typeof cms.setValue === 'function') {
+                cms.setValue('');
+            }
+        });
 
-    // Clear search input
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) searchInput.value = '';
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = '';
 
-    // 날짜 선택기를 전체 기간으로 초기화
-    if (typeof datePicker !== 'undefined' && datePicker) {
-        // 단일 객체인 경우와 배열인 경우 모두 처리
-        const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
-        if (dp) {
-            const today = new Date();
-            const minDate = window.absoluteEarliestDate || new Date(2000, 0, 1);
-            dp.setDate([minDate, today], false); // false prevents onChange from firing to avoid flicker
+        if (typeof datePicker !== 'undefined' && datePicker) {
+            const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+            if (dp) {
+                const today = new Date();
+                const minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                dp.setDate([minDate, today], false);
+                
+                const label = document.getElementById('date-range-label');
+                if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            }
         }
-        
-        // Label 원상복구
-        const label = document.getElementById('date-range-label');
-        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
-    }
 
-    // Refresh UI with cleared filters
-    // 50ms 딜레이를 주어 플랫피커 달력 렌더링으로 인한 브라우저 프레임 드랍(깜빡임) 방지 후 스르륵 애니메이션 적용
-    setTimeout(() => {
-        filterData();
-    }, 50);
+        // 사용자가 명시적으로 필터를 비우기 원하므로, setHardcodedDefaults()를 호출하지 않고
+        // 즉시 데이터만 전체 기준으로 갱신합니다.
+        if (typeof filterData === 'function') {
+            filterData();
+        }
+    } catch (e) {
+        console.error('필터 초기화 중 오류:', e);
+    }
 }
 
 // Export CSV
@@ -1576,30 +1564,6 @@ function toggleTheme() {
     updateCharts();
 }
 
-function getLatestDataTime() {
-    let maxDateStr = "";
-    if (window.TRANSPORT_DATA && window.TRANSPORT_DATA.length > 0) {
-        window.TRANSPORT_DATA.forEach(row => {
-            const dt = row['상차 요청 일시'] || row['배차 요청 일시'] || row['접수일시'] || '';
-            if (dt && dt > maxDateStr) {
-                maxDateStr = dt;
-            }
-        });
-    }
-    if (maxDateStr) {
-        const parts = maxDateStr.split(' ');
-        if (parts.length >= 2) {
-            const dateParts = parts[0].split('-');
-            const timeParts = parts[1].split(':');
-            if (dateParts.length >= 3 && timeParts.length >= 2) {
-                return `${dateParts[0]}.${dateParts[1]}.${dateParts[2]} ${timeParts[0]}:${timeParts[1]}`;
-            }
-        }
-        return maxDateStr;
-    }
-    return new Date().toLocaleString();
-}
-
 function applyDynamicLabels() {
     // Load Configuration
     const getConfigName = (key, defaultName) => {
@@ -1646,15 +1610,12 @@ function applyDynamicLabels() {
 // On Load
 function initDashboard() {
     applyDynamicLabels();
-    try {
-        initEditMode();
-    } catch(e) { console.error('initEditMode error:', e); }
+    initEditMode();
     initFilters();
-    
-    // 강제로 필터 한 번 더 적용하여 초기화면 데이터와 UI 동기화 (기본 필터 없는 전체 데이터 상태)
-    filterData();
 
-    // 상단 가로 스크롤바 동기화 초기화
+    // 강제로 세팅된 필터를 적용하여 초기화면 데이터와 UI 동기화
+
+    filterData();
     const topScroll = document.getElementById('top-scrollbar');
     const fakeContent = document.getElementById('top-scrollbar-fake-content');
     const tableWrapper = document.getElementById('table-wrapper');
@@ -1685,17 +1646,13 @@ function initDashboard() {
         });
     }
 
-    // Show initial update time
-    const timeSpan = document.getElementById('lastUpdateTime');
-    if (timeSpan) {
-        timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
+    // Show initial update time if available
+    const timeSpan = document.getElementById('last-updated-time');
+    if (timeSpan && window.LAST_UPDATED) {
+        timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
     }
 
     // Initialize Flatpickr date range picker
-    if (window.flatpickr && window.flatpickr.l10ns) {
-        if (window.flatpickr.l10ns.ko) window.flatpickr.l10ns.ko.rangeSeparator = ' ~ ';
-        if (window.flatpickr.l10ns.default) window.flatpickr.l10ns.default.rangeSeparator = ' ~ ';
-    }
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     const fileStartDate = firstDay;
@@ -1801,7 +1758,9 @@ function initDashboard() {
         }
     };
 
-    // Force clear cached browser form states on load for selects
+    // Force clear cached browser form states on load to prevent "필터 초기화" state from persisting across F5 or "새 데이터 새로고침"
+    const _dateRangeInput = document.getElementById('filter-date-range');
+    if (_dateRangeInput) _dateRangeInput.value = "";
     document.querySelectorAll('select.filter-select, select.th-filter').forEach(sel => sel.value = "");
 
     datePicker = flatpickr("#filter-date-range", {
@@ -1821,15 +1780,8 @@ function initDashboard() {
             updateDateLabel(selectedDates);
         }
     });
-    
-    // Explicitly set value to ensure filterData picks it up correctly on load
-    const _dateRangeInput = document.getElementById('filter-date-range');
-    if (_dateRangeInput) {
-        _dateRangeInput.value = flatpickr.formatDate(fileStartDate, "Y-m-d") + " ~ " + flatpickr.formatDate(today, "Y-m-d");
-    }
 
-    filterData();
-
+    // Global filterData call removed
     // Event listeners
     document.getElementById('filter-shipper').addEventListener('change', filterData);
     document.getElementById('filter-loading').addEventListener('change', filterData);
@@ -1898,6 +1850,10 @@ function initDashboard() {
 
     document.getElementById('btn-export').addEventListener('click', exportToCSV);
     document.getElementById('btn-theme').addEventListener('click', toggleTheme);
+
+    // --- [최종 수정] 초기화 가장 마지막에 필터 강제 설정 ---
+    setHardcodedDefaults();
+    filterData();
 }
 
 
@@ -1921,8 +1877,8 @@ setInterval(async () => {
 
             if (newData.last_updated) {
                 window.LAST_UPDATED = newData.last_updated;
-                const timeSpan = document.getElementById('lastUpdateTime');
-                if (timeSpan) timeSpan.textContent = `데이터 업데이트: ${getLatestDataTime()}`;
+                const timeSpan = document.getElementById('last-updated-time');
+                if (timeSpan) timeSpan.textContent = "최근 업데이트: " + window.LAST_UPDATED;
             }
 
             // Update dropdowns in case there are new shippers/dests
@@ -2033,12 +1989,11 @@ function initEditMode() {
             }
             if(label && window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG[key] && window.DASHBOARD_CONFIG[key].display_name) {
                 if(label.tagName === 'BUTTON') {
-                    label.textContent = window.DASHBOARD_CONFIG[key].display_name;
+                    label.innerText = window.DASHBOARD_CONFIG[key].display_name;
                 } else {
-                    const text = label.textContent || label.innerText || '';
-                    const textParts = text.split(' ');
-                    const icon = (textParts[0] && textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/)) ? textParts[0] + ' ' : '';
-                    label.textContent = icon + window.DASHBOARD_CONFIG[key].display_name;
+                    const textParts = label.innerText.split(' ');
+                    const icon = textParts[0].match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/) ? textParts[0] + ' ' : '';
+                    label.innerText = icon + window.DASHBOARD_CONFIG[key].display_name;
                 }
             }
         }
@@ -2548,6 +2503,43 @@ if (btnTableScrollDown && dynamicTableWrapper) {
     });
 }
 
+
+// ==========================================
+// 공통 필터 강제 초기화 함수 (F5 및 초기화 버튼 공통)
+// ==========================================
+function setHardcodedDefaults() {
+    console.log("Applying Hardcoded Defaults...");
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const minDate = firstDay;
+
+    // 1. 운송 기간 (당월)
+    if (typeof datePicker !== 'undefined' && datePicker) {
+        const dp = Array.isArray(datePicker) ? datePicker[0] : datePicker;
+        if (dp) {
+            dp.setDate([minDate, today], false);
+        }
+        const label = document.getElementById('date-range-label');
+        if (label) label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+    }
+
+    // 2. 접수상태 (운송완료)
+    if (window.cmsStatus) {
+        window.cmsStatus.setValue('운송완료');
+        if (window.cmsThStatus) window.cmsThStatus.setValue('운송완료');
+    }
+    const statusSelect = document.getElementById('filter-status');
+    if (statusSelect) statusSelect.value = '운송완료';
+
+    // 3. 간선사 (JM컴퍼니)
+    if (window.cmsCarrier) {
+        window.cmsCarrier.setValue('JM컴퍼니');
+        if (window.cmsThCarrier) window.cmsThCarrier.setValue('JM컴퍼니');
+    }
+    const carrierSelect = document.getElementById('filter-carrier');
+    if (carrierSelect) carrierSelect.value = 'JM컴퍼니';
+}
+
 // App execution
 
 if (document.readyState === 'loading') {
@@ -2555,6 +2547,7 @@ if (document.readyState === 'loading') {
 } else {
     initDashboard();
 }
+
 
 
 
