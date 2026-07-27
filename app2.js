@@ -734,7 +734,19 @@ function updateKPIs(statusUnfilteredData, rowFilter, startDateVal, endDateVal) {
 
     let kpiHtml = '';
 
-    Object.keys(statusCounts).sort().forEach(status => {
+    const orderMap = {
+        '접수': 1,
+        '배차완료': 2,
+        '운송완료': 3,
+        '취소': 4
+    };
+
+    Object.keys(statusCounts).sort((a, b) => {
+        const orderA = orderMap[a] || 99;
+        const orderB = orderMap[b] || 99;
+        if (orderA !== orderB) return orderA - orderB;
+        return a.localeCompare(b);
+    }).forEach(status => {
         const count = statusCounts[status];
         const pct = totalSourceCount > 0 ? ((count / totalSourceCount) * 100).toFixed(1) : 0;
         
@@ -1712,8 +1724,26 @@ function initDashboard() {
             instance.close();
         });
 
+        const prevMonthBtn = document.createElement("button");
+        prevMonthBtn.textContent = "전월";
+        prevMonthBtn.className = "btn btn-secondary";
+        prevMonthBtn.style.flex = "1";
+        prevMonthBtn.style.padding = "6px";
+        prevMonthBtn.style.cursor = "pointer";
+        prevMonthBtn.style.backgroundColor = "rgba(72, 187, 120, 0.2)"; // subtle green tint
+        prevMonthBtn.style.color = "#48bb78";
+        prevMonthBtn.addEventListener("click", function () {
+            const today = new Date();
+            const prevMonthFirstDay = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const maxPrevMonthDay = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            const targetDay = Math.min(today.getDate(), maxPrevMonthDay);
+            const prevMonthLastDay = new Date(today.getFullYear(), today.getMonth() - 1, targetDay);
+            instance.setDate([prevMonthFirstDay, prevMonthLastDay], true); // true to trigger onChange
+            instance.close();
+        });
+
         const clearBtn = document.createElement("button");
-        clearBtn.textContent = "전체선택 (전체날짜)";
+        clearBtn.textContent = "전체날짜";
         clearBtn.className = "btn btn-secondary";
         clearBtn.style.flex = "2";
         clearBtn.style.padding = "6px";
@@ -1730,6 +1760,7 @@ function initDashboard() {
 
         btnContainer.appendChild(todayBtn);
         btnContainer.appendChild(monthBtn);
+        btnContainer.appendChild(prevMonthBtn);
         btnContainer.appendChild(clearBtn);
         instance.calendarContainer.appendChild(btnContainer);
     };
@@ -1743,11 +1774,17 @@ function initDashboard() {
             
             const todayDate = new Date();
             const monthStartStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth(), 1), "Y-m-d");
+            const prevMonthFirstStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth() - 1, 1), "Y-m-d");
+            const maxPrevMonthDay = new Date(todayDate.getFullYear(), todayDate.getMonth(), 0).getDate();
+            const targetDay = Math.min(todayDate.getDate(), maxPrevMonthDay);
+            const prevMonthLastStr = flatpickr.formatDate(new Date(todayDate.getFullYear(), todayDate.getMonth() - 1, targetDay), "Y-m-d");
             const allStartStr = window.absoluteEarliestDate ? flatpickr.formatDate(window.absoluteEarliestDate, "Y-m-d") : monthStartStr;
             const todayStr = flatpickr.formatDate(todayDate, "Y-m-d");
             
             if (startStr === monthStartStr && endStr === todayStr) {
                 label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(당월)</span>';
+            } else if (startStr === prevMonthFirstStr && endStr === prevMonthLastStr) {
+                label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전월)</span>';
             } else if (startStr === allStartStr && endStr === todayStr) {
                 label.innerHTML = '📅 운송 기간 <span style="color: #48bb78; font-size: 0.8em; margin-left: 4px;">(전체)</span>';
             } else {
@@ -1773,7 +1810,11 @@ function initDashboard() {
             if (selectedDates.length === 0 || selectedDates.length === 2) filterData();
         },
         onOpen: function (selectedDates, dateStr, instance) {
-            instance.jumpToDate(new Date());
+            if (selectedDates && selectedDates.length > 0) {
+                instance.jumpToDate(selectedDates[0]);
+            } else {
+                instance.jumpToDate(new Date());
+            }
         },
         onReady: function (selectedDates, dateStr, instance) {
             addCustomButtons(selectedDates, dateStr, instance);
