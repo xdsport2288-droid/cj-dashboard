@@ -1,4 +1,4 @@
-window.LAST_UPDATED = '2026-08-20 06:15:12';
+window.LAST_UPDATED = '2026-08-20 06:47:23';
 
 window.TRANSPORT_DATA = [
   {
